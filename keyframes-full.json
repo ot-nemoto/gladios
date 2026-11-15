@@ -1,0 +1,6777 @@
+{
+ "note": "Full inventory v1: the 31 vertical-slice sets plus sica/pugio/trident/hasta attacks (48) and parmula/small-shield/weapon-only defence sets (9). Angles: absolute degrees, torso 0=up, limbs 0=down, + toward opponent. Weapon angle: 0 = horizontal toward opponent, + = up. Shield: offset from torso centre. Standard build (doc v3.5).",
+ "sets": [
+  {
+   "id": "gladius-slash-feint-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -1,
+     "upperArm": -12,
+     "forearm": 34,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 98
+    },
+    {
+     "t": 0.6,
+     "torso": 11,
+     "upperArm": 46,
+     "forearm": 86,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 50
+    },
+    {
+     "t": 0.8,
+     "torso": 14,
+     "upperArm": 66,
+     "forearm": 99,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": 17
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 53,
+     "forearm": 80,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": -9
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-normal-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -6,
+     "upperArm": -35,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 130
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.8,
+     "torso": 18,
+     "upperArm": 85,
+     "forearm": 115,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.1,
+      0.94
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 65,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -35
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-strong-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -10,
+     "upperArm": -35,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 145
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.8,
+     "torso": 22,
+     "upperArm": 85,
+     "forearm": 115,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.15,
+      0.94
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 65,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -45
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-feint-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -2,
+     "upperArm": -17,
+     "forearm": 39,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 114
+    },
+    {
+     "t": 0.6,
+     "torso": 9,
+     "upperArm": 58,
+     "forearm": 98,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 71
+    },
+    {
+     "t": 0.8,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 108,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": 31
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 64,
+     "forearm": 91,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": 16
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-normal-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -8,
+     "upperArm": -45,
+     "forearm": 20,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 145
+    },
+    {
+     "t": 0.6,
+     "torso": 10,
+     "upperArm": 70,
+     "forearm": 110,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 80
+    },
+    {
+     "t": 0.8,
+     "torso": 14,
+     "upperArm": 105,
+     "forearm": 125,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.1,
+      0.95
+     ],
+     "weaponAngle": 18
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 100,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -5
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-strong-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -12,
+     "upperArm": -45,
+     "forearm": 20,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 160
+    },
+    {
+     "t": 0.6,
+     "torso": 10,
+     "upperArm": 70,
+     "forearm": 110,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 80
+    },
+    {
+     "t": 0.8,
+     "torso": 18,
+     "upperArm": 105,
+     "forearm": 125,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.15,
+      0.95
+     ],
+     "weaponAngle": 18
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 100,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -15
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-feint-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -1,
+     "upperArm": -9,
+     "forearm": 29,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 90
+    },
+    {
+     "t": 0.6,
+     "torso": 11,
+     "upperArm": 43,
+     "forearm": 78,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 38
+    },
+    {
+     "t": 0.8,
+     "torso": 13,
+     "upperArm": 59,
+     "forearm": 91,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": 7
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 48,
+     "forearm": 73,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": -14
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-normal-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -6,
+     "upperArm": -30,
+     "forearm": 10,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 120
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.8,
+     "torso": 16,
+     "upperArm": 75,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.1,
+      0.94
+     ],
+     "weaponAngle": -8
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 58,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -40
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-strong-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -10,
+     "upperArm": -30,
+     "forearm": 10,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 135
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.8,
+     "torso": 20,
+     "upperArm": 75,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.15,
+      0.94
+     ],
+     "weaponAngle": -8
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 58,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -50
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-feint-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": 4,
+     "upperArm": -3,
+     "forearm": 28,
+     "thigh": 13,
+     "shin": -5,
+     "hip": [
+      -0.01,
+      0.91
+     ],
+     "weaponAngle": 79
+    },
+    {
+     "t": 0.55,
+     "torso": 16,
+     "upperArm": 13,
+     "forearm": 29,
+     "thigh": 17,
+     "shin": -3,
+     "hip": [
+      0.03,
+      0.89
+     ],
+     "weaponAngle": -6
+    },
+    {
+     "t": 0.85,
+     "torso": 27,
+     "upperArm": 52,
+     "forearm": 24,
+     "thigh": 21,
+     "shin": 0,
+     "hip": [
+      0.08,
+      0.87
+     ],
+     "weaponAngle": -10
+    },
+    {
+     "t": 1.0,
+     "torso": 23,
+     "upperArm": 42,
+     "forearm": 21,
+     "thigh": 18,
+     "shin": -1,
+     "hip": [
+      0.05,
+      0.88
+     ],
+     "weaponAngle": -27
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-normal-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": 0,
+     "upperArm": -20,
+     "forearm": 10,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.03,
+      0.9
+     ],
+     "weaponAngle": 105
+    },
+    {
+     "t": 0.55,
+     "torso": 20,
+     "upperArm": 5,
+     "forearm": 12,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.87
+     ],
+     "weaponAngle": -25
+    },
+    {
+     "t": 0.85,
+     "torso": 36,
+     "upperArm": 65,
+     "forearm": 5,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.16,
+      0.84
+     ],
+     "weaponAngle": -32
+    },
+    {
+     "t": 1.0,
+     "torso": 30,
+     "upperArm": 50,
+     "forearm": 0,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.1,
+      0.86
+     ],
+     "weaponAngle": -58
+    }
+   ]
+  },
+  {
+   "id": "gladius-slash-strong-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": -4,
+     "upperArm": -20,
+     "forearm": 10,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.03,
+      0.9
+     ],
+     "weaponAngle": 120
+    },
+    {
+     "t": 0.55,
+     "torso": 20,
+     "upperArm": 5,
+     "forearm": 12,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.87
+     ],
+     "weaponAngle": -25
+    },
+    {
+     "t": 0.85,
+     "torso": 40,
+     "upperArm": 65,
+     "forearm": 5,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.21,
+      0.84
+     ],
+     "weaponAngle": -32
+    },
+    {
+     "t": 1.0,
+     "torso": 30,
+     "upperArm": 50,
+     "forearm": 0,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.1,
+      0.86
+     ],
+     "weaponAngle": -68
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-feint-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 16,
+     "forearm": 44,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.02,
+      0.92
+     ],
+     "weaponAngle": 9
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 51,
+     "forearm": 76,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.7,
+     "torso": 16,
+     "upperArm": 69,
+     "forearm": 81,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.06,
+      0.94
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 58,
+     "forearm": 73,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": 0
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-normal-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 5,
+     "forearm": 35,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 8
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 60,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.7,
+     "torso": 20,
+     "upperArm": 88,
+     "forearm": 92,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.12,
+      0.94
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-strong-torso",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": -3,
+     "forearm": 35,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 8
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 60,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.7,
+     "torso": 24,
+     "upperArm": 88,
+     "forearm": 92,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.17,
+      0.94
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-feint-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 20,
+     "forearm": 46,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.02,
+      0.92
+     ],
+     "weaponAngle": 15
+    },
+    {
+     "t": 0.5,
+     "torso": 9,
+     "upperArm": 60,
+     "forearm": 83,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.94
+     ],
+     "weaponAngle": 13
+    },
+    {
+     "t": 0.7,
+     "torso": 13,
+     "upperArm": 78,
+     "forearm": 90,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.06,
+      0.94
+     ],
+     "weaponAngle": 15
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 65,
+     "forearm": 79,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": 8
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-normal-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 10,
+     "forearm": 38,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": 12
+    },
+    {
+     "t": 0.7,
+     "torso": 16,
+     "upperArm": 100,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.12,
+      0.95
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": 4
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-strong-head",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": 2,
+     "forearm": 38,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": 12
+    },
+    {
+     "t": 0.7,
+     "torso": 20,
+     "upperArm": 100,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.17,
+      0.95
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": 4
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-feint-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 13,
+     "forearm": 41,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.02,
+      0.92
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 47,
+     "forearm": 72,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 0.7,
+     "torso": 14,
+     "upperArm": 64,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.06,
+      0.94
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 53,
+     "forearm": 70,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-normal-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 2,
+     "forearm": 32,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 18,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.12,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -12
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-strong-arm",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": -6,
+     "forearm": 32,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 22,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.17,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": -12
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-feint-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 6,
+     "upperArm": 12,
+     "forearm": 39,
+     "thigh": 13,
+     "shin": -5,
+     "hip": [
+      -0.02,
+      0.91
+     ],
+     "weaponAngle": -3
+    },
+    {
+     "t": 0.5,
+     "torso": 18,
+     "upperArm": 20,
+     "forearm": 39,
+     "thigh": 17,
+     "shin": -3,
+     "hip": [
+      0.03,
+      0.89
+     ],
+     "weaponAngle": -6
+    },
+    {
+     "t": 0.7,
+     "torso": 30,
+     "upperArm": 55,
+     "forearm": 39,
+     "thigh": 21,
+     "shin": 0,
+     "hip": [
+      0.09,
+      0.86
+     ],
+     "weaponAngle": -22
+    },
+    {
+     "t": 1.0,
+     "torso": 24,
+     "upperArm": 44,
+     "forearm": 37,
+     "thigh": 18,
+     "shin": -1,
+     "hip": [
+      0.06,
+      0.87
+     ],
+     "weaponAngle": -30
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-normal-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 2,
+     "forearm": 30,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.04,
+      0.9
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.06,
+      0.87
+     ],
+     "weaponAngle": -10
+    },
+    {
+     "t": 0.7,
+     "torso": 40,
+     "upperArm": 68,
+     "forearm": 30,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.18,
+      0.83
+     ],
+     "weaponAngle": -34
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.11,
+      0.85
+     ],
+     "weaponAngle": -46
+    }
+   ]
+  },
+  {
+   "id": "gladius-thrust-strong-leg",
+   "weapon": "gladius",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -6,
+     "forearm": 30,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.04,
+      0.9
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.06,
+      0.87
+     ],
+     "weaponAngle": -10
+    },
+    {
+     "t": 0.7,
+     "torso": 44,
+     "upperArm": 68,
+     "forearm": 30,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.23,
+      0.83
+     ],
+     "weaponAngle": -34
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.11,
+      0.85
+     ],
+     "weaponAngle": -46
+    }
+   ]
+  },
+  {
+   "id": "defence-scutum-block",
+   "weapon": "gladius+scutum",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 2,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": 14,
+     "shin": -2,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 35,
+     "shield": {
+      "dx": 0.34,
+      "dy": 0.03,
+      "angle": 6
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 6,
+     "upperArm": 30,
+     "forearm": 68,
+     "thigh": 11,
+     "shin": -4,
+     "hip": [
+      -0.01,
+      0.93
+     ],
+     "weaponAngle": 38,
+     "shield": {
+      "dx": 0.28,
+      "dy": 0.02,
+      "angle": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-scutum-deflect",
+   "weapon": "gladius+scutum",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 14,
+     "upperArm": 32,
+     "forearm": 72,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 42,
+     "shield": {
+      "dx": 0.3,
+      "dy": 0.06,
+      "angle": 38
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.27,
+      "dy": 0.03,
+      "angle": 12
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-scutum-evade",
+   "weapon": "gladius+scutum",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": -4,
+     "upperArm": 26,
+     "forearm": 62,
+     "thigh": -16,
+     "shin": 6,
+     "hip": [
+      -0.28,
+      0.92
+     ],
+     "weaponAngle": 30,
+     "shield": {
+      "dx": 0.24,
+      "dy": 0.02,
+      "angle": -4
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 4,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": -6,
+     "shin": -2,
+     "hip": [
+      -0.38,
+      0.93
+     ],
+     "weaponAngle": 36,
+     "shield": {
+      "dx": 0.25,
+      "dy": 0.02,
+      "angle": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "common-advance-1m",
+   "kind": "common",
+   "baseTime": 0.55,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": 9,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 34,
+     "shin": 12,
+     "hip": [
+      0.35,
+      0.94
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.7,
+     "torso": 9,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": -6,
+     "shin": 18,
+     "hip": [
+      0.7,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 1.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      1.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    }
+   ]
+  },
+  {
+   "id": "common-retreat-1m",
+   "kind": "common",
+   "baseTime": 0.55,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": 7,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": -30,
+     "shin": -14,
+     "hip": [
+      -0.35,
+      0.94
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.7,
+     "torso": 7,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 8,
+     "shin": -16,
+     "hip": [
+      -0.7,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 1.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      -1.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    }
+   ]
+  },
+  {
+   "id": "common-posture-recovery",
+   "kind": "common",
+   "baseTime": 1.2,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 28,
+     "upperArm": 15,
+     "forearm": 40,
+     "thigh": 22,
+     "shin": 8,
+     "hip": [
+      0.0,
+      0.84
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.5,
+     "torso": 16,
+     "upperArm": 22,
+     "forearm": 55,
+     "thigh": 14,
+     "shin": 0,
+     "hip": [
+      0.0,
+      0.89
+     ],
+     "weaponAngle": 25
+    },
+    {
+     "t": 1.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    }
+   ]
+  },
+  {
+   "id": "common-shield-push",
+   "kind": "common",
+   "baseTime": 1.0,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.35,
+     "torso": -2,
+     "upperArm": 28,
+     "forearm": 64,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.04,
+      0.92
+     ],
+     "weaponAngle": 15,
+     "shield": {
+      "dx": 0.2,
+      "dy": 0.02,
+      "angle": -4
+     }
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 29,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": 18,
+     "shield": {
+      "dx": 0.32,
+      "dy": 0.02,
+      "angle": 2
+     }
+    },
+    {
+     "t": 0.8,
+     "torso": 22,
+     "upperArm": 30,
+     "forearm": 60,
+     "thigh": 24,
+     "shin": 0,
+     "hip": [
+      0.14,
+      0.93
+     ],
+     "weaponAngle": 20,
+     "shield": {
+      "dx": 0.42,
+      "dy": 0.02,
+      "angle": 4
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 30,
+     "forearm": 66,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.08,
+      0.93
+     ],
+     "weaponAngle": 22,
+     "shield": {
+      "dx": 0.3,
+      "dy": 0.02,
+      "angle": 2
+     }
+    }
+   ],
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   }
+  },
+  {
+   "id": "sica-slash-feint-torso",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -1,
+     "upperArm": -12,
+     "forearm": 34,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 98
+    },
+    {
+     "t": 0.6,
+     "torso": 11,
+     "upperArm": 46,
+     "forearm": 86,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 50
+    },
+    {
+     "t": 0.8,
+     "torso": 14,
+     "upperArm": 66,
+     "forearm": 99,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 53,
+     "forearm": 80,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": -14
+    }
+   ],
+   "refDistance": 1.6
+  },
+  {
+   "id": "sica-slash-normal-torso",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -6,
+     "upperArm": -35,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 130
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.8,
+     "torso": 18,
+     "upperArm": 85,
+     "forearm": 115,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.13,
+      0.94
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 65,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -43
+    }
+   ],
+   "refDistance": 1.6
+  },
+  {
+   "id": "sica-slash-strong-torso",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.35,
+     "torso": -10,
+     "upperArm": -35,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 145
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.8,
+     "torso": 22,
+     "upperArm": 85,
+     "forearm": 115,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.18,
+      0.94
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 65,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -53
+    }
+   ],
+   "refDistance": 1.6
+  },
+  {
+   "id": "sica-slash-feint-head",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -2,
+     "upperArm": -17,
+     "forearm": 39,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 114
+    },
+    {
+     "t": 0.6,
+     "torso": 9,
+     "upperArm": 58,
+     "forearm": 98,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 71
+    },
+    {
+     "t": 0.8,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 108,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": 28
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 64,
+     "forearm": 91,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": 11
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "sica-slash-normal-head",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -8,
+     "upperArm": -45,
+     "forearm": 20,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 145
+    },
+    {
+     "t": 0.6,
+     "torso": 10,
+     "upperArm": 70,
+     "forearm": 110,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 80
+    },
+    {
+     "t": 0.8,
+     "torso": 14,
+     "upperArm": 105,
+     "forearm": 125,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.13,
+      0.95
+     ],
+     "weaponAngle": 13
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 100,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -13
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "sica-slash-strong-head",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 75,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.35,
+     "torso": -12,
+     "upperArm": -45,
+     "forearm": 20,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 160
+    },
+    {
+     "t": 0.6,
+     "torso": 10,
+     "upperArm": 70,
+     "forearm": 110,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 80
+    },
+    {
+     "t": 0.8,
+     "torso": 18,
+     "upperArm": 105,
+     "forearm": 125,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.18,
+      0.95
+     ],
+     "weaponAngle": 13
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 100,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -23
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "sica-slash-feint-arm",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -1,
+     "upperArm": -9,
+     "forearm": 29,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.01,
+      0.92
+     ],
+     "weaponAngle": 90
+    },
+    {
+     "t": 0.6,
+     "torso": 11,
+     "upperArm": 43,
+     "forearm": 78,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.03,
+      0.93
+     ],
+     "weaponAngle": 38
+    },
+    {
+     "t": 0.8,
+     "torso": 14,
+     "upperArm": 59,
+     "forearm": 91,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 48,
+     "forearm": 73,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.04,
+      0.93
+     ],
+     "weaponAngle": -19
+    }
+   ],
+   "refDistance": 1.88
+  },
+  {
+   "id": "sica-slash-normal-arm",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -6,
+     "upperArm": -30,
+     "forearm": 10,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 120
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.8,
+     "torso": 18,
+     "upperArm": 75,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.13,
+      0.94
+     ],
+     "weaponAngle": -13
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 58,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -48
+    }
+   ],
+   "refDistance": 1.88
+  },
+  {
+   "id": "sica-slash-strong-arm",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.8
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 65,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.35,
+     "torso": -10,
+     "upperArm": -30,
+     "forearm": 10,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 135
+    },
+    {
+     "t": 0.6,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.05,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.8,
+     "torso": 22,
+     "upperArm": 75,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.18,
+      0.94
+     ],
+     "weaponAngle": -13
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 58,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.09,
+      0.93
+     ],
+     "weaponAngle": -58
+    }
+   ],
+   "refDistance": 1.88
+  },
+  {
+   "id": "sica-slash-feint-leg",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": 4,
+     "upperArm": -3,
+     "forearm": 28,
+     "thigh": 13,
+     "shin": -5,
+     "hip": [
+      -0.01,
+      0.91
+     ],
+     "weaponAngle": 79
+    },
+    {
+     "t": 0.55,
+     "torso": 16,
+     "upperArm": 13,
+     "forearm": 29,
+     "thigh": 17,
+     "shin": -3,
+     "hip": [
+      0.03,
+      0.89
+     ],
+     "weaponAngle": -6
+    },
+    {
+     "t": 0.85,
+     "torso": 27,
+     "upperArm": 52,
+     "forearm": 24,
+     "thigh": 21,
+     "shin": 0,
+     "hip": [
+      0.11,
+      0.87
+     ],
+     "weaponAngle": -14
+    },
+    {
+     "t": 1.0,
+     "torso": 23,
+     "upperArm": 42,
+     "forearm": 21,
+     "thigh": 18,
+     "shin": -1,
+     "hip": [
+      0.07,
+      0.88
+     ],
+     "weaponAngle": -32
+    }
+   ],
+   "refDistance": 1.42
+  },
+  {
+   "id": "sica-slash-normal-leg",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": 0,
+     "upperArm": -20,
+     "forearm": 10,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.03,
+      0.9
+     ],
+     "weaponAngle": 105
+    },
+    {
+     "t": 0.55,
+     "torso": 20,
+     "upperArm": 5,
+     "forearm": 12,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.87
+     ],
+     "weaponAngle": -25
+    },
+    {
+     "t": 0.85,
+     "torso": 36,
+     "upperArm": 65,
+     "forearm": 5,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.22,
+      0.84
+     ],
+     "weaponAngle": -37
+    },
+    {
+     "t": 1.0,
+     "torso": 30,
+     "upperArm": 50,
+     "forearm": 0,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.14,
+      0.86
+     ],
+     "weaponAngle": -66
+    }
+   ],
+   "refDistance": 1.42
+  },
+  {
+   "id": "sica-slash-strong-leg",
+   "weapon": "sica",
+   "kind": "attack",
+   "method": "slash",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.35,
+    "finalPhaseStart": 0.85
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 28,
+     "forearm": 60,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 0.35,
+     "torso": -4,
+     "upperArm": -20,
+     "forearm": 10,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.03,
+      0.9
+     ],
+     "weaponAngle": 120
+    },
+    {
+     "t": 0.55,
+     "torso": 20,
+     "upperArm": 5,
+     "forearm": 12,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.05,
+      0.87
+     ],
+     "weaponAngle": -25
+    },
+    {
+     "t": 0.85,
+     "torso": 40,
+     "upperArm": 65,
+     "forearm": 5,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.27,
+      0.84
+     ],
+     "weaponAngle": -37
+    },
+    {
+     "t": 1.0,
+     "torso": 30,
+     "upperArm": 50,
+     "forearm": 0,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.14,
+      0.86
+     ],
+     "weaponAngle": -76
+    }
+   ],
+   "refDistance": 1.42
+  },
+  {
+   "id": "pugio-thrust-feint-torso",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 16,
+     "forearm": 44,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 9
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 51,
+     "forearm": 76,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.7,
+     "torso": 18,
+     "upperArm": 69,
+     "forearm": 81,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.17,
+      0.94
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 58,
+     "forearm": 73,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.1,
+      0.93
+     ],
+     "weaponAngle": 0
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-normal-torso",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 5,
+     "forearm": 35,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 8
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 60,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.93
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.7,
+     "torso": 24,
+     "upperArm": 88,
+     "forearm": 92,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.34,
+      0.94
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-strong-torso",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 35,
+     "forearm": 60,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 10
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": -3,
+     "forearm": 35,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 8
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 60,
+     "forearm": 85,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.93
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.7,
+     "torso": 28,
+     "upperArm": 88,
+     "forearm": 92,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.39,
+      0.94
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-feint-head",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 20,
+     "forearm": 46,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 15
+    },
+    {
+     "t": 0.5,
+     "torso": 9,
+     "upperArm": 60,
+     "forearm": 83,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": 13
+    },
+    {
+     "t": 0.7,
+     "torso": 16,
+     "upperArm": 78,
+     "forearm": 90,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.17,
+      0.94
+     ],
+     "weaponAngle": 15
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 65,
+     "forearm": 79,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.1,
+      0.93
+     ],
+     "weaponAngle": 8
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-normal-head",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 10,
+     "forearm": 38,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.94
+     ],
+     "weaponAngle": 12
+    },
+    {
+     "t": 0.7,
+     "torso": 20,
+     "upperArm": 100,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.34,
+      0.95
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": 4
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-strong-head",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 38,
+     "forearm": 62,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 16
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": 2,
+     "forearm": 38,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.94
+     ],
+     "weaponAngle": 12
+    },
+    {
+     "t": 0.7,
+     "torso": 24,
+     "upperArm": 100,
+     "forearm": 105,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.39,
+      0.95
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": 4
+    }
+   ],
+   "refDistance": 1.65
+  },
+  {
+   "id": "pugio-thrust-feint-arm",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 13,
+     "forearm": 41,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 5
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 47,
+     "forearm": 72,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.07,
+      0.93
+     ],
+     "weaponAngle": 2
+    },
+    {
+     "t": 0.7,
+     "torso": 17,
+     "upperArm": 64,
+     "forearm": 78,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.17,
+      0.94
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 53,
+     "forearm": 70,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.1,
+      0.93
+     ],
+     "weaponAngle": -6
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "pugio-thrust-normal-arm",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": 2,
+     "upperArm": 2,
+     "forearm": 32,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 22,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.34,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": -12
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "pugio-thrust-strong-arm",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 33,
+     "forearm": 58,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 0.3,
+     "torso": -2,
+     "upperArm": -6,
+     "forearm": 32,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 4
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 55,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.15,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 26,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.39,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.21,
+      0.93
+     ],
+     "weaponAngle": -12
+    }
+   ],
+   "refDistance": 1.4
+  },
+  {
+   "id": "pugio-thrust-feint-leg",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 6,
+     "upperArm": 12,
+     "forearm": 39,
+     "thigh": 13,
+     "shin": -5,
+     "hip": [
+      -0.03,
+      0.91
+     ],
+     "weaponAngle": -3
+    },
+    {
+     "t": 0.5,
+     "torso": 18,
+     "upperArm": 20,
+     "forearm": 39,
+     "thigh": 17,
+     "shin": -3,
+     "hip": [
+      0.08,
+      0.89
+     ],
+     "weaponAngle": -6
+    },
+    {
+     "t": 0.7,
+     "torso": 33,
+     "upperArm": 55,
+     "forearm": 39,
+     "thigh": 21,
+     "shin": 0,
+     "hip": [
+      0.21,
+      0.84
+     ],
+     "weaponAngle": -22
+    },
+    {
+     "t": 1.0,
+     "torso": 24,
+     "upperArm": 44,
+     "forearm": 37,
+     "thigh": 18,
+     "shin": -1,
+     "hip": [
+      0.13,
+      0.85
+     ],
+     "weaponAngle": -30
+    }
+   ],
+   "refDistance": 1.62
+  },
+  {
+   "id": "pugio-thrust-normal-leg",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": 2,
+     "forearm": 30,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.06,
+      0.9
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.16,
+      0.87
+     ],
+     "weaponAngle": -10
+    },
+    {
+     "t": 0.7,
+     "torso": 46,
+     "upperArm": 68,
+     "forearm": 30,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.42,
+      0.79
+     ],
+     "weaponAngle": -34
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.26,
+      0.82
+     ],
+     "weaponAngle": -46
+    }
+   ],
+   "refDistance": 1.62
+  },
+  {
+   "id": "pugio-thrust-strong-leg",
+   "weapon": "pugio",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 55,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.0,
+      0.92
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -6,
+     "forearm": 30,
+     "thigh": 14,
+     "shin": -6,
+     "hip": [
+      -0.06,
+      0.9
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.16,
+      0.87
+     ],
+     "weaponAngle": -10
+    },
+    {
+     "t": 0.7,
+     "torso": 50,
+     "upperArm": 68,
+     "forearm": 30,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.47,
+      0.79
+     ],
+     "weaponAngle": -34
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.26,
+      0.82
+     ],
+     "weaponAngle": -46
+    }
+   ],
+   "refDistance": 1.62
+  },
+  {
+   "id": "trident-thrust-feint-torso",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 34,
+     "forearm": 52,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 19
+    },
+    {
+     "t": 0.7,
+     "torso": 14,
+     "upperArm": 54,
+     "forearm": 65,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 18
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 47,
+     "forearm": 61,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.6
+  },
+  {
+   "id": "trident-thrust-normal-torso",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 67,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 18,
+     "upperArm": 81,
+     "forearm": 86,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.02,
+      0.94
+     ],
+     "weaponAngle": -2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.6
+  },
+  {
+   "id": "trident-thrust-strong-torso",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 67,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 22,
+     "upperArm": 81,
+     "forearm": 86,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": -2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.6
+  },
+  {
+   "id": "trident-thrust-feint-head",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 9,
+     "upperArm": 49,
+     "forearm": 70,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 28
+    },
+    {
+     "t": 0.7,
+     "torso": 11,
+     "upperArm": 71,
+     "forearm": 82,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 23
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 54,
+     "forearm": 66,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.3
+  },
+  {
+   "id": "trident-thrust-normal-head",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.94
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.7,
+     "torso": 12,
+     "upperArm": 107,
+     "forearm": 113,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.02,
+      0.95
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.3
+  },
+  {
+   "id": "trident-thrust-strong-head",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.94
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.7,
+     "torso": 16,
+     "upperArm": 107,
+     "forearm": 113,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.07,
+      0.95
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.3
+  },
+  {
+   "id": "trident-thrust-feint-arm",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 31,
+     "forearm": 49,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 17
+    },
+    {
+     "t": 0.7,
+     "torso": 13,
+     "upperArm": 49,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 17
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 43,
+     "forearm": 58,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.78
+  },
+  {
+   "id": "trident-thrust-normal-arm",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 45,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.93
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.7,
+     "torso": 16,
+     "upperArm": 73,
+     "forearm": 82,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.02,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.78
+  },
+  {
+   "id": "trident-thrust-strong-arm",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 45,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.02,
+      0.93
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.7,
+     "torso": 20,
+     "upperArm": 73,
+     "forearm": 82,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.07,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.78
+  },
+  {
+   "id": "trident-thrust-feint-leg",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 17,
+     "upperArm": 12,
+     "forearm": 28,
+     "thigh": 16,
+     "shin": -3,
+     "hip": [
+      0.01,
+      0.89
+     ],
+     "weaponAngle": 9
+    },
+    {
+     "t": 0.7,
+     "torso": 24,
+     "upperArm": 50,
+     "forearm": 33,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.03,
+      0.9
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 24,
+     "upperArm": 36,
+     "forearm": 27,
+     "thigh": 18,
+     "shin": -2,
+     "hip": [
+      0.02,
+      0.9
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.55
+  },
+  {
+   "id": "trident-thrust-normal-leg",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.02,
+      0.87
+     ],
+     "weaponAngle": -16
+    },
+    {
+     "t": 0.7,
+     "torso": 32,
+     "upperArm": 75,
+     "forearm": 38,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.06,
+      0.88
+     ],
+     "weaponAngle": -30
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.04,
+      0.89
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.55
+  },
+  {
+   "id": "trident-thrust-strong-leg",
+   "weapon": "trident",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.02,
+      0.87
+     ],
+     "weaponAngle": -16
+    },
+    {
+     "t": 0.7,
+     "torso": 36,
+     "upperArm": 75,
+     "forearm": 38,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.11,
+      0.88
+     ],
+     "weaponAngle": -30
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.04,
+      0.89
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.55
+  },
+  {
+   "id": "hasta-thrust-feint-torso",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "torso",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 34,
+     "forearm": 52,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 19
+    },
+    {
+     "t": 0.7,
+     "torso": 14,
+     "upperArm": 55,
+     "forearm": 65,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.94
+     ],
+     "weaponAngle": 18
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 47,
+     "forearm": 61,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.9
+  },
+  {
+   "id": "hasta-thrust-normal-torso",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "torso",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 67,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 17,
+     "upperArm": 82,
+     "forearm": 87,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.0,
+      0.94
+     ],
+     "weaponAngle": -2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.9
+  },
+  {
+   "id": "hasta-thrust-strong-torso",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "torso",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 50,
+     "forearm": 67,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 0.7,
+     "torso": 21,
+     "upperArm": 82,
+     "forearm": 87,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": -2
+    },
+    {
+     "t": 1.0,
+     "torso": 14,
+     "upperArm": 70,
+     "forearm": 80,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.9
+  },
+  {
+   "id": "hasta-thrust-feint-head",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "head",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 9,
+     "upperArm": 49,
+     "forearm": 70,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 28
+    },
+    {
+     "t": 0.7,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 83,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.94
+     ],
+     "weaponAngle": 23
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 54,
+     "forearm": 66,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.25
+  },
+  {
+   "id": "hasta-thrust-normal-head",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "head",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.7,
+     "torso": 11,
+     "upperArm": 108,
+     "forearm": 114,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.0,
+      0.95
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.25
+  },
+  {
+   "id": "hasta-thrust-strong-head",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "head",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 10,
+     "upperArm": 72,
+     "forearm": 95,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.94
+     ],
+     "weaponAngle": 14
+    },
+    {
+     "t": 0.7,
+     "torso": 15,
+     "upperArm": 108,
+     "forearm": 114,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.05,
+      0.95
+     ],
+     "weaponAngle": 6
+    },
+    {
+     "t": 1.0,
+     "torso": 12,
+     "upperArm": 80,
+     "forearm": 88,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.25
+  },
+  {
+   "id": "hasta-thrust-feint-arm",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "arm",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 11,
+     "upperArm": 31,
+     "forearm": 49,
+     "thigh": 14,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 17
+    },
+    {
+     "t": 0.7,
+     "torso": 13,
+     "upperArm": 50,
+     "forearm": 63,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.94
+     ],
+     "weaponAngle": 17
+    },
+    {
+     "t": 1.0,
+     "torso": 11,
+     "upperArm": 43,
+     "forearm": 58,
+     "thigh": 14,
+     "shin": -3,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 3.05
+  },
+  {
+   "id": "hasta-thrust-normal-arm",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "arm",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 45,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.7,
+     "torso": 15,
+     "upperArm": 74,
+     "forearm": 83,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.0,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 3.05
+  },
+  {
+   "id": "hasta-thrust-strong-arm",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "arm",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 45,
+     "forearm": 62,
+     "thigh": 16,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 0.7,
+     "torso": 19,
+     "upperArm": 74,
+     "forearm": 83,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.05,
+      0.94
+     ],
+     "weaponAngle": -4
+    },
+    {
+     "t": 1.0,
+     "torso": 13,
+     "upperArm": 64,
+     "forearm": 76,
+     "thigh": 16,
+     "shin": -2,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 3.05
+  },
+  {
+   "id": "hasta-thrust-feint-leg",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "feint",
+   "part": "leg",
+   "baseTime": 0.7,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 5,
+     "upperArm": -2,
+     "forearm": 18,
+     "thigh": 11,
+     "shin": -7,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 42
+    },
+    {
+     "t": 0.5,
+     "torso": 17,
+     "upperArm": 12,
+     "forearm": 28,
+     "thigh": 16,
+     "shin": -3,
+     "hip": [
+      0.01,
+      0.89
+     ],
+     "weaponAngle": 9
+    },
+    {
+     "t": 0.7,
+     "torso": 23,
+     "upperArm": 51,
+     "forearm": 34,
+     "thigh": 20,
+     "shin": 0,
+     "hip": [
+      0.02,
+      0.9
+     ],
+     "weaponAngle": 0
+    },
+    {
+     "t": 1.0,
+     "torso": 24,
+     "upperArm": 36,
+     "forearm": 27,
+     "thigh": 18,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.91
+     ],
+     "weaponAngle": 32
+    }
+   ],
+   "refDistance": 2.85
+  },
+  {
+   "id": "hasta-thrust-normal-leg",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "normal",
+   "part": "leg",
+   "baseTime": 1.0,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 4,
+     "upperArm": -5,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.87
+     ],
+     "weaponAngle": -16
+    },
+    {
+     "t": 0.7,
+     "torso": 31,
+     "upperArm": 76,
+     "forearm": 39,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.04,
+      0.89
+     ],
+     "weaponAngle": -30
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.03,
+      0.9
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.85
+  },
+  {
+   "id": "hasta-thrust-strong-leg",
+   "weapon": "hasta",
+   "kind": "attack",
+   "method": "thrust",
+   "strength": "strong",
+   "part": "leg",
+   "baseTime": 1.5,
+   "markers": {
+    "executionStart": 0.3,
+    "finalPhaseStart": 0.7
+   },
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 5,
+     "forearm": 25,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 0.3,
+     "torso": 0,
+     "upperArm": -13,
+     "forearm": 15,
+     "thigh": 12,
+     "shin": -8,
+     "hip": [
+      -0.06,
+      0.92
+     ],
+     "weaponAngle": 35
+    },
+    {
+     "t": 0.5,
+     "torso": 22,
+     "upperArm": 15,
+     "forearm": 30,
+     "thigh": 20,
+     "shin": -2,
+     "hip": [
+      0.01,
+      0.87
+     ],
+     "weaponAngle": -16
+    },
+    {
+     "t": 0.7,
+     "torso": 35,
+     "upperArm": 76,
+     "forearm": 39,
+     "thigh": 26,
+     "shin": 2,
+     "hip": [
+      0.09,
+      0.89
+     ],
+     "weaponAngle": -30
+    },
+    {
+     "t": 1.0,
+     "torso": 32,
+     "upperArm": 52,
+     "forearm": 28,
+     "thigh": 22,
+     "shin": 0,
+     "hip": [
+      0.03,
+      0.9
+     ],
+     "weaponAngle": 20
+    }
+   ],
+   "refDistance": 2.85
+  },
+  {
+   "id": "defence-parmula-block",
+   "weapon": "gladius+parmula",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 2,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": 14,
+     "shin": -2,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 35,
+     "shield": {
+      "dx": 0.34,
+      "dy": 0.03,
+      "angle": 6
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 6,
+     "upperArm": 30,
+     "forearm": 68,
+     "thigh": 11,
+     "shin": -4,
+     "hip": [
+      -0.01,
+      0.93
+     ],
+     "weaponAngle": 38,
+     "shield": {
+      "dx": 0.28,
+      "dy": 0.02,
+      "angle": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-parmula-deflect",
+   "weapon": "gladius+parmula",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 14,
+     "upperArm": 32,
+     "forearm": 72,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 42,
+     "shield": {
+      "dx": 0.3,
+      "dy": 0.06,
+      "angle": 38
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.27,
+      "dy": 0.03,
+      "angle": 12
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-parmula-evade",
+   "weapon": "gladius+parmula",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": -4,
+     "upperArm": 26,
+     "forearm": 62,
+     "thigh": -16,
+     "shin": 6,
+     "hip": [
+      -0.28,
+      0.92
+     ],
+     "weaponAngle": 30,
+     "shield": {
+      "dx": 0.24,
+      "dy": 0.02,
+      "angle": -4
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 4,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": -6,
+     "shin": -2,
+     "hip": [
+      -0.38,
+      0.93
+     ],
+     "weaponAngle": 36,
+     "shield": {
+      "dx": 0.25,
+      "dy": 0.02,
+      "angle": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-smallshield-block",
+   "weapon": "gladius+smallshield",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 2,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": 14,
+     "shin": -2,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 35,
+     "shield": {
+      "dx": 0.34,
+      "dy": 0.03,
+      "angle": 6
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 6,
+     "upperArm": 30,
+     "forearm": 68,
+     "thigh": 11,
+     "shin": -4,
+     "hip": [
+      -0.01,
+      0.93
+     ],
+     "weaponAngle": 38,
+     "shield": {
+      "dx": 0.28,
+      "dy": 0.02,
+      "angle": 2
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-smallshield-deflect",
+   "weapon": "gladius+smallshield",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": 14,
+     "upperArm": 32,
+     "forearm": 72,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 42,
+     "shield": {
+      "dx": 0.3,
+      "dy": 0.06,
+      "angle": 38
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 10,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.27,
+      "dy": 0.03,
+      "angle": 12
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-smallshield-evade",
+   "weapon": "gladius+smallshield",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40,
+     "shield": {
+      "dx": 0.26,
+      "dy": 0.02,
+      "angle": 0
+     }
+    },
+    {
+     "t": 0.5,
+     "torso": -4,
+     "upperArm": 26,
+     "forearm": 62,
+     "thigh": -16,
+     "shin": 6,
+     "hip": [
+      -0.28,
+      0.92
+     ],
+     "weaponAngle": 30,
+     "shield": {
+      "dx": 0.24,
+      "dy": 0.02,
+      "angle": -4
+     }
+    },
+    {
+     "t": 1.0,
+     "torso": 4,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": -6,
+     "shin": -2,
+     "hip": [
+      -0.38,
+      0.93
+     ],
+     "weaponAngle": 36,
+     "shield": {
+      "dx": 0.25,
+      "dy": 0.02,
+      "angle": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "defence-weapononly-block",
+   "weapon": "gladius only",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.5,
+     "torso": 4,
+     "upperArm": 58,
+     "forearm": 96,
+     "thigh": 14,
+     "shin": -2,
+     "hip": [
+      -0.03,
+      0.92
+     ],
+     "weaponAngle": 78
+    },
+    {
+     "t": 1.0,
+     "torso": 6,
+     "upperArm": 52,
+     "forearm": 90,
+     "thigh": 11,
+     "shin": -4,
+     "hip": [
+      -0.01,
+      0.93
+     ],
+     "weaponAngle": 72
+    }
+   ]
+  },
+  {
+   "id": "defence-weapononly-deflect",
+   "weapon": "gladius only",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.5,
+     "torso": 12,
+     "upperArm": 46,
+     "forearm": 82,
+     "thigh": 12,
+     "shin": -4,
+     "hip": [
+      0.01,
+      0.93
+     ],
+     "weaponAngle": 55
+    },
+    {
+     "t": 1.0,
+     "torso": 9,
+     "upperArm": 42,
+     "forearm": 78,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 50
+    }
+   ]
+  },
+  {
+   "id": "defence-weapononly-evade",
+   "weapon": "gladius only",
+   "kind": "defence",
+   "baseTime": 0.6,
+   "keyframes": [
+    {
+     "t": 0.0,
+     "torso": 8,
+     "upperArm": 30,
+     "forearm": 70,
+     "thigh": 10,
+     "shin": -5,
+     "hip": [
+      0.0,
+      0.93
+     ],
+     "weaponAngle": 40
+    },
+    {
+     "t": 0.5,
+     "torso": -4,
+     "upperArm": 26,
+     "forearm": 62,
+     "thigh": -16,
+     "shin": 6,
+     "hip": [
+      -0.28,
+      0.92
+     ],
+     "weaponAngle": 30
+    },
+    {
+     "t": 1.0,
+     "torso": 4,
+     "upperArm": 28,
+     "forearm": 66,
+     "thigh": -6,
+     "shin": -2,
+     "hip": [
+      -0.38,
+      0.93
+     ],
+     "weaponAngle": 36
+    }
+   ]
+  }
+ ]
+}
