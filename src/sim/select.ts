@@ -80,11 +80,16 @@ export function refTargetX(g: Glad, setId: string): number {
  * v3.44：各部位を、その部位を狙う一式の基準間合いに立った場合で採点する（相手の姿勢は判断時点）。
  * 基準間合いの位置が移動範囲の外なら、移動範囲の端に立った場合で採点する。
  */
-export function selectPart(g: Glad, pattern: string): { part: Part | null; scores: PartScores } {
+export function selectPart(
+  g: Glad,
+  pattern: string,
+): { part: Part | null; scores: PartScores; exposure: PartScores } {
   const dfn = g.opp;
   const method = pattern.split('-')[1] as 'slash' | 'thrust';
   const { regs } = regionsOf(dfn, dfn.pose);
   const scores = {} as PartScores;
+  // 防御の薄さ（判断パネルの表示用。#33）
+  const exposure = {} as PartScores;
   for (const part of PARTS) {
     const sid = `${pattern}-${part}`;
     // 足切り（v3.11 / v3.44）：基準間合いでこの一式の軌道が部位に届くか（盾・腕による遮りは届く扱い）
@@ -94,10 +99,13 @@ export function selectPart(g: Glad, pattern: string): { part: Part | null; score
     const scan = atRef ? scanTrajectory(atRef, sid, part, regs) : null;
     if (scan === null || scan.partStep === null) {
       scores[part] = null;
+      exposure[part] = null;
       continue;
     }
     const inj = ([0, 1, 1, 2] as const)[injuryDegree(dfn, part)];
-    scores[part] = exposureOf(g, sid, part, scan) * 100 + COMPAT[method][part] * 10 + inj;
+    const exp = exposureOf(g, sid, part, scan);
+    exposure[part] = exp;
+    scores[part] = exp * 100 + COMPAT[method][part] * 10 + inj;
   }
   let best: Part | null = null;
   // 同点時の固定順（v3.44 で脚を腕より前に）
@@ -105,5 +113,5 @@ export function selectPart(g: Glad, pattern: string): { part: Part | null; score
     const s = scores[part];
     if (s !== null && (best === null || s > scores[best]!)) best = part;
   }
-  return { part: best, scores };
+  return { part: best, scores, exposure };
 }
