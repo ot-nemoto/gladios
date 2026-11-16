@@ -26,8 +26,10 @@ import {
   REF_TOLERANCE,
   STAGE_ORDER,
   STAMINA_MAX,
+  METHOD_JP,
   STANCE,
   STRENGTH_CORR,
+  STRENGTH_JP,
   clampToArena,
   defenceSetId,
   kf,
@@ -56,6 +58,23 @@ import { selectPart } from './select';
 import { cos, radians, sin } from './trig';
 
 export type GladId = 'A' | 'B';
+
+/** 攻撃一式の表示名（一式のデータから作る。例「デフォルト: 牽制攻撃（突く・脚）」。#11 の修正）。 */
+export function attackLabel(setId: string): string {
+  const s = kf(setId);
+  if (
+    s.kind !== 'attack' ||
+    !s.strength ||
+    !Object.hasOwn(STRENGTH_JP, s.strength) ||
+    !s.method ||
+    !Object.hasOwn(METHOD_JP, s.method) ||
+    !s.part ||
+    !Object.hasOwn(PART_JP, s.part)
+  ) {
+    throw new Error(`not an attack set: ${setId}`);
+  }
+  return `デフォルト: ${STRENGTH_JP[s.strength]}攻撃（${METHOD_JP[s.method]}・${PART_JP[s.part as Part]}）`;
+}
 
 export interface SimOptions {
   policies: Record<GladId, Policy>;
@@ -119,6 +138,13 @@ export class Sim {
     this.b.opp = this.a;
     this.policies = o.policies;
     this.atkSets = o.atkSets ?? {};
+    // 攻撃の指定は、戦闘を始める前に確かめる（途中でエラーにしない）
+    for (const sid of Object.values(this.atkSets)) if (sid !== undefined) attackLabel(sid);
+    for (const pattern of Object.values(o.auto ?? {})) {
+      if (pattern !== undefined && !PARTS.some((p) => KF.has(`${pattern}-${p}`))) {
+        throw new Error(`unknown attack pattern: ${pattern}`);
+      }
+    }
     this.auto = o.auto ?? {};
     this.pushUsers = o.pushUsers ?? {};
     for (const [gid, ov] of Object.entries(o.armour ?? {})) Object.assign(this.glad(gid).armour, ov);
@@ -260,16 +286,13 @@ export class Sim {
           this.ev('選択', `${g.id}: 自動選択 [${detail}] → 届く部位なし、接近する`);
           this.startAction(g, 'approach', '自動選択: 届く位置まで接近する');
         } else {
-          const methodJp = pattern.includes('-slash-') ? '斬る' : '突く';
-          const label = `デフォルト: 通常攻撃（${methodJp}・${PART_JP[part]}）`;
+          const sid = `${pattern}-${part}`;
           this.ev('選択', `${g.id}: 自動選択 [${detail}] → ${PART_JP[part]}`);
-          this.moveOrHold(g, `${pattern}-${part}`, label, '自動選択');
+          this.moveOrHold(g, sid, attackLabel(sid), '自動選択');
         }
       } else {
         const sid = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
-        const part = sid.slice(sid.lastIndexOf('-') + 1) as Part;
-        const label = `デフォルト: 通常攻撃（斬る・${PART_JP[part]}）`;
-        this.moveOrHold(g, sid, label, '固定');
+        this.moveOrHold(g, sid, attackLabel(sid), '固定');
       }
     } else {
       this.startAction(g, 'wait', '体勢崩れ: 待機する');

@@ -1,5 +1,5 @@
 /** モーション図鑑の表示用の名前（判定には使わない）。 */
-import { PART_JP, type KeyframeSet, type ShieldName, type WeaponName } from '../sim/data';
+import { METHOD_JP, PART_JP, STRENGTH_JP, type KeyframeSet, type ShieldName, type WeaponName } from '../sim/data';
 import { defenceOf, type ContactTarget, type OpponentPose } from '../sim/motion';
 
 export const WEAPON_JP: Record<WeaponName, string> = {
@@ -23,8 +23,6 @@ export const OPPONENT_POSE_JP: Record<OpponentPose, string> = {
   evade: '回避（防御姿勢）',
 };
 
-const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
-const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
 const POLICY_JP: Record<string, string> = { block: '受け止め', deflect: '受け流し', evade: '回避' };
 const COMMON_JP: Record<string, string> = {
   'common-advance-1m': '接近（1m）',

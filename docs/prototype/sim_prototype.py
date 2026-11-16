@@ -176,6 +176,20 @@ def total_time_mult(g):
     return min(2.0, 1.0 * sm * pm)
 
 
+STRENGTH_JP = {"feint": "牽制", "normal": "通常", "strong": "強"}
+METHOD_JP = {"slash": "斬る", "thrust": "突く"}
+PART_JP = {"torso": "胴体", "leg": "脚", "head": "頭部", "arm": "腕"}
+
+
+def attack_label(set_id):
+    """Display label of an attack set, from its data (e.g. 'デフォルト: 牽制攻撃（突く・脚）').
+    Before this fix, fixed sets were always labelled as a normal slash (#11)."""
+    s = KF[set_id]
+    if s.get("kind") != "attack":
+        raise ValueError(f"not an attack set: {set_id}")
+    return f"デフォルト: {STRENGTH_JP[s['strength']]}攻撃（{METHOD_JP[s['method']]}・{PART_JP[s['part']]}）"
+
+
 def move_speed(g):
     """Movement speed (m/s) for approach / retreat: 1 m per 0.55 s, slowed by
     the state time multiplier and by leg injury."""
@@ -435,6 +449,12 @@ class Sim:
         self.a.opp, self.b.opp = self.b, self.a
         self.policies = defence_policies  # {id: "block" | "none"}
         self.atk_sets = atk_sets or {}
+        # validate attack choices before the bout starts (not mid-run)
+        for sid in self.atk_sets.values():
+            attack_label(sid)
+        for pattern in (auto or {}).values():
+            if not any(f"{pattern}-{p}" in KF for p in ("head", "torso", "arm", "leg")):
+                raise ValueError(f"unknown attack pattern: {pattern}")
         self.auto = auto or {}  # {id: set pattern e.g. "gladius-slash-normal"} -> v3.11 auto selection
         self.push_users = push_users or {}  # {id: "push" (push only) | "mix" (push until opp posture < 50)}
         for gid, ov in (armour or {}).items():
@@ -563,7 +583,6 @@ class Sim:
             else:
                 self.start_action(g, "wait", "ダミー: 待機する（攻撃しない）")
         elif not g.collapsed:
-            part_jp = {"torso": "胴体", "leg": "脚", "head": "頭部", "arm": "腕"}
             push_mode = self.push_users.get(g.id)
             if push_mode and (push_mode == "push" or o.posture >= 50):
                 if dist <= 1.1:
@@ -573,20 +592,18 @@ class Sim:
             elif g.id in self.auto:
                 pattern = self.auto[g.id]
                 part, scores = select_part(g, pattern)
-                detail = " ".join(f"{part_jp[p]}={'届かない' if scores[p] is None else scores[p]}"
+                detail = " ".join(f"{PART_JP[p]}={'届かない' if scores[p] is None else scores[p]}"
                                    for p in ("head", "torso", "arm", "leg"))
                 if part is None:
                     self.ev("選択", f"{g.id}: 自動選択 [{detail}] → 届く部位なし、接近する")
                     self.start_action(g, "approach", "自動選択: 届く位置まで接近する")
                 else:
-                    method_jp = "斬る" if "-slash-" in pattern else "突く"
-                    label = f"デフォルト: 通常攻撃（{method_jp}・{part_jp[part]}）"
-                    self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {part_jp[part]}")
-                    self._move_or_hold(g, f"{pattern}-{part}", label, "自動選択")
+                    sid = f"{pattern}-{part}"
+                    self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {PART_JP[part]}")
+                    self._move_or_hold(g, sid, attack_label(sid), "自動選択")
             else:
                 sid = self.atk_sets.get(g.id, "gladius-slash-normal-torso")
-                label = f"デフォルト: 通常攻撃（斬る・{part_jp[sid.rsplit('-', 1)[1]]}）"
-                self._move_or_hold(g, sid, label, "固定")
+                self._move_or_hold(g, sid, attack_label(sid), "固定")
         else:
             self.start_action(g, "wait", "体勢崩れ: 待機する")
 
