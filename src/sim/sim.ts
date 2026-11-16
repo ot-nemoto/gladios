@@ -19,7 +19,6 @@ import {
   HP_LOSS,
   INJ_PTS,
   KF,
-  MOVE_TIME_PER_M,
   PARTS,
   PART_JP,
   PART_MOD,
@@ -43,6 +42,7 @@ import { Glad, applyEquip, type ActionKind, type Policy } from './glad';
 import {
   DETECTION_DELAY,
   actionTime,
+  moveSpeed,
   holdTime,
   injuryDegree,
   judgmentDelay,
@@ -166,27 +166,17 @@ export class Sim {
     } else if (kind === 'postureRecovery') {
       cost = 3 * g.equipMult;
       g.action = { kind, set: 'common-posture-recovery', start: this.t, dur: actionTime('postureRecovery', { mult }), label };
-    } else if (kind === 'approach') {
+    } else if (kind === 'approach' || kind === 'retreat') {
+      // 相手へ寄る／離れる。目標の間隔まで続け、スタミナは進んだ距離に応じて step() で減らす
       cost = 0.0;
       g.action = {
         kind,
-        set: 'common-advance-1m',
+        set: kind === 'approach' ? 'common-advance-1m' : 'common-retreat-1m',
         start: this.t,
         dur: Infinity,
         label,
         travelled: 0.0,
         until: opts.until ?? this.approachUntil,
-      };
-    } else if (kind === 'retreat') {
-      cost = 0.0;
-      g.action = {
-        kind,
-        set: 'common-retreat-1m',
-        start: this.t,
-        dur: Infinity,
-        label,
-        travelled: 0.0,
-        until: opts.until!,
       };
     } else {
       cost = 0.0;
@@ -569,25 +559,22 @@ export class Sim {
       // 行動の決定
       if (g.action === null && g.hold === null && t >= g.decisionAt && !this.over) this.decide(g);
       // 移動
-      if (g.action && g.action.kind === 'approach') {
-        const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
-        const speed = 1 / MOVE_TIME_PER_M / mult;
+      if (g.action && (g.action.kind === 'approach' || g.action.kind === 'retreat')) {
+        const a = g.action;
         const gap = Math.abs(g.opp.x - g.x);
         // v3.44：目標の間隔を越えずに止まる
-        const stepLen = Math.min(speed * DT, Math.max(0.0, gap - 0.35), Math.max(0.0, gap - g.action.until!));
-        g.x += g.facing * stepLen;
-        g.action.travelled! += stepLen;
-        g.stamina = Math.max(0.0, g.stamina - stepLen * 2 * g.equipMult);
-      }
-      if (g.action && g.action.kind === 'retreat') {
-        const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
-        const speed = 1 / MOVE_TIME_PER_M / mult;
-        const gap = Math.abs(g.opp.x - g.x);
-        const want = Math.min(speed * DT, Math.max(0.0, g.action.until! - gap));
-        const newX = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.x - g.facing * want));
-        const stepLen = Math.abs(newX - g.x);
+        let stepLen: number;
+        let newX: number;
+        if (a.kind === 'approach') {
+          stepLen = Math.min(moveSpeed(g) * DT, Math.max(0.0, gap - 0.35), Math.max(0.0, gap - a.until!));
+          newX = g.x + g.facing * stepLen;
+        } else {
+          const want = Math.min(moveSpeed(g) * DT, Math.max(0.0, a.until! - gap));
+          newX = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.x - g.facing * want));
+          stepLen = Math.abs(newX - g.x);
+        }
         g.x = newX;
-        g.action.travelled! += stepLen;
+        a.travelled! += stepLen;
         g.stamina = Math.max(0.0, g.stamina - stepLen * 2 * g.equipMult);
       }
       // 行動していない間の回復

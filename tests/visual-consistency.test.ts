@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest';
 import scenarios from '../src/scenarios/check-scenarios.json';
 import { HEAD_R, regionsOf, type Regions } from '../src/sim/body';
 import { segCircle, segObb, segSeg, type Vec } from '../src/sim/geometry';
+import { ARENA_HALF } from '../src/sim/data';
 import { record, type Frame, type Recording } from '../src/sim/record';
 import type { GladId, SimOptions } from '../src/sim/sim';
 
@@ -88,39 +89,41 @@ function checkContact(rec: Recording, frames: Frame[], k: number, text: string):
   return { ok: false, what: `未分類の接触ログ: ${text}` };
 }
 
-let totalChecked = 0;
+/** 接触ログを、その瞬間の記録した図形で検証する。検証した件数と失敗を返す。 */
+function verifyContacts(rec: Recording): { checked: number; failures: string[] } {
+  const frames = rec.frames;
+  let fi = 0;
+  const failures: string[] = [];
+  let checked = 0;
+  for (const e of rec.events) {
+    while (fi < frames.length && frames[fi]!.logEnd <= e.index) fi++;
+    if (e.kind !== '接触') continue;
+    const c = checkContact(rec, frames, fi, e.text);
+    checked++;
+    if (!c.ok) failures.push(`${e.t.toFixed(2)} ${e.text} — ${c.what} が成り立たない`);
+
+    // 受け流した直後は、攻撃側の剣の角度が約30度ずれて描かれる
+    const defl = /^([AB]) の攻撃 → [AB] が受け流した（武器を([+-]\d+)度/.exec(e.text);
+    if (defl && frames[fi + 1]) {
+      const id = defl[1] as GladId;
+      const d = frames[fi + 1]![id].pose.weaponAngle - frames[fi]![id].pose.weaponAngle;
+      const expected = Number(defl[2]) * rec.bodies[id].facing;
+      if (Math.abs(d - expected) > 5) failures.push(`${e.t.toFixed(2)} 受け流し後の剣の角度変化 ${d.toFixed(1)}° (期待 ${expected}°)`);
+    }
+  }
+  return { checked, failures };
+}
+
 describe('接触の瞬間、記録した図形はログどおりに交わっている', () => {
   scenarios.forEach((sc) => {
     it(sc.name, () => {
-      const rec = record(sc.options as SimOptions, 1);
-      const frames = rec.frames;
-      let fi = 0;
-      const failures: string[] = [];
-      let checked = 0;
-      for (const e of rec.events) {
-        while (fi < frames.length && frames[fi]!.logEnd <= e.index) fi++;
-        if (e.kind !== '接触') continue;
-        const c = checkContact(rec, frames, fi, e.text);
-        checked++;
-        if (!c.ok) failures.push(`${e.t.toFixed(2)} ${e.text} — ${c.what} が成り立たない`);
-
-        // 受け流した直後は、攻撃側の剣の角度が約30度ずれて描かれる
-        const defl = /^([AB]) の攻撃 → [AB] が受け流した（武器を([+-]\d+)度/.exec(e.text);
-        if (defl && frames[fi + 1]) {
-          const id = defl[1] as GladId;
-          const d = frames[fi + 1]![id].pose.weaponAngle - frames[fi]![id].pose.weaponAngle;
-          const facing = rec.bodies[id].facing;
-          const expected = Number(defl[2]) * facing;
-          if (Math.abs(d - expected) > 5) failures.push(`${e.t.toFixed(2)} 受け流し後の剣の角度変化 ${d.toFixed(1)}° (期待 ${expected}°)`);
-        }
-      }
-      expect(failures).toEqual([]);
-      totalChecked += checked;
+      // 接触が一度も起きないシナリオもある（間合いの取り合いなど、#26）。その場合は検証対象がないだけ
+      expect(verifyContacts(record(sc.options as SimOptions, 1)).failures).toEqual([]);
     });
   });
-  // シナリオによっては接触が一度も起きない（間合いの取り合いなど、#26）。全体では検証できていること
-  it('全シナリオで接触を検証できている', () => {
-    expect(totalChecked).toBeGreaterThan(500);
+  it('全シナリオの合計で、十分な数の接触を検証できている', () => {
+    const total = scenarios.reduce((n, sc) => n + verifyContacts(record(sc.options as SimOptions, 1)).checked, 0);
+    expect(total).toBeGreaterThan(500);
   });
 });
 
@@ -142,7 +145,7 @@ describe('見た目の破綻がない（全フレーム）', () => {
         minGap = Math.min(minGap, (f.B.x - f.A.x) * rec.bodies.A.facing);
       }
       expect(minGap, '足裏の間隔は最小 0.35m を割らず、すれ違わない').toBeGreaterThanOrEqual(0.35 - 1e-9);
-      expect(maxAbsX, '移動範囲 ±12m の内側').toBeLessThanOrEqual(12);
+      expect(maxAbsX, '移動範囲 ±12m の内側').toBeLessThanOrEqual(ARENA_HALF);
       expect(shieldBehind, '盾が胴体の後ろに回るフレーム数').toBe(0);
     });
   });

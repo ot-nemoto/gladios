@@ -22,6 +22,8 @@ import { Sim, type SimOptions } from '../src/sim/sim';
  */
 function battleFirstContact(o: SimOptions) {
   const sim = new Sim(o);
+  // ダミーは判断させず、開始位置で構えたまま立たせる（間隔 1.5m 以上だと接近してしまうため。#26）
+  sim.b.decisionAt = Infinity;
   let start: number | null = null;
   let setId: string | null = null;
   let gap = 0;
@@ -54,13 +56,11 @@ function battleFirstContact(o: SimOptions) {
 
 const JP: Record<string, string> = { 盾: 'shield', 武器: 'weapon', 腕: 'arm', 脚: 'leg', 胴体: 'torso', 頭部: 'head' };
 
-/*
- * 実際の戦闘での照合は、攻撃しない側（ダミー）が動かない攻撃に限る。ダミーは間隔 1.5m 以上だと
- * 接近するため、基準間合いが 1.5m 以上の攻撃では攻撃中に歩いてくる（#26）。長い間合いの照合は、
- * 下の「相手が防御姿勢のときも…」の、相手を固定して判定そのものと突き合わせるテストが担う。
- */
 describe('firstContact は戦闘の判定と一致する', () => {
   it.each<[string, SimOptions]>([
+    ['斬り胴 → 盾', { policies: { A: 'none', B: 'none' }, passive: ['B'] }],
+    ['突き胴', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-thrust-normal-torso' } }],
+    ['ハスタ突き胴（小盾）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'hasta-thrust-normal-torso' }, equip: { A: { weapon: 'hasta' }, B: { shield: 'small' } } }],
     ['斬り脚 → 脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-normal-leg' } }],
     ['強斬り頭', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-strong-head' } }],
     ['牽制斬り脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-feint-leg' } }],

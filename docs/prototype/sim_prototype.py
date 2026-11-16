@@ -169,6 +169,13 @@ def total_time_mult(g):
     return min(2.0, 1.0 * sm * pm)
 
 
+def move_speed(g):
+    """Movement speed (m/s) for approach / retreat: 1 m per 0.55 s, slowed by
+    the state time multiplier and by leg injury."""
+    mult = total_time_mult(g) * (1.0, 1.1, 1.3, 1.6)[injury_degree(g, "leg")]
+    return (1 / 0.55) / mult
+
+
 # ---------- geometry ----------
 def rot_pt(g, lx, ly):
     return (g.x + g.facing * lx, ly)
@@ -467,15 +474,14 @@ class Sim:
             cost = 3 * g.equip_mult
             g.action = {"kind": kind, "set": "common-posture-recovery", "start": self.t,
                         "dur": 1.2 * mult, "label": label}
-        elif kind == "approach":
+        elif kind in ("approach", "retreat"):
+            # movement toward / away from the opponent until the target gap
+            # (stamina is charged per metre travelled, in step())
             cost = 0.0
-            g.action = {"kind": kind, "set": "common-advance-1m", "start": self.t,
-                        "dur": float("inf"), "label": label, "travelled": 0.0,
+            g.action = {"kind": kind,
+                        "set": "common-advance-1m" if kind == "approach" else "common-retreat-1m",
+                        "start": self.t, "dur": float("inf"), "label": label, "travelled": 0.0,
                         "until": until if until is not None else self.approach_until}
-        elif kind == "retreat":
-            cost = 0.0
-            g.action = {"kind": kind, "set": "common-retreat-1m", "start": self.t,
-                        "dur": float("inf"), "label": label, "travelled": 0.0, "until": until}
         elif kind == "wait":
             cost = 0.0
             g.action = {"kind": kind, "set": None, "start": self.t, "dur": float("inf"), "label": label}
@@ -839,24 +845,19 @@ class Sim:
             if g.action is None and g.hold is None and t >= g.decision_at and not self.over:
                 self.decide(g)
             # movement
-            if g.action and g.action["kind"] == "approach":
-                mult = total_time_mult(g) * (1.0, 1.1, 1.3, 1.6)[injury_degree(g, "leg")]
-                speed = (1 / 0.55) / mult
+            if g.action and g.action["kind"] in ("approach", "retreat"):
+                a = g.action
                 gap = abs(g.opp.x - g.x)
                 # v3.44: stop exactly at the target gap (no overshoot)
-                step = min(speed * DT, max(0.0, gap - 0.35), max(0.0, gap - g.action["until"]))
-                g.x += g.facing * step
-                g.action["travelled"] += step
-                g.stamina = max(0.0, g.stamina - step * 2 * g.equip_mult)
-            if g.action and g.action["kind"] == "retreat":
-                mult = total_time_mult(g) * (1.0, 1.1, 1.3, 1.6)[injury_degree(g, "leg")]
-                speed = (1 / 0.55) / mult
-                gap = abs(g.opp.x - g.x)
-                step = min(speed * DT, max(0.0, g.action["until"] - gap))
-                new_x = max(-ARENA_HALF, min(ARENA_HALF, g.x - g.facing * step))
-                step = abs(new_x - g.x)
+                if a["kind"] == "approach":
+                    step = min(move_speed(g) * DT, max(0.0, gap - 0.35), max(0.0, gap - a["until"]))
+                    new_x = g.x + g.facing * step
+                else:
+                    want = min(move_speed(g) * DT, max(0.0, a["until"] - gap))
+                    new_x = max(-ARENA_HALF, min(ARENA_HALF, g.x - g.facing * want))
+                    step = abs(new_x - g.x)
                 g.x = new_x
-                g.action["travelled"] += step
+                a["travelled"] += step
                 g.stamina = max(0.0, g.stamina - step * 2 * g.equip_mult)
             # recovery while not acting
             if g.action is None:
