@@ -59,10 +59,10 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 - 変更したら `npm run typecheck` と `npm test` を通す。
 - `src/sim/` は決定性を守る。`Math.random`・`Date`・DOM を使わない。三角関数は `trig.ts` 経由（現在は Python 試作と一致させるため標準の Math。環境間の完全一致が要る段階で自前実装に差し替える）。
 - 戦闘の正式な記録はイベントログ（設計書 §5.9）。
-- `src/sim/` の判定本体（`sim.ts` と、それが使う `body` / `contact` / `rules` / `select` など）は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。`src/sim/` の判定本体を変えるときは（規則の変更でも不具合の修正でも）、先に Python 試作を直し、`npm run sync:data`（キーフレーム・確認条件を写す）→ `npm run golden`（正解データを作り直す）の後に TS 側を合わせる。
+- `src/sim/` の判定本体（`sim.ts` と、それが使う `body` / `contact` / `rules` / `select` など）は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。`src/sim/` の判定本体の振る舞いを変えるときは（規則の変更でも、試作にもある不具合の修正でも）、先に Python 試作を直し、`npm run sync:data`（キーフレーム・確認条件を写す）→ `npm run golden`（正解データを作り直す）の後に TS 側を合わせる。TS の移植だけの誤り（試作は正しい）を直す場合は、試作も正解データも変えずに TS を直す。
 - `src/sim/record.ts`（リプレイの記録）と `src/sim/motion.ts`（モーション図鑑の計算）は移植ではなく、判定と同じ関数・定数を使う補助。判定と食い違わないよう、接触の分類（`contact.ts`）や行動時間の定数（`data.ts`）は判定と共有し、独自に書き写さない。表示用の名前は `src/ui/` に置く。
 
-## 設計の進め方の約束（重要）
+## 設計の進め方の約束（重要・必ず守る）
 
 - **1回に1つの論点**だけを扱う。まず推奨案を理由と懸念つきで提示し、ユーザーの承認を得てから決定として仕様書に反映する。承認されていない提案を決定にしない。
 - ユーザーの「OK」は、直前の提案への承認を意味する。ユーザーが考えながら覆すこともあるので、その場合は議論を続ける。
@@ -78,7 +78,6 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 - **ブランチ**は `develop` から切る。名前は `<種類>/<Issue番号>-<短い説明>`（例: `feature/12-strategy-rules`、`fix/15-approach-overshoot`）。複数 Issue をまとめて扱う場合は代表の内容で名付ける。種類は `feature` / `fix` / `docs` / `chore` / `refactor`。
 - **コミットメッセージ**には対応する Issue 番号を `(#12)` の形で入れる。
 - **PR** は `develop` 向けに出し、本文に `Closes #12` の形で対応する Issue をすべて書いて紐づける（マージで自動クローズされる）。
-- **PR のマージはマージコミット**で行う（squash しない）。master への自動 PR が「Merge pull request #N」から PR と Issue を拾うため。
 - **PR を作成したら、その PR に対してエージェントによるコードレビューを行う**（Claude Code の `/code-review high <PR番号>`）。
   - 対象外：develop → master の自動 PR（`auto-pr-to-master.yml`。中身は各 PR でレビュー済み）と、Dependabot の npm の更新 PR（CI で確認する）。
   - Dependabot の devcontainers・GitHub Actions の更新 PR は、マージする前にレビューする（CI は開発コンテナの構築や、Pages 配信・リリースのワークフローを実行しないため）。直す必要がある指摘が出たら、Dependabot のブランチには push せず、Issue にして PR を保留するか閉じる。
@@ -89,6 +88,7 @@ gladios の開発者向けの情報。アプリでできることは [README](..
   - 「直す」で変更を push したら、**再レビューを 1 回だけ**行う。レビューは PR 全体を見直すので、前回と同じ指摘や、既に判断した指摘は扱わない。「直す」の対象にするのは、その修正で入った問題だけ（それ以外の新しい指摘は「Issue にする」か「不採用」）。再レビューの指摘をさらに直した場合は、もう一度はレビューせず、結果のコメントに書いてユーザーの確認を受ける。
   - 結果（指摘と、それぞれの対応と理由）を PR にまとめのコメントで残す。対応の記録になるため、`--comment` による行コメントの投稿では代えない。
   - レビュー対象の PR は、レビュー（必要なら再レビュー）・結果のコメント・CI が済んでからマージする。
+- **PR のマージはマージコミット**で行う（squash しない）。master への自動 PR が「Merge pull request #N」から PR と Issue を拾うため。
 - 作業中に見つかった別件は、その場で直さず新しい Issue にする。
 
 ## CI・公開・リリース（GitHub Actions）
