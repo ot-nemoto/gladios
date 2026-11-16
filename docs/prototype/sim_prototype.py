@@ -49,8 +49,20 @@ Simplifications (prototype only):
   and pushes them back 0.5 m; the pusher's shield is scanned as its axis
   segment (prototype simplification)
 - Shield region is always present at its carried position when not defending
+- Reference distance (v3.44): every attack set carries refDistance. Auto part
+  selection scores each part as if standing at that part's set refDistance
+  (parts whose refDistance cannot be reached inside the arena are excluded),
+  and an attacker moves to the chosen set's refDistance (approach if farther,
+  retreat if closer, tolerance REF_TOLERANCE) before entering the hold.
+  Approach/retreat stop exactly at their target gap (no overshoot). The
+  general "rule 3" approach (gap >= 1.5 -> approach) now applies only to
+  gladiators that do not attack (passive dummies); attackers' spacing is
+  governed by the reference distance.
+- Tie-break order (v3.44): torso > head > leg > arm (leg moved ahead of arm:
+  at their reference distances both often score "armour only", and the leg
+  slash passes under the shield while the arm slash meets a raised shield).
 """
-import json, math, pathlib, sys
+import json, math, pathlib, sys, types
 
 BASE = pathlib.Path(__file__).resolve().parent
 _kf_path = BASE / "keyframes-full.json"
@@ -83,6 +95,9 @@ SHIELDS = {  # design doc v3.23: half = vertical half-length of the shield regio
     "small": {"half": 0.175, "def": 20, "weight": 0.5},
 }
 STRENGTH_CORR = {"feint": -20, "normal": 0, "strong": 20}  # v3.12 action correction to P
+REF_TOLERANCE = 0.02  # v3.44: move to the set's refDistance when the gap is outside +-this (provisional)
+ARENA_HALF = 12.0     # v3.25: movement bounds are +-12 m from the origin
+GAP_EPS = 1e-9        # float slack when a move has reached its target gap (avoids endless tiny steps)
 
 
 def apply_equip(g, weapon_name, shield_name):
@@ -334,20 +349,37 @@ def part_reachable(atk, set_id, part, regs):
     return False
 
 
+def ref_target_x(g, set_id):
+    """Where g's feet would be when standing at the set's refDistance from the
+    opponent (v3.44), or None if that spot is outside the arena."""
+    ref = KF[set_id].get("refDistance")
+    if ref is None:
+        return g.x
+    tx = g.opp.x - g.facing * ref
+    return tx if abs(tx) <= ARENA_HALF else None
+
+
 def select_part(g, pattern):
+    # v3.44: each part is scored as if g stood at that part's set refDistance,
+    # against the opponent's pose at the decision moment.
     dfn = g.opp
     method = pattern.split("-")[1]
     regs, _ = regions_of(dfn, dfn.pose)
     scores = {}
     for part in ("head", "torso", "arm", "leg"):
         sid = f"{pattern}-{part}"
-        if sid not in KF or not part_reachable(g, sid, part, regs):
+        tx = ref_target_x(g, sid) if sid in KF else None
+        if tx is None:
+            scores[part] = None
+            continue
+        at_ref = types.SimpleNamespace(x=tx, facing=g.facing, wlen=g.wlen, opp=dfn)
+        if not part_reachable(at_ref, sid, part, regs):
             scores[part] = None
             continue
         inj = (0, 1, 1, 2)[injury_degree(dfn, part)]
-        scores[part] = exposure_of(g, sid, part, regs) * 100 + COMPAT[method][part] * 10 + inj
+        scores[part] = exposure_of(at_ref, sid, part, regs) * 100 + COMPAT[method][part] * 10 + inj
     best = None
-    for part in ("torso", "head", "arm", "leg"):  # fixed tie-break order
+    for part in ("torso", "head", "leg", "arm"):  # fixed tie-break order (v3.44: leg before arm)
         if scores[part] is not None and (best is None or scores[part] > scores[best]):
             best = part
     return best, scores
@@ -440,6 +472,10 @@ class Sim:
             g.action = {"kind": kind, "set": "common-advance-1m", "start": self.t,
                         "dur": float("inf"), "label": label, "travelled": 0.0,
                         "until": until if until is not None else self.approach_until}
+        elif kind == "retreat":
+            cost = 0.0
+            g.action = {"kind": kind, "set": "common-retreat-1m", "start": self.t,
+                        "dur": float("inf"), "label": label, "travelled": 0.0, "until": until}
         elif kind == "wait":
             cost = 0.0
             g.action = {"kind": kind, "set": None, "start": self.t, "dur": float("inf"), "label": label}
@@ -460,7 +496,7 @@ class Sim:
         a = g.action
         if a["kind"] == "defence":
             return False
-        if a["kind"] in ("approach", "wait", "postureRecovery"):
+        if a["kind"] in ("approach", "retreat", "wait", "postureRecovery"):
             return True
         if a["kind"] == "attack":
             prog = (self.t - a["start"]) / a["dur"]
@@ -481,6 +517,22 @@ class Sim:
             o.switch_at = self.t + DETECTION_DELAY + judgment_delay(o) + read_shift(o, set_id)
             o.switch_for = self.t
 
+    def _move_or_hold(self, g, sid, label, prefix):
+        """v3.44: attack from the set's refDistance. Outside +-REF_TOLERANCE,
+        move there first (approach if farther, retreat if closer); the plan is
+        re-evaluated when the move ends. If the spot is outside the arena, the
+        attack is held from the current gap."""
+        dist = abs(g.opp.x - g.x)
+        refd = KF[sid].get("refDistance")
+        if refd is not None and abs(dist - refd) > REF_TOLERANCE:
+            if dist > refd:
+                self.start_action(g, "approach", f"{prefix}: 間合いまで接近する", until=refd)
+                return
+            if ref_target_x(g, sid) is not None:
+                self.start_action(g, "retreat", f"{prefix}: 間合いまで距離を取る", until=refd)
+                return
+        self._enter_hold(g, sid, label)
+
     def decide(self, g):
         o = g.opp
         dist = abs(o.x - g.x)
@@ -488,10 +540,13 @@ class Sim:
             self.start_action(g, "postureRecovery", "ルール1: 体勢を立て直す")
         elif stamina_stage(g)[0] == "枯渇":
             self.start_action(g, "wait", "ルール2: 待機する")
-        elif dist >= 1.5:
-            self.start_action(g, "approach", "ルール3: 接近する")
         elif g.id in self.passive:
-            self.start_action(g, "wait", "ダミー: 待機する（攻撃しない）")
+            # rule 3 (approach when far) now applies only to gladiators that do
+            # not attack; attackers' spacing follows the reference distance (v3.44)
+            if dist >= 1.5:
+                self.start_action(g, "approach", "ルール3: 接近する")
+            else:
+                self.start_action(g, "wait", "ダミー: 待機する（攻撃しない）")
         elif not g.collapsed:
             part_jp = {"torso": "胴体", "leg": "脚", "head": "頭部", "arm": "腕"}
             push_mode = self.push_users.get(g.id)
@@ -512,19 +567,11 @@ class Sim:
                     method_jp = "斬る" if "-slash-" in pattern else "突く"
                     label = f"デフォルト: 通常攻撃（{method_jp}・{part_jp[part]}）"
                     self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {part_jp[part]}")
-                    refd = KF[f"{pattern}-{part}"].get("refDistance")
-                    if refd and dist > refd + 0.05:
-                        self.start_action(g, "approach", "自動選択: 間合いまで接近する", until=refd)
-                    else:
-                        self._enter_hold(g, f"{pattern}-{part}", label)
+                    self._move_or_hold(g, f"{pattern}-{part}", label, "自動選択")
             else:
                 sid = self.atk_sets.get(g.id, "gladius-slash-normal-torso")
                 label = f"デフォルト: 通常攻撃（斬る・{part_jp[sid.rsplit('-', 1)[1]]}）"
-                refd = KF[sid].get("refDistance")
-                if refd and dist > refd + 0.05:
-                    self.start_action(g, "approach", "固定: 間合いまで接近する", until=refd)
-                else:
-                    self._enter_hold(g, sid, label)
+                self._move_or_hold(g, sid, label, "固定")
         else:
             self.start_action(g, "wait", "体勢崩れ: 待機する")
 
@@ -534,9 +581,9 @@ class Sim:
         if a is None or a["kind"] == "wait":
             g.pose = dict(STANCE)
             return
-        if a["kind"] == "approach":
+        if a["kind"] in ("approach", "retreat"):
             tau = (a["travelled"] % 1.0)
-            g.pose = interp_pose("common-advance-1m", tau)
+            g.pose = interp_pose(a["set"], tau)
             return
         tau = (self.t - a["start"]) / a["dur"] if a["dur"] != float("inf") else 0.0
         if a["kind"] == "defence" and a.get("phase"):
@@ -776,7 +823,13 @@ class Sim:
                 g.action = None
                 g.decision_at = t + judgment_delay(g)
             # continuous action ends
-            if g.action and g.action["kind"] == "approach" and abs(g.opp.x - g.x) <= g.action.get("until", self.approach_until):
+            if g.action and g.action["kind"] == "approach" and abs(g.opp.x - g.x) <= g.action.get("until", self.approach_until) + GAP_EPS:
+                g.action = None
+                g.decision_at = t + judgment_delay(g)
+            if g.action and g.action["kind"] == "retreat" and (
+                    abs(g.opp.x - g.x) >= g.action["until"] - GAP_EPS
+                    or g.x * g.facing <= -ARENA_HALF):
+                # reached the target gap, or backed against the arena edge
                 g.action = None
                 g.decision_at = t + judgment_delay(g)
             if g.action and g.action["kind"] == "wait" and stamina_stage(g)[0] != "枯渇":
@@ -789,8 +842,20 @@ class Sim:
             if g.action and g.action["kind"] == "approach":
                 mult = total_time_mult(g) * (1.0, 1.1, 1.3, 1.6)[injury_degree(g, "leg")]
                 speed = (1 / 0.55) / mult
-                step = min(speed * DT, max(0.0, abs(g.opp.x - g.x) - 0.35))
+                gap = abs(g.opp.x - g.x)
+                # v3.44: stop exactly at the target gap (no overshoot)
+                step = min(speed * DT, max(0.0, gap - 0.35), max(0.0, gap - g.action["until"]))
                 g.x += g.facing * step
+                g.action["travelled"] += step
+                g.stamina = max(0.0, g.stamina - step * 2 * g.equip_mult)
+            if g.action and g.action["kind"] == "retreat":
+                mult = total_time_mult(g) * (1.0, 1.1, 1.3, 1.6)[injury_degree(g, "leg")]
+                speed = (1 / 0.55) / mult
+                gap = abs(g.opp.x - g.x)
+                step = min(speed * DT, max(0.0, g.action["until"] - gap))
+                new_x = max(-ARENA_HALF, min(ARENA_HALF, g.x - g.facing * step))
+                step = abs(new_x - g.x)
+                g.x = new_x
                 g.action["travelled"] += step
                 g.stamina = max(0.0, g.stamina - step * 2 * g.equip_mult)
             # recovery while not acting
@@ -872,11 +937,7 @@ if __name__ == "__main__":
                                      atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45)
     out.append("\n" + log3_text)
     out.append("\n".join(log3))
-    log4_text, log4, s4 = run_battle("戦闘4: 接近距離0.9m・Aは脚狙い（近距離での身体命中の確認用）",
-                                     {"A": "block", "B": "block"},
-                                     atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=0.9)
-    out.append("\n" + log4_text)
-    out.append("\n".join(log4))
+    # 戦闘4（接近距離0.9m）は v3.44 で廃止：攻撃は基準間合いから行うため、近距離の攻撃は起きない
     log5_text, log5, s5 = run_battle("戦闘5: Aは脚狙い、Bは防御方針なし（決着までの確認用）",
                                      {"A": "block", "B": "none"}, cap=300.0,
                                      atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45)
