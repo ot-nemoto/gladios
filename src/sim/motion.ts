@@ -9,22 +9,19 @@ import { fkPoints, interpPose, regionsOf, type BodyRef } from './body';
 import { classifyContact, type ContactTarget } from './contact';
 import {
   DEFENCE_SET_PREFIX,
-  DEFENCE_TIME,
   DT,
-  MOVE_TIME_PER_M,
-  POSTURE_RECOVERY_TIME,
-  PUSH_TIME,
   SHIELDS,
   STANCE,
   WEAPONS,
-  attackWeightFactor,
   defenceSetId,
+  effectiveShield,
   type KeyframeSet,
   type Pose,
   type ShieldName,
   type WeaponName,
 } from './data';
 import type { Vec } from './geometry';
+import { actionTime, type TimedAction } from './rules';
 
 export type { ContactTarget } from './contact';
 
@@ -51,7 +48,7 @@ export function actorEquipment(
 ): { weapon: WeaponName; shield: ShieldName | null } {
   if (set.kind === 'attack') {
     const weapon = set.weapon as WeaponName;
-    return { weapon, shield: weapon === 'trident' ? null : attackShield }; // トライデントは両手持ち
+    return { weapon, shield: effectiveShield(weapon, attackShield) };
   }
   const d = defenceOf(set);
   if (d) return { weapon: 'gladius', shield: d.shield };
@@ -62,17 +59,21 @@ export function bodyRef(weapon: WeaponName, shield: ShieldName | null, x: number
   return { x, facing, wlen: WEAPONS[weapon].len, shieldHalf: shield ? SHIELDS[shield].half : null };
 }
 
+/** 一式を、所要時間の計算上の行動の種類に対応づける。 */
+export function timedActionOf(set: KeyframeSet): TimedAction {
+  if (set.kind === 'attack') return 'attack';
+  if (set.kind === 'defence') return 'defence';
+  if (set.id === 'common-shield-push') return 'push';
+  if (set.id === 'common-posture-recovery') return 'postureRecovery';
+  return 'move'; // 接近・距離を取る：1m ぶん
+}
+
 /**
  * 実際の所要時間（秒）。全能力 50・スタミナ余裕・体勢通常のとき（状態の倍率 1.0）。
- * Sim.startAction と同じ定数：攻撃は基準時間 × 武器重量の倍率、防御・盾の押し込み・
- * 体勢を立て直すは各基準時間、移動は 1m ぶん。
+ * 計算は戦闘の判定と同じ actionTime を使う。
  */
 export function actionDuration(set: KeyframeSet, weapon: WeaponName): number {
-  if (set.kind === 'attack') return (set.baseTime ?? 1.0) * attackWeightFactor(WEAPONS[weapon].weight);
-  if (set.kind === 'defence') return DEFENCE_TIME;
-  if (set.id === 'common-shield-push') return PUSH_TIME;
-  if (set.id === 'common-posture-recovery') return POSTURE_RECOVERY_TIME;
-  return MOVE_TIME_PER_M; // 接近・距離を取る：1m ぶん
+  return actionTime(timedActionOf(set), { setId: set.id, weaponWeight: WEAPONS[weapon].weight, mult: 1.0 });
 }
 
 export interface Phase {

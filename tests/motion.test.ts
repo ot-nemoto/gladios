@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { KF, STANCE, WEAPONS, kf } from '../src/sim/data';
+import { DT, KF, STANCE, WEAPONS, defenceSetId, effectiveShield, kf, type ShieldName, type WeaponName } from '../src/sim/data';
+import { interpPose } from '../src/sim/body';
 import {
   actionDuration,
   actorEquipment,
@@ -9,6 +10,8 @@ import {
   opponentPoseOf,
   phasesOf,
   trajectory,
+  type ContactTarget,
+  type OpponentPose,
 } from '../src/sim/motion';
 import { keyframeNames, setLabel } from '../src/ui/motion-labels';
 import { Sim, type SimOptions } from '../src/sim/sim';
@@ -38,9 +41,9 @@ function battleFirstContact(o: SimOptions) {
     const hit = lines.find((l) => /\] 接触\s+A の攻撃 → B の(.+?)(に命中|に接触)/.test(l));
     if (hit && start !== null) {
       const what = /→ B の(.+?)(に命中|に接触)/.exec(hit)![1]!;
-      return { steps: Math.round((sim.t - start) / 0.005), what, setId: setId!, gap, dur };
+      return { steps: Math.round((sim.t - start) / DT), what, setId: setId!, gap, dur };
     }
-    sim.t += 0.005;
+    sim.t += DT;
   }
   throw new Error('no contact');
 }
@@ -119,5 +122,81 @@ describe('モーション図鑑の計算', () => {
     const { pose, defending } = opponentPoseOf('deflect', 'parmula');
     expect(defending).toBe(true);
     expect(pose.torso).toBe(kf('defence-parmula-deflect').keyframes[1]!.torso);
+  });
+});
+
+/**
+ * 相手を一定の姿勢（構え・各防御姿勢）に固定し、戦闘の判定そのもの（Sim の contactScan）を
+ * 試作と同じ手順（時刻を DT ずつ進め、姿勢を更新してから判定）で回して、最初の接触を求める。
+ */
+function simFirstContact(
+  setId: string,
+  weapon: WeaponName,
+  gap: number,
+  oppShield: ShieldName | null,
+  oppPose: OpponentPose,
+): { step: number; target: ContactTarget } | null {
+  const sim = new Sim({
+    policies: { A: 'none', B: 'none' },
+    equip: { A: { weapon, shield: 'scutum' }, B: { shield: oppShield } },
+  });
+  // 判定の内部の手順を直接呼ぶ（テストのため）
+  const internal = sim as unknown as {
+    startAction(g: unknown, kind: string, label: string, o: { setId: string; holdStart: null }): void;
+    contactScan(g: unknown): void;
+  };
+  sim.a.x = -gap / 2;
+  sim.b.x = gap / 2;
+  internal.startAction(sim.a, 'attack', 'test', { setId, holdStart: null });
+  const { pose, defending } = opponentPoseOf(oppPose, oppShield);
+  if (defending) {
+    sim.b.action = { kind: 'defence', set: defenceSetId(oppShield, oppPose), start: 0, dur: Infinity, label: '', policy: 'block' };
+  }
+  sim.b.pose = pose;
+  const a = sim.a.action!;
+  for (let step = 1; ; step++) {
+    sim.t += DT;
+    if (sim.t >= a.start + a.dur) return null; // 試作では完了の判定が接触の判定より先
+    sim.a.pose = interpPose(setId, (sim.t - a.start) / a.dur);
+    internal.contactScan(sim.a);
+    const line = sim.log.find((l) => /\] 接触/.test(l));
+    if (line) {
+      const what = /→ B の(.+?)(?:に命中|に接触)/.exec(line)![1]!;
+      return { step, target: JP[what] as ContactTarget };
+    }
+  }
+}
+
+describe('firstContact は、相手が防御姿勢のときも戦闘の判定と一致する', () => {
+  it('武器・攻撃・相手の盾・姿勢・間隔の組み合わせ', () => {
+    const sets = [...KF.values()].filter((s) => s.kind === 'attack' && s.strength === 'normal');
+    const mismatches: string[] = [];
+    const seen = new Set<string>();
+    let cases = 0;
+    for (const set of sets) {
+      const weapon = set.weapon as WeaponName;
+      const base = set.refDistance ?? 1.4;
+      for (const oppShield of ['scutum', 'small', null] as (ShieldName | null)[]) {
+        for (const oppPose of ['stance', 'block', 'deflect', 'evade'] as OpponentPose[]) {
+          for (const gap of [base - 0.2, base, base + 0.1]) {
+            cases++;
+            const want = simFirstContact(set.id, weapon, gap, oppShield, oppPose);
+            const actor = bodyRef(weapon, effectiveShield(weapon, 'scutum'), -gap / 2, 1);
+            const opp = bodyRef('gladius', oppShield, gap / 2, -1);
+            const { pose, defending } = opponentPoseOf(oppPose, oppShield);
+            const got = firstContact(set.id, actor, actionDuration(set, weapon), opp, pose, defending);
+            const g = got && { step: got.step, target: got.target };
+            if (JSON.stringify(g) !== JSON.stringify(want)) {
+              mismatches.push(`${set.id} ${oppShield} ${oppPose} ${gap.toFixed(2)}: sim=${JSON.stringify(want)} motion=${JSON.stringify(g)}`);
+            }
+            if (want) seen.add(want.target);
+          }
+        }
+      }
+    }
+    expect(mismatches).toEqual([]);
+    expect(cases).toBeGreaterThan(800);
+    // 防御姿勢の相手で、武器での受け（R1b の境界を越えた接触）まで実際に通っていること
+    expect([...seen].sort()).toEqual(expect.arrayContaining(['shield', 'weapon', 'leg']));
   });
 });

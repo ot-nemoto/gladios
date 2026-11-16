@@ -12,7 +12,7 @@ import {
   BLOCK_POSTURE,
   BLOCK_STAMINA,
   CONDITIONS,
-  DEFENCE_TIME,
+  DEFAULT_APPROACH_UNTIL,
   DT,
   HP_LOSS,
   INJ_PTS,
@@ -22,13 +22,10 @@ import {
   PART_JP,
   PART_MOD,
   POSTURE_LOSS,
-  POSTURE_RECOVERY_TIME,
-  PUSH_TIME,
   STAGE_ORDER,
   STAMINA_MAX,
   STANCE,
   STRENGTH_CORR,
-  attackWeightFactor,
   defenceSetId,
   kf,
   type Part,
@@ -42,6 +39,7 @@ import { segCircle, segObb, type Vec } from './geometry';
 import { Glad, applyEquip, type ActionKind, type Policy } from './glad';
 import {
   DETECTION_DELAY,
+  actionTime,
   holdTime,
   injuryDegree,
   judgmentDelay,
@@ -119,7 +117,7 @@ export class Sim {
       const g = this.glad(gid);
       applyEquip(g, ov.weapon ?? g.weaponName, 'shield' in ov ? (ov.shield ?? null) : g.shieldName);
     }
-    this.approachUntil = o.approachUntil ?? 1.4;
+    this.approachUntil = o.approachUntil ?? DEFAULT_APPROACH_UNTIL;
     this.passive = new Set(o.passive ?? []);
     this.cap = o.cap ?? 180.0;
     for (const [gid, base] of Object.entries(o.judgment ?? {})) this.glad(gid).judgmentBase = base;
@@ -145,15 +143,14 @@ export class Sim {
     let cost: number;
     if (kind === 'attack') {
       cost = 7 * g.wweight * g.equipMult;
-      const bt = setId !== null && KF.has(setId) ? (kf(setId).baseTime ?? 1.0) : 1.0;
-      const dur = bt * mult * attackWeightFactor(g.wweight);
+      const dur = actionTime('attack', { setId, weaponWeight: g.wweight, mult });
       const armDeg = injuryDegree(g, 'arm');
       const corr = setId ? (STRENGTH_CORR[setId.split('-')[2]!] ?? 0) : 0;
       const P = g.watk + corr - ([0, 5, 15, 30] as const)[armDeg];
       g.action = { kind, set: setId, start: this.t, dur, resolved: false, P, label, holdStart };
     } else if (kind === 'defence') {
       cost = 5 * g.equipMult;
-      const dur = DEFENCE_TIME * mult * (g.collapsed ? 1.5 : 1.0);
+      const dur = actionTime('defence', { mult, collapsed: g.collapsed });
       const policy = opts.policy ?? 'block';
       g.action = { kind, set: setId ?? 'defence-scutum-block', start: this.t, dur, label, policy };
       if (policy === 'deflect') {
@@ -162,10 +159,10 @@ export class Sim {
       }
     } else if (kind === 'push') {
       cost = 8 * g.equipMult;
-      g.action = { kind, set: 'common-shield-push', start: this.t, dur: PUSH_TIME * mult, label, resolved: false };
+      g.action = { kind, set: 'common-shield-push', start: this.t, dur: actionTime('push', { mult }), label, resolved: false };
     } else if (kind === 'postureRecovery') {
       cost = 3 * g.equipMult;
-      g.action = { kind, set: 'common-posture-recovery', start: this.t, dur: POSTURE_RECOVERY_TIME * mult, label };
+      g.action = { kind, set: 'common-posture-recovery', start: this.t, dur: actionTime('postureRecovery', { mult }), label };
     } else if (kind === 'approach') {
       cost = 0.0;
       g.action = {

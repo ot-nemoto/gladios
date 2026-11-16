@@ -127,6 +127,12 @@ export const POSTURE_RECOVERY_TIME = 1.2;
 export const MOVE_TIME_PER_M = 0.55;
 /** 攻撃の時間に掛ける武器重量の倍率（v3.24）。 */
 export const attackWeightFactor = (weight: number): number => 0.85 + 0.15 * weight;
+/** 試作の既定の接近先（足裏の間隔、m）。 */
+export const DEFAULT_APPROACH_UNTIL = 1.4;
+/** 両手持ちの武器は盾を持てない（v3.22）。 */
+export const isTwoHanded = (weapon: WeaponName): boolean => weapon === 'trident';
+export const effectiveShield = (weapon: WeaponName, shield: ShieldName | null): ShieldName | null =>
+  isTwoHanded(weapon) ? null : shield;
 
 /** 盾の種類 → 防御一式の ID の接頭辞。 */
 export const DEFENCE_SET_PREFIX: Record<ShieldName | 'none', string> = {

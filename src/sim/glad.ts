@@ -7,6 +7,7 @@ import {
   STAMINA_MAX,
   STANCE,
   WEAPONS,
+  effectiveShield,
   type GladiatorSpec,
   type Part,
   type Pose,
@@ -124,7 +125,7 @@ export function applyEquip(g: Glad, weaponName: WeaponName, shieldName: ShieldNa
   g.watk = w.atk;
   g.wblock = w.block;
   g.wweight = w.weight;
-  if (weaponName === 'trident') shieldName = null; // 両手持ち（v3.22）：盾なし
+  shieldName = effectiveShield(weaponName, shieldName); // 両手持ち（v3.22）は盾なし
   g.shieldName = shieldName;
   const sh = shieldName ? SHIELDS[shieldName] : null;
   g.shieldHalf = sh ? sh.half : null;

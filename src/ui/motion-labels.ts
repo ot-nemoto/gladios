@@ -1,5 +1,5 @@
 /** モーション図鑑の表示用の名前（判定には使わない）。 */
-import type { KeyframeSet, ShieldName, WeaponName } from '../sim/data';
+import { PART_JP, type KeyframeSet, type ShieldName, type WeaponName } from '../sim/data';
 import { defenceOf, type ContactTarget, type OpponentPose } from '../sim/motion';
 
 export const WEAPON_JP: Record<WeaponName, string> = {
@@ -15,14 +15,7 @@ export const SHIELD_JP: Record<ShieldName | 'none', string> = {
   small: '小盾',
   none: '盾なし',
 };
-export const CONTACT_JP: Record<ContactTarget, string> = {
-  shield: '盾',
-  weapon: '武器',
-  arm: '腕',
-  leg: '脚',
-  torso: '胴体',
-  head: '頭部',
-};
+export const CONTACT_JP: Record<ContactTarget, string> = { ...PART_JP, shield: '盾', weapon: '武器' };
 export const OPPONENT_POSE_JP: Record<OpponentPose, string> = {
   stance: '構え',
   block: '受け止め（防御姿勢）',
@@ -32,7 +25,6 @@ export const OPPONENT_POSE_JP: Record<OpponentPose, string> = {
 
 const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
 const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
-const PART_JP: Record<string, string> = { head: '頭部', torso: '胴体', arm: '腕', leg: '脚' };
 const POLICY_JP: Record<string, string> = { block: '受け止め', deflect: '受け流し', evade: '回避' };
 const COMMON_JP: Record<string, string> = {
   'common-advance-1m': '接近（1m）',
@@ -48,7 +40,7 @@ export function setLabel(set: KeyframeSet): string {
       WEAPON_JP[set.weapon as WeaponName],
       METHOD_JP[set.method!],
       STRENGTH_JP[set.strength!],
-      PART_JP[set.part!],
+      PART_JP[set.part as keyof typeof PART_JP],
     ].join('・');
   }
   const d = defenceOf(set);

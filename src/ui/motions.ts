@@ -4,7 +4,18 @@
  */
 import { drawBackground, drawBody, makeView, obbPath, toPx, type View } from '../render/arena';
 import { fkPoints, interpPose, regionsOf, type BodyRef, type Regions } from '../sim/body';
-import { KF, SHIELDS, type KeyframeSet, type Pose, type ShieldName } from '../sim/data';
+import {
+  DEFAULT_APPROACH_UNTIL,
+  DT,
+  KF,
+  MOVE_TIME_PER_M,
+  PUSH_TIME,
+  SHIELDS,
+  effectiveShield,
+  type KeyframeSet,
+  type Pose,
+  type ShieldName,
+} from '../sim/data';
 import {
   OPPONENT_POSES,
   actionDuration,
@@ -23,7 +34,7 @@ import {
 import { CONTACT_JP, OPPONENT_POSE_JP, SHIELD_JP, WEAPON_JP, groupOf, keyframeNames, setLabel } from './motion-labels';
 
 const html = String.raw;
-const SETS = [...KF.values()];
+
 const SPEEDS = [0.05, 0.1, 0.25, 0.5, 1];
 const CIRCLED = ['①', '②', '③', '④', '⑤', '⑥', '⑦'];
 
@@ -59,13 +70,14 @@ interface State {
 }
 
 const shieldOf = (c: ShieldChoice): ShieldName | null => (c === 'none' ? null : c);
-const isShieldChoice = (v: string | null): v is ShieldChoice => v === 'none' || (v !== null && v in SHIELDS);
+const isShieldChoice = (v: string | null): v is ShieldChoice => v === 'none' || (v !== null && Object.hasOwn(SHIELDS, v));
 const isOpponentPose = (v: string | null): v is OpponentPose => OPPONENT_POSES.includes(v as OpponentPose);
 const GAP_MIN = 0.35;
 const GAP_MAX = 4;
 const clampGap = (g: number) => Math.max(GAP_MIN, Math.min(GAP_MAX, g));
-/** 既定の間隔：基準間合い、なければ試作の既定の接近先 1.40m。接近は 1m 進んで 1.40m になる位置から。 */
-const defaultGap = (set: KeyframeSet) => set.refDistance ?? (set.id === 'common-advance-1m' ? 2.4 : 1.4);
+/** 既定の間隔：基準間合い、なければ試作の既定の接近先。接近は 1m 進んで接近先になる位置から。 */
+const defaultGap = (set: KeyframeSet) =>
+  set.refDistance ?? (set.id === 'common-advance-1m' ? DEFAULT_APPROACH_UNTIL + 1 : DEFAULT_APPROACH_UNTIL);
 const fmt = (x: number, d = 3) => x.toFixed(d);
 
 export function mountMotions(root: HTMLElement): void {
@@ -100,7 +112,7 @@ export function mountMotions(root: HTMLElement): void {
       <label>速度 <select id="speed"></select></label>
       <label class="check"><input id="loop" type="checkbox" checked /> ループ</label>
       <span id="time" class="time"></span>
-      <span class="muted">← → でキーフレーム間を移動、, . で 1 ステップ（0.005 秒）送り</span>
+      <span class="muted">← → でキーフレーム間を移動、, . で 1 ステップ（${DT} 秒）送り</span>
     </section>
     <section id="timeline" class="tl" aria-label="タイムライン（クリック・ドラッグでシーク）"></section>
     <section class="mo-panel">
@@ -139,16 +151,24 @@ export function mountMotions(root: HTMLElement): void {
   };
 
   // ---- 選択肢 ----
-  let group: HTMLOptGroupElement | null = null;
-  for (const s of SETS) {
+  // データの並びでは防御と共通が入り混じるため、見出しごとにまとめる
+  const groups = new Map<string, HTMLOptGroupElement>();
+  // 攻撃（武器の順）→ 防御 → 共通 の順に並べる（データ内の順序は保つ安定な並べ替え）
+  const KIND_ORDER: Record<string, number> = { attack: 0, defence: 1, common: 2 };
+  const ordered = [...KF.values()].sort((x, y) => (KIND_ORDER[x.kind] ?? 3) - (KIND_ORDER[y.kind] ?? 3));
+  for (const s of ordered) {
     const g = groupOf(s);
-    if (group?.label !== g) {
-      group = document.createElement('optgroup');
-      group.label = g;
-      setSel.append(group);
+    let og = groups.get(g);
+    if (!og) {
+      og = document.createElement('optgroup');
+      og.label = g;
+      groups.set(g, og);
+      setSel.append(og);
     }
-    group.append(new Option(setLabel(s), s.id));
+    og.append(new Option(setLabel(s), s.id));
   }
+  /** 一覧の表示順（見出しごと）。前後送りもこの順。 */
+  const SETS = [...groups.values()].flatMap((og) => [...og.querySelectorAll('option')].map((o) => KF.get(o.value)!));
   for (const c of ['scutum', 'parmula', 'small', 'none'] as const) {
     mySel.add(new Option(SHIELD_JP[c], c));
     oppSel.add(new Option(SHIELD_JP[c], c));
@@ -223,7 +243,7 @@ export function mountMotions(root: HTMLElement): void {
   function syncControls(): void {
     setSel.value = st.set.id;
     mySel.value = d.eq.shield ?? 'none';
-    mySel.disabled = st.set.kind !== 'attack' || st.set.weapon === 'trident';
+    mySel.disabled = st.set.kind !== 'attack' || effectiveShield(d.eq.weapon, 'scutum') === null;
     oppSel.value = st.oppShield;
     poseSel.value = st.oppPose;
     gapIn.value = st.gap.toFixed(2);
@@ -238,7 +258,7 @@ export function mountMotions(root: HTMLElement): void {
     if (s.kind === 'attack') {
       const w = WEAPON_JP[d.eq.weapon];
       parts.push(`所要 <b>${fmt(d.dur)} 秒</b>（基準 ${s.baseTime ?? 1} 秒 × 武器重量の倍率。${w}）`);
-      parts.push(s.refDistance ? `基準間合い ${s.refDistance.toFixed(2)} m` : '基準間合いの記録なし（試作の既定の接近は 1.40 m）');
+      parts.push(s.refDistance ? `基準間合い ${s.refDistance.toFixed(2)} m` : `基準間合いの記録なし（試作の既定の接近は ${DEFAULT_APPROACH_UNTIL.toFixed(2)} m）`);
       parts.push(
         d.contact
           ? `最初の接触 <b>${fmt(d.contact.time)} 秒</b>（進み ${fmt(d.contact.tau, 2)}）相手の<b>${CONTACT_JP[d.contact.target]}</b>`
@@ -248,8 +268,8 @@ export function mountMotions(root: HTMLElement): void {
       parts.push(`所要 <b>${fmt(d.dur)} 秒</b>`);
       const df = defenceOf(s);
       if (df?.policy === 'deflect') parts.push('実戦では中央の防御姿勢を、きっかけの攻撃が解決するまで保持する（v3.43）。ここでは保持せずに再生');
-      if (s.id === 'common-advance-1m' || s.id === 'common-retreat-1m') parts.push('1m あたり 0.55 秒。実戦では移動距離に合わせて繰り返す');
-      if (s.id === 'common-shield-push') parts.push(`設計書 5.5.1 の基準時間 0.8 秒で再生（一式データの baseTime は ${s.baseTime}）`);
+      if (s.id === 'common-advance-1m' || s.id === 'common-retreat-1m') parts.push(`1m あたり ${MOVE_TIME_PER_M} 秒。実戦では移動距離に合わせて繰り返す`);
+      if (s.id === 'common-shield-push') parts.push(`判定と同じ基準時間 ${PUSH_TIME} 秒で再生（一式データの baseTime は ${s.baseTime}。#17）`);
       parts.push('接触の計算は攻撃一式のみ');
     }
     $('#summary').innerHTML = parts.join('<span class="sep">｜</span>');
@@ -396,6 +416,10 @@ export function mountMotions(root: HTMLElement): void {
       <div class="tl-label">秒</div><div class="tl-track ticks">${ticks.join('')}</div>
       <div class="tl-head" id="tl-head"></div>
     `;
+    // キーボードで押した場合（Enter / Space）。マウスは下の pointerdown で処理する
+    timeline.querySelectorAll<HTMLButtonElement>('.tl-kf').forEach((b) =>
+      b.addEventListener('click', () => seek(Number(b.dataset.tau))),
+    );
     measureTrack();
   }
 
@@ -581,14 +605,20 @@ export function mountMotions(root: HTMLElement): void {
   }
 
   // ---- 全体の更新 ----
-  function rebuild(): void {
+  /**
+   * 組み直し。full = false は相手の条件（盾・姿勢・間隔）だけが変わったとき：
+   * 本人の姿勢に関わるサムネイル・数値表・グラフの縦軸は作り直さない。
+   */
+  function rebuild(full = true): void {
     derive();
     syncControls();
     renderSummary();
-    computeYRange();
     buildTimeline();
-    buildThumbs();
-    buildTable();
+    if (full) {
+      computeYRange();
+      buildThumbs();
+      buildTable();
+    }
     render();
   }
 
@@ -660,20 +690,20 @@ export function mountMotions(root: HTMLElement): void {
   });
   oppSel.addEventListener('change', () => {
     st.oppShield = oppSel.value as ShieldChoice;
-    rebuild();
+    rebuild(false);
   });
   poseSel.addEventListener('change', () => {
     st.oppPose = poseSel.value as OpponentPose;
-    rebuild();
+    rebuild(false);
   });
   gapIn.addEventListener('change', () => {
     const g = Number(gapIn.value);
     if (Number.isFinite(g)) st.gap = clampGap(g);
-    rebuild();
+    rebuild(false);
   });
   $('#gap-reset').addEventListener('click', () => {
     st.gap = defaultGap(st.set);
-    rebuild();
+    rebuild(false);
   });
   speedSel.addEventListener('change', () => {
     st.speed = Number(speedSel.value);
@@ -684,16 +714,18 @@ export function mountMotions(root: HTMLElement): void {
     setPlaying(!st.playing);
   });
   window.addEventListener('keydown', (e) => {
-    // 入力欄・選択欄・チェックボックスの操作は奪わない。ボタンの Space / Enter は押下として扱わせる
+    // 文字・数値の入力欄と選択欄の操作は奪わない。チェックボックスとボタンでは Space / Enter だけ
+    // 本来の操作（切り替え・押下）に任せ、矢印キーなどの操作は使えるようにする
     const t = e.target;
-    if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
-    if (t instanceof HTMLButtonElement && (e.key === ' ' || e.key === 'Enter')) return;
+    const isToggle = t instanceof HTMLInputElement && (t.type === 'checkbox' || t.type === 'range');
+    if ((t instanceof HTMLInputElement && !isToggle) || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
+    if ((isToggle || t instanceof HTMLButtonElement) && (e.key === ' ' || e.key === 'Enter')) return;
     const kfs = st.set.keyframes;
     if (e.key === ' ') playBtn.click();
     else if (e.key === 'ArrowRight') seek(kfs.find((k) => k.t > st.tau + 1e-6)?.t ?? 1);
     else if (e.key === 'ArrowLeft') seek([...kfs].reverse().find((k) => k.t < st.tau - 1e-6)?.t ?? 0);
-    else if (e.key === '.') seek(st.tau + 0.005 / d.dur);
-    else if (e.key === ',') seek(st.tau - 0.005 / d.dur);
+    else if (e.key === '.') seek(st.tau + DT / d.dur);
+    else if (e.key === ',') seek(st.tau - DT / d.dur);
     else if (e.key === 'ArrowDown') $('#next').click();
     else if (e.key === 'ArrowUp') $('#prev').click();
     else return;
@@ -719,9 +751,13 @@ export function mountMotions(root: HTMLElement): void {
     raf = requestAnimationFrame(tick);
   }
 
+  // キャンバスの大きさを変えると中身が消えて作り直しになるため、幅が変わったときだけ行う
+  let lastWidth = -1;
   function resize(): void {
     const dpr = window.devicePixelRatio || 1;
     const w = stage.parentElement!.clientWidth;
+    if (w === lastWidth) return;
+    lastWidth = w;
     const hgt = Math.round(Math.min(520, w * 0.5));
     stage.style.height = `${hgt}px`;
     stage.width = Math.round(w * dpr);
@@ -737,7 +773,7 @@ export function mountMotions(root: HTMLElement): void {
   }
 
   buildLegend();
-  new ResizeObserver(resize).observe(root);
+  new ResizeObserver(resize).observe(stage.parentElement!);
   resize();
   rebuild();
 }
