@@ -1,0 +1,253 @@
+:root {
+  --bg: #15130f;
+  --panel: #201d18;
+  --line: #3a342b;
+  --text: #e9e2d4;
+  --muted: #a39a89;
+  --accent: #d6a24e;
+  --a: #6f9cf0;
+  --b: #f08070;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 system-ui, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 16px 24px;
+  display: grid;
+  gap: 10px;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+.top h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+}
+.top h1 span {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: normal;
+  margin-left: 6px;
+}
+.scenario {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+}
+.summary {
+  margin: 0;
+  color: var(--accent);
+}
+
+select,
+button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+}
+button {
+  min-width: 40px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--muted);
+}
+button.primary {
+  background: var(--accent);
+  color: #1b1408;
+  border-color: var(--accent);
+  min-width: 52px;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  gap: 10px;
+  align-items: start;
+}
+.canvas-wrap {
+  min-width: 0;
+}
+canvas {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.hud {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+.who {
+  margin: 0;
+  font-size: 18px;
+}
+.who-A {
+  color: var(--a);
+}
+.who-B {
+  color: var(--b);
+}
+.bar-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+.bar-head span:last-child {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.bar-track {
+  height: 8px;
+  background: #0e0d0b;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+}
+.hp .bar-fill {
+  background: #c94f43;
+}
+.st .bar-fill {
+  background: #d6a24e;
+}
+.po .bar-fill {
+  background: #6fb07a;
+}
+.act {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 3em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.controls label {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#seek {
+  flex: 1 1 240px;
+  accent-color: var(--accent);
+}
+.time {
+  font-variant-numeric: tabular-nums;
+  min-width: 13ch;
+  text-align: right;
+}
+
+.log {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.log-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.log-filters > span {
+  color: var(--text);
+  font-weight: bold;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+#log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  font-size: 12.5px;
+}
+.ev {
+  display: grid;
+  grid-template-columns: 6ch 6em 1fr;
+  gap: 10px;
+  padding: 2px 10px;
+  color: var(--muted);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.ev:hover {
+  background: #2a261f;
+}
+.ev time {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.ev b {
+  font-weight: normal;
+}
+.ev.past {
+  color: var(--text);
+}
+.ev-A.past b {
+  color: var(--a);
+}
+.ev-B.past b {
+  color: var(--b);
+}
+.ev.current {
+  background: #3a3020;
+  border-left-color: var(--accent);
+}
+
+@media (max-width: 760px) {
+  .stage {
+    grid-template-columns: 1fr 1fr;
+  }
+  .canvas-wrap {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .ev {
+    grid-template-columns: 5ch 1fr;
+  }
+  .ev b {
+    display: none;
+  }
+}
