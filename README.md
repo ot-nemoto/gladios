@@ -27,7 +27,7 @@
 │  ├─ data/           docs/prototype から写したデータ（手で直さない）
 │  ├─ scenarios/      確認用シナリオ（ビューアと Python 一致テストで共用）
 │  ├─ render/         描画（Canvas 2D。今は判定領域をそのまま描く骨格表示、後でドット絵に差し替え）
-│  └─ ui/             画面（今は戦闘ビューア。作戦編集は今後）
+│  └─ ui/             画面（戦闘ビューア、モーション図鑑。作戦編集は今後）
 ├─ tests/             Vitest
 ├─ scripts/           補助スクリプト（sync-data.mjs など）
 └─ docs/
@@ -43,7 +43,7 @@
 
 | コマンド | 内容 |
 |---|---|
-| `npm run dev` | 開発サーバー（戦闘ビューア。Space 再生/停止、←→ 0.1秒送り〔Shift で1秒〕、[ ] 前後のイベント） |
+| `npm run dev` | 開発サーバー。`/` が戦闘ビューア（Space 再生/停止、←→ 0.1秒送り〔Shift で1秒〕、[ ] 前後のイベント）、`/motions.html` がモーション図鑑（88 のキーフレーム一式の姿勢・軌道・段階・最初の接触。←→ キーフレーム間、, . 1ステップ送り、↑↓ 一式の切り替え） |
 | `npm run build` | 型検査＋本番ビルド |
 | `npm test` | テスト |
 | `npm run sync:data` | `docs/prototype/` のデータを `src/data/` へ写す |
@@ -80,7 +80,7 @@
 |---|---|---|
 | `ci.yml` | PR、develop への push | 型検査・テスト・ビルド |
 | `secret-scan.yml` | PR、毎週月曜 | gitleaks で秘密情報の混入を検出（PR は差分、定期は全履歴） |
-| `deploy-github-pages.yml` | develop への push | 戦闘ビューアを GitHub Pages に公開（https://ot-nemoto.github.io/gladios/） |
+| `deploy-github-pages.yml` | develop への push | 戦闘ビューアとモーション図鑑を GitHub Pages に公開（https://ot-nemoto.github.io/gladios/ 、図鑑は `motions.html`） |
 | `auto-pr-to-master.yml` | 毎朝 6:00（JST） | develop → master の PR を作成・更新。含まれる Issue に `enhancement` があれば `bump:minor`、なければ `bump:patch` を付ける |
 | `bump-version.yml` | master 向け PR に bump ラベル | package.json の版を上げてコミット |
 | `release.yml` | master への push | package.json の版でタグと GitHub Release を作る |

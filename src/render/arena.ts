@@ -5,7 +5,8 @@
  * （設計書 §5.4.2「描画も判定と同じ線形補間を使う」）。ドット絵に差し替えるときは
  * このモジュールだけを置き換える。
  */
-import { HEAD_R, regionsOf, type Regions } from '../sim/body';
+import type { Pose } from '../sim/data';
+import { HEAD_R, regionsOf, type BodyRef, type Regions } from '../sim/body';
 import type { Obb, Vec } from '../sim/geometry';
 import type { Frame, GladFrame, LogEvent, Recording } from '../sim/record';
 import type { GladId } from '../sim/sim';
@@ -17,7 +18,7 @@ export interface DrawOptions {
   recentContacts: readonly LogEvent[];
 }
 
-const PALETTE: Record<GladId, { body: string; limb: string; shield: string; label: string }> = {
+export const PALETTE: Record<GladId, { body: string; limb: string; shield: string; label: string }> = {
   A: { body: '#4a78c8', limb: '#3a63ab', shield: '#2c4c86', label: '#9cc0ff' },
   B: { body: '#c8584a', limb: '#a8463a', shield: '#86342c', label: '#ffb0a4' },
 };
@@ -25,7 +26,7 @@ const STEEL = '#d9dde3';
 const VIEW_WIDTH_M = 7.0;
 const ARENA_HALF = 12.0;
 
-interface View {
+export interface View {
   scale: number;
   camX: number;
   groundY: number;
@@ -33,12 +34,17 @@ interface View {
   h: number;
 }
 
-const toPx = (v: View, p: Vec): [number, number] => [
+/** キャンバスの大きさから表示範囲を作る。widthM = 画面の横幅に収める距離（m）。 */
+export function makeView(w: number, h: number, camX: number, widthM: number, groundRatio = 0.82): View {
+  return { w, h, scale: w / widthM, camX, groundY: h * groundRatio };
+}
+
+export const toPx = (v: View, p: Vec): [number, number] => [
   v.w / 2 + (p[0] - v.camX) * v.scale,
   v.groundY - p[1] * v.scale,
 ];
 
-function obbPath(ctx: CanvasRenderingContext2D, v: View, b: Obb): void {
+export function obbPath(ctx: CanvasRenderingContext2D, v: View, b: Obb): void {
   const [cx, cy] = b.centre;
   const [ax, ay] = b.axis;
   const px = -ay;
@@ -64,7 +70,7 @@ function fillObb(ctx: CanvasRenderingContext2D, v: View, b: Obb, fill: string): 
   ctx.fill();
 }
 
-function drawBackground(ctx: CanvasRenderingContext2D, v: View): void {
+export function drawBackground(ctx: CanvasRenderingContext2D, v: View): void {
   const sky = ctx.createLinearGradient(0, 0, 0, v.groundY);
   sky.addColorStop(0, '#1d1a17');
   sky.addColorStop(1, '#3a3127');
@@ -96,17 +102,25 @@ function drawBackground(ctx: CanvasRenderingContext2D, v: View): void {
   }
 }
 
-function drawGladiator(
+export interface BodyDrawOptions {
+  flash?: Flash | null;
+  showRegions?: boolean;
+  /** 頭上に出す文字。 */
+  label?: string | null;
+}
+
+/** 剣闘士1人を、判定領域の図形そのままで描く。 */
+export function drawBody(
   ctx: CanvasRenderingContext2D,
   v: View,
   id: GladId,
-  rec: Recording,
-  f: GladFrame,
-  flash: 'hit' | 'block' | null,
-  showRegions: boolean,
+  body: BodyRef,
+  pose: Pose,
+  opts: BodyDrawOptions = {},
 ): Regions {
-  const body = { ...rec.bodies[id], x: f.x };
-  const { regs, P } = regionsOf(body, f.pose);
+  const flash = opts.flash ?? null;
+  const showRegions = opts.showRegions ?? false;
+  const { regs, P } = regionsOf(body, pose);
   const c = PALETTE[id];
   const hitTint = flash === 'hit' ? '#ffe2a0' : null;
 
@@ -163,17 +177,29 @@ function drawGladiator(
     }
   }
 
-  // 行動ラベル
-  if (f.label) {
-    const [lx] = toPx(v, [f.x, 0]);
+  if (opts.label) {
+    const [lx] = toPx(v, [body.x, 0]);
     const ly = toPx(v, [0, 2.05])[1];
     ctx.font = `${Math.round(Math.max(11, v.scale * 0.075))}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = c.label;
-    const text = f.label.replace(/^[^:：]+[:：]\s*/, '');
-    ctx.fillText((f.holding ? '構え: ' : '') + text, lx, ly);
+    ctx.fillText(opts.label, lx, ly);
   }
   return regs;
+}
+
+function drawGladiator(
+  ctx: CanvasRenderingContext2D,
+  v: View,
+  id: GladId,
+  rec: Recording,
+  f: GladFrame,
+  flash: Flash | null,
+  showRegions: boolean,
+): Regions {
+  // 行動ラベルは「ルール1: 」などの前置きを外して出す
+  const label = f.label ? (f.holding ? '構え: ' : '') + f.label.replace(/^[^:：]+[:：]\s*/, '') : null;
+  return drawBody(ctx, v, id, { ...rec.bodies[id], x: f.x }, f.pose, { flash, showRegions, label });
 }
 
 export type Flash = 'hit' | 'block';
@@ -217,8 +243,7 @@ export function drawFrame(
   opts: DrawOptions,
 ): void {
   const { width: w, height: h } = ctx.canvas;
-  const scale = w / VIEW_WIDTH_M;
-  const v: View = { w, h, scale, camX: (frame.A.x + frame.B.x) / 2, groundY: h * 0.82 };
+  const v = makeView(w, h, (frame.A.x + frame.B.x) / 2, VIEW_WIDTH_M);
   ctx.clearRect(0, 0, w, h);
   drawBackground(ctx, v);
   for (const id of ['A', 'B'] as const) {
