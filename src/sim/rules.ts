@@ -62,6 +62,12 @@ export function totalTimeMult(g: Glad): number {
   return Math.min(2.0, 1.0 * sm * pm);
 }
 
+/** 接近・距離を取るの速さ（m/秒）：1m あたり MOVE_TIME_PER_M 秒を、状態の倍率と脚の負傷で遅くする。 */
+export function moveSpeed(g: Glad): number {
+  const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
+  return 1 / MOVE_TIME_PER_M / mult;
+}
+
 export type TimedAction = 'attack' | 'defence' | 'push' | 'postureRecovery' | 'move';
 
 /**

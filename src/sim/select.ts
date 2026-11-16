@@ -1,6 +1,6 @@
 /** 攻撃対象部位の自動選択（v3.11、v3.37 で防御の薄さを軌道で評価）。 */
-import { COMPAT, KF, PARTS, type Part } from './data';
-import { HEAD_R, fkPoints, interpPose, regionsOf, type Regions } from './body';
+import { COMPAT, KF, PARTS, clampToArena, type Part } from './data';
+import { HEAD_R, fkPoints, interpPose, regionsOf, type BodyRef, type Regions } from './body';
 import { segCircle, segObb, type Obb } from './geometry';
 import type { Glad } from './glad';
 import { injuryDegree } from './rules';
@@ -28,7 +28,7 @@ interface Scan {
  * 一式の軌道を 0〜1 の 241 点で走査し、盾・相手の腕・狙う部位に最初に触れるステップを求める。
  * 部位に触れた時点で打ち切る（それ以降は防御の薄さの評価に影響しない）。
  */
-function scanTrajectory(atk: Glad, setId: string, part: Part, regs: Regions): Scan {
+function scanTrajectory(atk: BodyRef, setId: string, part: Part, regs: Regions): Scan {
   let shieldStep: number | null = null;
   let armStep: number | null = null;
   let partStep: number | null = null;
@@ -65,7 +65,21 @@ function exposureOf(atk: Glad, setId: string, part: Part, scan: Scan): number {
 
 export type PartScores = Record<Part, number | null>;
 
-/** pattern は「武器-攻撃方法-強さ」（例: gladius-slash-normal）。 */
+/**
+ * 一式の基準間合いに立ったときの足裏の位置（v3.44）。基準間合いのない一式は今の位置。
+ * その位置が移動範囲の外なら、移動範囲の端を使う。
+ */
+export function refTargetX(g: Glad, setId: string): number {
+  const ref = KF.get(setId)?.refDistance;
+  if (ref === undefined) return g.x;
+  return clampToArena(g.opp.x - g.facing * ref);
+}
+
+/**
+ * pattern は「武器-攻撃方法-強さ」（例: gladius-slash-normal）。
+ * v3.44：各部位を、その部位を狙う一式の基準間合いに立った場合で採点する（相手の姿勢は判断時点）。
+ * 基準間合いの位置が移動範囲の外なら、移動範囲の端に立った場合で採点する。
+ */
 export function selectPart(g: Glad, pattern: string): { part: Part | null; scores: PartScores } {
   const dfn = g.opp;
   const method = pattern.split('-')[1] as 'slash' | 'thrust';
@@ -73,8 +87,11 @@ export function selectPart(g: Glad, pattern: string): { part: Part | null; score
   const scores = {} as PartScores;
   for (const part of PARTS) {
     const sid = `${pattern}-${part}`;
-    // 足切り（v3.11）：現在の距離でこの一式の軌道が部位に届くか（盾・腕による遮りは届く扱い）
-    const scan = KF.has(sid) ? scanTrajectory(g, sid, part, regs) : null;
+    // 足切り（v3.11 / v3.44）：基準間合いでこの一式の軌道が部位に届くか（盾・腕による遮りは届く扱い）
+    const atRef: BodyRef | null = KF.has(sid)
+      ? { x: refTargetX(g, sid), facing: g.facing, wlen: g.wlen, shieldHalf: g.shieldHalf }
+      : null;
+    const scan = atRef ? scanTrajectory(atRef, sid, part, regs) : null;
     if (scan === null || scan.partStep === null) {
       scores[part] = null;
       continue;
@@ -83,7 +100,8 @@ export function selectPart(g: Glad, pattern: string): { part: Part | null; score
     scores[part] = exposureOf(g, sid, part, scan) * 100 + COMPAT[method][part] * 10 + inj;
   }
   let best: Part | null = null;
-  for (const part of ['torso', 'head', 'arm', 'leg'] as const) {
+  // 同点時の固定順（v3.44 で脚を腕より前に）
+  for (const part of ['torso', 'head', 'leg', 'arm'] as const) {
     const s = scores[part];
     if (s !== null && (best === null || s > scores[best]!)) best = part;
   }

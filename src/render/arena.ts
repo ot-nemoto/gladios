@@ -5,7 +5,7 @@
  * （設計書 §5.4.2「描画も判定と同じ線形補間を使う」）。ドット絵に差し替えるときは
  * このモジュールだけを置き換える。
  */
-import type { Pose } from '../sim/data';
+import { ARENA_HALF, type Pose } from '../sim/data';
 import { HEAD_R, regionsOf, type BodyRef, type Regions } from '../sim/body';
 import type { Obb, Vec } from '../sim/geometry';
 import type { Frame, GladFrame, LogEvent, Recording } from '../sim/record';
@@ -24,7 +24,6 @@ export const PALETTE: Record<GladId, { body: string; limb: string; shield: strin
 };
 const STEEL = '#d9dde3';
 const VIEW_WIDTH_M = 7.0;
-const ARENA_HALF = 12.0;
 
 export interface View {
   scale: number;

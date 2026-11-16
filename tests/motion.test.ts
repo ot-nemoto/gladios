@@ -22,6 +22,8 @@ import { Sim, type SimOptions } from '../src/sim/sim';
  */
 function battleFirstContact(o: SimOptions) {
   const sim = new Sim(o);
+  // ダミーは判断させず、開始位置で構えたまま立たせる（間隔 1.5m 以上だと接近してしまうため。#26）
+  sim.b.decisionAt = Infinity;
   let start: number | null = null;
   let setId: string | null = null;
   let gap = 0;
@@ -53,11 +55,13 @@ const JP: Record<string, string> = { 盾: 'shield', 武器: 'weapon', 腕: 'arm'
 describe('firstContact は戦闘の判定と一致する', () => {
   it.each<[string, SimOptions]>([
     ['斬り胴 → 盾', { policies: { A: 'none', B: 'none' }, passive: ['B'] }],
-    ['斬り脚 → 脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-normal-leg' }, approachUntil: 1.45 }],
     ['突き胴', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-thrust-normal-torso' } }],
-    ['強斬り頭', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-strong-head' } }],
     ['ハスタ突き胴（小盾）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'hasta-thrust-normal-torso' }, equip: { A: { weapon: 'hasta' }, B: { shield: 'small' } } }],
+    ['斬り脚 → 脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-normal-leg' } }],
+    ['強斬り頭', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-strong-head' } }],
+    ['牽制斬り脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-feint-leg' } }],
     ['スィカ斬り脚（パルムラ）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'sica-slash-normal-leg' }, equip: { A: { weapon: 'sica' }, B: { shield: 'parmula' } } }],
+    ['スィカ強斬り頭（小盾）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'sica-slash-strong-head' }, equip: { A: { weapon: 'sica' }, B: { shield: 'small' } } }],
   ])('%s', (_name, o) => {
     const want = battleFirstContact(o);
     const set = kf(want.setId);

@@ -79,7 +79,8 @@
      ],
      "weaponAngle": -9
     }
-   ]
+   ],
+   "refDistance": 1.6
   },
   {
    "id": "gladius-slash-normal-torso",
@@ -159,7 +160,8 @@
      ],
      "weaponAngle": -35
     }
-   ]
+   ],
+   "refDistance": 1.6
   },
   {
    "id": "gladius-slash-strong-torso",
@@ -239,7 +241,8 @@
      ],
      "weaponAngle": -45
     }
-   ]
+   ],
+   "refDistance": 1.6
   },
   {
    "id": "gladius-slash-feint-head",
@@ -319,7 +322,8 @@
      ],
      "weaponAngle": 16
     }
-   ]
+   ],
+   "refDistance": 1.48
   },
   {
    "id": "gladius-slash-normal-head",
@@ -399,7 +403,8 @@
      ],
      "weaponAngle": -5
     }
-   ]
+   ],
+   "refDistance": 1.48
   },
   {
    "id": "gladius-slash-strong-head",
@@ -479,7 +484,8 @@
      ],
      "weaponAngle": -15
     }
-   ]
+   ],
+   "refDistance": 1.48
   },
   {
    "id": "gladius-slash-feint-arm",
@@ -559,7 +565,8 @@
      ],
      "weaponAngle": -14
     }
-   ]
+   ],
+   "refDistance": 1.88
   },
   {
    "id": "gladius-slash-normal-arm",
@@ -639,7 +646,8 @@
      ],
      "weaponAngle": -40
     }
-   ]
+   ],
+   "refDistance": 1.88
   },
   {
    "id": "gladius-slash-strong-arm",
@@ -719,7 +727,8 @@
      ],
      "weaponAngle": -50
     }
-   ]
+   ],
+   "refDistance": 1.88
   },
   {
    "id": "gladius-slash-feint-leg",
@@ -799,7 +808,8 @@
      ],
      "weaponAngle": -27
     }
-   ]
+   ],
+   "refDistance": 1.42
   },
   {
    "id": "gladius-slash-normal-leg",
@@ -879,7 +889,8 @@
      ],
      "weaponAngle": -58
     }
-   ]
+   ],
+   "refDistance": 1.42
   },
   {
    "id": "gladius-slash-strong-leg",
@@ -959,7 +970,8 @@
      ],
      "weaponAngle": -68
     }
-   ]
+   ],
+   "refDistance": 1.42
   },
   {
    "id": "gladius-thrust-feint-torso",
@@ -1039,7 +1051,8 @@
      ],
      "weaponAngle": 0
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-normal-torso",
@@ -1119,7 +1132,8 @@
      ],
      "weaponAngle": -6
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-strong-torso",
@@ -1199,7 +1213,8 @@
      ],
      "weaponAngle": -6
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-feint-head",
@@ -1279,7 +1294,8 @@
      ],
      "weaponAngle": 8
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-normal-head",
@@ -1359,7 +1375,8 @@
      ],
      "weaponAngle": 4
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-strong-head",
@@ -1439,7 +1456,8 @@
      ],
      "weaponAngle": 4
     }
-   ]
+   ],
+   "refDistance": 1.65
   },
   {
    "id": "gladius-thrust-feint-arm",
@@ -1519,7 +1537,8 @@
      ],
      "weaponAngle": -6
     }
-   ]
+   ],
+   "refDistance": 1.9
   },
   {
    "id": "gladius-thrust-normal-arm",
@@ -1599,7 +1618,8 @@
      ],
      "weaponAngle": -12
     }
-   ]
+   ],
+   "refDistance": 1.9
   },
   {
    "id": "gladius-thrust-strong-arm",
@@ -1679,7 +1699,8 @@
      ],
      "weaponAngle": -12
     }
-   ]
+   ],
+   "refDistance": 1.9
   },
   {
    "id": "gladius-thrust-feint-leg",
@@ -1759,7 +1780,8 @@
      ],
      "weaponAngle": -30
     }
-   ]
+   ],
+   "refDistance": 1.55
   },
   {
    "id": "gladius-thrust-normal-leg",
@@ -1839,7 +1861,8 @@
      ],
      "weaponAngle": -46
     }
-   ]
+   ],
+   "refDistance": 1.55
   },
   {
    "id": "gladius-thrust-strong-leg",
@@ -1919,7 +1942,8 @@
      ],
      "weaponAngle": -46
     }
-   ]
+   ],
+   "refDistance": 1.55
   },
   {
    "id": "defence-scutum-block",

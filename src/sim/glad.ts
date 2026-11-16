@@ -15,7 +15,7 @@ import {
   type WeaponName,
 } from './data';
 
-export type ActionKind = 'attack' | 'defence' | 'push' | 'postureRecovery' | 'approach' | 'wait';
+export type ActionKind = 'attack' | 'defence' | 'push' | 'postureRecovery' | 'approach' | 'retreat' | 'wait';
 export type Policy = 'block' | 'evade' | 'deflect' | 'none';
 
 /** 実行中の行動。Python 試作の dict と同じ項目を持つ（種類ごとに使う項目が違う）。 */
@@ -41,7 +41,7 @@ export interface Action {
   phase?: 'enter' | 'hold' | 'exit';
   forHold?: number | null;
   exitStart?: number;
-  // approach
+  // approach / retreat
   travelled?: number;
   until?: number;
 }

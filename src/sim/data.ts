@@ -127,8 +127,16 @@ export const POSTURE_RECOVERY_TIME = 1.2;
 export const MOVE_TIME_PER_M = 0.55;
 /** 攻撃の時間に掛ける武器重量の倍率（v3.24）。 */
 export const attackWeightFactor = (weight: number): number => 0.85 + 0.15 * weight;
-/** 試作の既定の接近先（足裏の間隔、m）。 */
+/** 試作の既定の接近先（足裏の間隔、m）。v3.44 以降は攻撃しない側（ダミー）の接近にだけ使う。 */
 export const DEFAULT_APPROACH_UNTIL = 1.4;
+/** v3.44：足裏の間隔が基準間合い ± この幅の外なら、基準間合いへ移動してから攻撃する（仮置き）。 */
+export const REF_TOLERANCE = 0.02;
+/** 移動範囲の端（原点から ±12m、v3.25）。 */
+export const ARENA_HALF = 12.0;
+/** 位置を移動範囲（±ARENA_HALF）の中に収める。 */
+export const clampToArena = (x: number): number => Math.max(-ARENA_HALF, Math.min(ARENA_HALF, x));
+/** 移動が目標の間隔に達したとみなす浮動小数点の余裕（ごく小さな前進が終わらなくなるのを防ぐ）。 */
+export const GAP_EPS = 1e-9;
 /** 両手持ちの武器は盾を持てない（v3.22）。 */
 export const isTwoHanded = (weapon: WeaponName): boolean => weapon === 'trident';
 export const effectiveShield = (weapon: WeaponName, shield: ShieldName | null): ShieldName | null =>
