@@ -176,6 +176,18 @@ def total_time_mult(g):
     return min(2.0, 1.0 * sm * pm)
 
 
+STRENGTH_JP = {"feint": "牽制", "normal": "通常", "strong": "強"}
+METHOD_JP = {"slash": "斬る", "thrust": "突く"}
+PART_JP = {"torso": "胴体", "leg": "脚", "head": "頭部", "arm": "腕"}
+
+
+def attack_label(set_id):
+    """Display label of an attack set, from its data (e.g. 'デフォルト: 牽制攻撃（突く・脚）').
+    Before this fix, fixed sets were always labelled as a normal slash (#11)."""
+    s = KF[set_id]
+    return f"デフォルト: {STRENGTH_JP[s['strength']]}攻撃（{METHOD_JP[s['method']]}・{PART_JP[s['part']]}）"
+
+
 def move_speed(g):
     """Movement speed (m/s) for approach / retreat: 1 m per 0.55 s, slowed by
     the state time multiplier and by leg injury."""
@@ -579,14 +591,12 @@ class Sim:
                     self.ev("選択", f"{g.id}: 自動選択 [{detail}] → 届く部位なし、接近する")
                     self.start_action(g, "approach", "自動選択: 届く位置まで接近する")
                 else:
-                    method_jp = "斬る" if "-slash-" in pattern else "突く"
-                    label = f"デフォルト: 通常攻撃（{method_jp}・{part_jp[part]}）"
+                    sid = f"{pattern}-{part}"
                     self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {part_jp[part]}")
-                    self._move_or_hold(g, f"{pattern}-{part}", label, "自動選択")
+                    self._move_or_hold(g, sid, attack_label(sid), "自動選択")
             else:
                 sid = self.atk_sets.get(g.id, "gladius-slash-normal-torso")
-                label = f"デフォルト: 通常攻撃（斬る・{part_jp[sid.rsplit('-', 1)[1]]}）"
-                self._move_or_hold(g, sid, label, "固定")
+                self._move_or_hold(g, sid, attack_label(sid), "固定")
         else:
             self.start_action(g, "wait", "体勢崩れ: 待機する")
 

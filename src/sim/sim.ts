@@ -57,6 +57,15 @@ import { cos, radians, sin } from './trig';
 
 export type GladId = 'A' | 'B';
 
+const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
+const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
+
+/** 攻撃一式の表示名（一式のデータから作る。例「デフォルト: 牽制攻撃（突く・脚）」。#11 の修正）。 */
+function attackLabel(setId: string): string {
+  const s = kf(setId);
+  return `デフォルト: ${STRENGTH_JP[s.strength!]}攻撃（${METHOD_JP[s.method!]}・${PART_JP[s.part as Part]}）`;
+}
+
 export interface SimOptions {
   policies: Record<GladId, Policy>;
   cap?: number;
@@ -260,16 +269,13 @@ export class Sim {
           this.ev('選択', `${g.id}: 自動選択 [${detail}] → 届く部位なし、接近する`);
           this.startAction(g, 'approach', '自動選択: 届く位置まで接近する');
         } else {
-          const methodJp = pattern.includes('-slash-') ? '斬る' : '突く';
-          const label = `デフォルト: 通常攻撃（${methodJp}・${PART_JP[part]}）`;
+          const sid = `${pattern}-${part}`;
           this.ev('選択', `${g.id}: 自動選択 [${detail}] → ${PART_JP[part]}`);
-          this.moveOrHold(g, `${pattern}-${part}`, label, '自動選択');
+          this.moveOrHold(g, sid, attackLabel(sid), '自動選択');
         }
       } else {
         const sid = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
-        const part = sid.slice(sid.lastIndexOf('-') + 1) as Part;
-        const label = `デフォルト: 通常攻撃（斬る・${PART_JP[part]}）`;
-        this.moveOrHold(g, sid, label, '固定');
+        this.moveOrHold(g, sid, attackLabel(sid), '固定');
       }
     } else {
       this.startAction(g, 'wait', '体勢崩れ: 待機する');
