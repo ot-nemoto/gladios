@@ -5,17 +5,55 @@
 
 ## 最初に読むもの
 
-1. **設計書（正）**: `files/01_ゲーム企画・基本設計書.md`
+1. **設計書（正）**: `docs/01_ゲーム企画・基本設計書.md`
    - 設計の決定はすべてこの単一ファイルに集約する。分割しない。
    - バージョンはファイル冒頭と §12 の変更履歴で管理する（ファイル名には付けない）。現在の本文バージョンは v3.43。
    - §14 に進捗記録と残作業がある。作業前に必ず本文と §14 を読むこと。
-2. **試作シミュレータ**: `sim_prototype.py`（設計書の戦闘規則の検証用）
-   - 実行: `python3 sim_prototype.py` → 結果は `sim-run-2026-11-15.txt` に出る（ファイル名は固定のまま中身が更新される）。
+2. **試作シミュレータ**: `docs/prototype/sim_prototype.py`（設計書の戦闘規則の検証用）
+   - 実行: `python3 docs/prototype/sim_prototype.py` → 結果は `docs/prototype/sim-run-2026-11-15.txt` に出る（ファイル名は固定のまま中身が更新される）。
    - 確認条件は `check-conditions-v1.md` / `.json`（全能力50の同条件対戦が基準）。
    - キーフレームは `keyframes-full.json`（88セット）が正。生成は `build_keyframes_full.py` 経由（手で直さない。再生成で `refDistance` が保持される）。
    - 個別の確認記録は `check-*.txt`。設計判断の根拠はここにある。
-3. **グラフィックス方針メモ**: `グラフィックス方針メモ.md`（ドット絵制作の方針・手順。設計書とは別文書）
+3. **グラフィックス方針メモ**: `docs/グラフィックス方針メモ.md`（ドット絵制作の方針・手順。設計書とは別文書）
    - PixelLab の API キーは保存されていない。制作を始める前にユーザーに確認すること。
+
+## ディレクトリ構成
+
+```
+/                     Vite + TypeScript のブラウザゲーム本体（package.json はルート）
+├─ src/
+│  ├─ sim/            戦闘判定の中核。DOM・乱数・時計を使わない純粋な TS（決定性を守る層）
+│  │  └─ trig.ts      三角関数の唯一の入口。sim/ では Math.sin 等を直接呼ばない
+│  ├─ data/           docs/prototype から写したデータ（手で直さない）
+│  ├─ scenarios/      確認用シナリオ（ビューアと Python 一致テストで共用）
+│  ├─ render/         描画（Canvas 2D。今は判定領域をそのまま描く骨格表示、後でドット絵に差し替え）
+│  └─ ui/             画面（今は戦闘ビューア。作戦編集は今後）
+├─ tests/             Vitest
+├─ scripts/           補助スクリプト（sync-data.mjs など）
+└─ docs/
+   ├─ 01_ゲーム企画・基本設計書.md
+   ├─ グラフィックス方針メモ.md
+   └─ prototype/      Python 試作・キーフレーム・確認条件・check-*.txt
+```
+
+- 設計書 §14 などに出てくるファイル名（`sim_prototype.py`、`check-*.txt`、`keyframes-full.json` など）は、すべて `docs/prototype/` にある。設計書本文はライブラリの原本と揃えるため、パスの書き換えはしていない。
+- キーフレームと確認条件の正は `docs/prototype/` 側。更新したら `npm run sync:data` で `src/data/` へ写す（ずれはテストで検知される）。
+
+### コマンド
+
+| コマンド | 内容 |
+|---|---|
+| `npm run dev` | 開発サーバー（戦闘ビューア。Space 再生/停止、←→ 0.1秒送り〔Shift で1秒〕、[ ] 前後のイベント） |
+| `npm run build` | 型検査＋本番ビルド |
+| `npm test` | テスト |
+| `npm run sync:data` | `docs/prototype/` のデータを `src/data/` へ写す |
+| `npm run golden` | Python 試作の出力を `tests/golden/sim-prototype.json` に書き出す（TS 移植の正解データ） |
+
+### 実装の約束
+
+- `src/sim/` は決定性を守る。`Math.random`・`Date`・DOM を使わない。三角関数は `trig.ts` 経由（現在は Python 試作と一致させるため標準の Math。環境間の完全一致が要る段階で自前実装に差し替える）。
+- 戦闘の正式な記録はイベントログ（設計書 §5.9）。
+- `src/sim/` は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。試作側の規則を変えたら `npm run sync:data` → `npm run golden` で正解データを更新し、TS 側を合わせる。
 
 ## 進め方の約束（重要）
 

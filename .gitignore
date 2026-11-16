@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+node_modules/
+dist/
+# 試作スクリプトが生成する画像（画像はローカル保管の方針）
+docs/prototype/*.png
+docs/prototype/*.gif
+docs/prototype/*.webp
