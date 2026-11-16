@@ -1,5 +1,16 @@
 /** 状態から導く値（段階・判断レベル・遅延・時間倍率など）。 */
-import { KF, STAGE, STAMINA_MAX, type Part, type Stage } from './data';
+import {
+  DEFENCE_TIME,
+  KF,
+  MOVE_TIME_PER_M,
+  POSTURE_RECOVERY_TIME,
+  PUSH_TIME,
+  STAGE,
+  STAMINA_MAX,
+  attackWeightFactor,
+  type Part,
+  type Stage,
+} from './data';
 import type { Glad, StaminaStageName } from './glad';
 
 export function stageOf(E: number): Stage {
@@ -49,4 +60,35 @@ export function totalTimeMult(g: Glad): number {
   const sm = staminaStage(g)[1];
   const pm = g.posture > 0 && g.posture < 50 ? 1.2 : 1.0;
   return Math.min(2.0, 1.0 * sm * pm);
+}
+
+export type TimedAction = 'attack' | 'defence' | 'push' | 'postureRecovery' | 'move';
+
+/**
+ * 行動の所要時間（秒）。mult は状態による行動時間の倍率（totalTimeMult）。
+ * 戦闘の判定（Sim.startAction）とモーション図鑑で共用する。浮動小数点の結果を試作と
+ * 一致させるため、掛け算の順序は試作のまま（基準時間 × 倍率 × 武器重量の倍率）。
+ * - attack：一式の基準時間（なければ 1.0）
+ * - defence：体勢崩れ中は ×1.5
+ * - move：1m あたり
+ */
+export function actionTime(
+  kind: TimedAction,
+  o: { setId?: string | null; weaponWeight?: number; mult: number; collapsed?: boolean },
+): number {
+  switch (kind) {
+    case 'attack': {
+      const s = o.setId ? KF.get(o.setId) : undefined;
+      const bt = s ? (s.baseTime ?? 1.0) : 1.0;
+      return bt * o.mult * attackWeightFactor(o.weaponWeight ?? 1.0);
+    }
+    case 'defence':
+      return DEFENCE_TIME * o.mult * (o.collapsed ? 1.5 : 1.0);
+    case 'push':
+      return PUSH_TIME * o.mult;
+    case 'postureRecovery':
+      return POSTURE_RECOVERY_TIME * o.mult;
+    case 'move':
+      return MOVE_TIME_PER_M * o.mult;
+  }
 }

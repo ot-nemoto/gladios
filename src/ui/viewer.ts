@@ -25,6 +25,7 @@ export function mountViewer(root: HTMLElement): void {
   root.innerHTML = html`
     <header class="top">
       <h1>gladios <span>戦闘ビューア</span></h1>
+      <nav class="pages"><a href="./" aria-current="page">戦闘ビューア</a><a href="./motions.html">モーション図鑑</a></nav>
       <label class="scenario">確認シナリオ
         <select id="scenario"></select>
       </label>

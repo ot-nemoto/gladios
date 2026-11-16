@@ -12,10 +12,12 @@ import {
   BLOCK_POSTURE,
   BLOCK_STAMINA,
   CONDITIONS,
+  DEFAULT_APPROACH_UNTIL,
   DT,
   HP_LOSS,
   INJ_PTS,
   KF,
+  MOVE_TIME_PER_M,
   PARTS,
   PART_JP,
   PART_MOD,
@@ -24,6 +26,7 @@ import {
   STAMINA_MAX,
   STANCE,
   STRENGTH_CORR,
+  defenceSetId,
   kf,
   type Part,
   type ShieldName,
@@ -31,10 +34,12 @@ import {
 } from './data';
 import { HEAD_R, fkPoints, interpPose, regionsOf } from './body';
 import { pyFixed, pyRound, pySigned } from './format';
-import { segCircle, segObb, segSeg, type Vec } from './geometry';
+import { classifyContact } from './contact';
+import { segCircle, segObb, type Vec } from './geometry';
 import { Glad, applyEquip, type ActionKind, type Policy } from './glad';
 import {
   DETECTION_DELAY,
+  actionTime,
   holdTime,
   injuryDegree,
   judgmentDelay,
@@ -72,12 +77,6 @@ export interface Summary {
   reason: '体力0' | '時間上限';
 }
 
-const DEFENCE_SET_PREFIX: Record<ShieldName | 'none', string> = {
-  scutum: 'defence-scutum-',
-  parmula: 'defence-parmula-',
-  small: 'defence-smallshield-',
-  none: 'defence-weapononly-',
-};
 
 interface StartOpts {
   setId?: string | null;
@@ -118,7 +117,7 @@ export class Sim {
       const g = this.glad(gid);
       applyEquip(g, ov.weapon ?? g.weaponName, 'shield' in ov ? (ov.shield ?? null) : g.shieldName);
     }
-    this.approachUntil = o.approachUntil ?? 1.4;
+    this.approachUntil = o.approachUntil ?? DEFAULT_APPROACH_UNTIL;
     this.passive = new Set(o.passive ?? []);
     this.cap = o.cap ?? 180.0;
     for (const [gid, base] of Object.entries(o.judgment ?? {})) this.glad(gid).judgmentBase = base;
@@ -144,15 +143,14 @@ export class Sim {
     let cost: number;
     if (kind === 'attack') {
       cost = 7 * g.wweight * g.equipMult;
-      const bt = setId !== null && KF.has(setId) ? (kf(setId).baseTime ?? 1.0) : 1.0;
-      const dur = bt * mult * (0.85 + 0.15 * g.wweight);
+      const dur = actionTime('attack', { setId, weaponWeight: g.wweight, mult });
       const armDeg = injuryDegree(g, 'arm');
       const corr = setId ? (STRENGTH_CORR[setId.split('-')[2]!] ?? 0) : 0;
       const P = g.watk + corr - ([0, 5, 15, 30] as const)[armDeg];
       g.action = { kind, set: setId, start: this.t, dur, resolved: false, P, label, holdStart };
     } else if (kind === 'defence') {
       cost = 5 * g.equipMult;
-      const dur = 0.6 * mult * (g.collapsed ? 1.5 : 1.0);
+      const dur = actionTime('defence', { mult, collapsed: g.collapsed });
       const policy = opts.policy ?? 'block';
       g.action = { kind, set: setId ?? 'defence-scutum-block', start: this.t, dur, label, policy };
       if (policy === 'deflect') {
@@ -161,10 +159,10 @@ export class Sim {
       }
     } else if (kind === 'push') {
       cost = 8 * g.equipMult;
-      g.action = { kind, set: 'common-shield-push', start: this.t, dur: 0.8 * mult, label, resolved: false };
+      g.action = { kind, set: 'common-shield-push', start: this.t, dur: actionTime('push', { mult }), label, resolved: false };
     } else if (kind === 'postureRecovery') {
       cost = 3 * g.equipMult;
-      g.action = { kind, set: 'common-posture-recovery', start: this.t, dur: 1.2 * mult, label };
+      g.action = { kind, set: 'common-posture-recovery', start: this.t, dur: actionTime('postureRecovery', { mult }), label };
     } else if (kind === 'approach') {
       cost = 0.0;
       g.action = {
@@ -290,25 +288,13 @@ export class Sim {
     const w2 = Pa0.tip;
     const dAct = dfn.action;
     const defending = dAct !== null && dAct.kind === 'defence';
-    let hit: 'shield' | 'weapon' | Part | null = null;
-    const weaponTouch = defending && segSeg(w1, w2, regs.weapon[0], regs.weapon[1]);
-    if (regs.shield && !a.shieldDown && segObb(w1, w2, regs.shield)) {
-      hit = 'shield';
-    } else if (weaponTouch) {
-      // R1b（v3.40）：武器での受けは攻撃の進行が実行開始印（0.35）以降のみ成立。
-      // それより前の剣同士の接触は構え同士の触れ合いで、攻撃を解決しない
-      if ((this.t - a.start) / a.dur < 0.35) return;
-      hit = 'weapon';
-    } else if (regs.arm.some((r) => segObb(w1, w2, r))) {
-      hit = 'arm';
-    } else if (regs.leg.some((r) => segObb(w1, w2, r))) {
-      hit = 'leg';
-    } else if (segObb(w1, w2, regs.torso)) {
-      hit = 'torso';
-    } else if (segCircle(w1, w2, regs.head, HEAD_R)) {
-      hit = 'head';
-    }
-    if (hit === null) return;
+    const hit = classifyContact(w1, w2, regs, {
+      defending,
+      progress: (this.t - a.start) / a.dur,
+      shieldDown: a.shieldDown,
+    });
+    // 'bind'（R1b）：実行開始印より前の剣同士の接触は構え同士の触れ合いで、攻撃を解決しない
+    if (hit === null || hit === 'bind') return;
     const guard = hit === 'shield' || hit === 'weapon';
     const deflecting = defending && dAct.policy === 'deflect';
 
@@ -494,7 +480,7 @@ export class Sim {
             g.stats.evades += 1;
             g.evadeFor = g.switchFor;
           }
-          const dset = DEFENCE_SET_PREFIX[g.shieldName ?? 'none'] + pol;
+          const dset = defenceSetId(g.shieldName, pol);
           const dlabel = pol === 'evade' ? '回避する' : pol === 'deflect' ? '受け流す' : '受け止める';
           this.startAction(g, 'defence', `防御に切替: ${dlabel}（${prev}から）`, { setId: dset, policy: pol });
         }
@@ -552,7 +538,7 @@ export class Sim {
       // 移動
       if (g.action && g.action.kind === 'approach') {
         const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
-        const speed = 1 / 0.55 / mult;
+        const speed = 1 / MOVE_TIME_PER_M / mult;
         const stepLen = Math.min(speed * DT, Math.max(0.0, Math.abs(g.opp.x - g.x) - 0.35));
         g.x += g.facing * stepLen;
         g.action.travelled! += stepLen;

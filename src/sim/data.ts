@@ -119,6 +119,31 @@ export const SHIELDS: Record<ShieldName, { half: number; def: number; weight: nu
   small: { half: 0.175, def: 20, weight: 0.5 },
 };
 
+/** 行動の基準時間（秒。設計書 7.6、仮置き）。能力・状態の倍率を掛ける前の値。 */
+export const DEFENCE_TIME = 0.6;
+export const PUSH_TIME = 0.8;
+export const POSTURE_RECOVERY_TIME = 1.2;
+/** 移動：1m あたりの時間。 */
+export const MOVE_TIME_PER_M = 0.55;
+/** 攻撃の時間に掛ける武器重量の倍率（v3.24）。 */
+export const attackWeightFactor = (weight: number): number => 0.85 + 0.15 * weight;
+/** 試作の既定の接近先（足裏の間隔、m）。 */
+export const DEFAULT_APPROACH_UNTIL = 1.4;
+/** 両手持ちの武器は盾を持てない（v3.22）。 */
+export const isTwoHanded = (weapon: WeaponName): boolean => weapon === 'trident';
+export const effectiveShield = (weapon: WeaponName, shield: ShieldName | null): ShieldName | null =>
+  isTwoHanded(weapon) ? null : shield;
+
+/** 盾の種類 → 防御一式の ID の接頭辞。 */
+export const DEFENCE_SET_PREFIX: Record<ShieldName | 'none', string> = {
+  scutum: 'defence-scutum-',
+  parmula: 'defence-parmula-',
+  small: 'defence-smallshield-',
+  none: 'defence-weapononly-',
+};
+export const defenceSetId = (shield: ShieldName | null, policy: string): string =>
+  DEFENCE_SET_PREFIX[shield ?? 'none'] + policy;
+
 /** 攻撃威力 P への行動補正（v3.12）。 */
 export const STRENGTH_CORR: Record<string, number> = { feint: -20, normal: 0, strong: 20 };
 
