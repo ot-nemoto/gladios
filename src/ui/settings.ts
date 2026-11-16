@@ -5,6 +5,7 @@
 import {
   CONDITIONS,
   KF,
+  MIX_PUSH_WHILE,
   METHOD_JP,
   PART_JP,
   STRENGTH_JP,
@@ -167,5 +168,5 @@ export const SHIELD_CHOICES: readonly (ShieldName | null)[] = ['scutum', 'parmul
 export const POLICY_CHOICES: readonly Policy[] = ['block', 'deflect', 'evade', 'none'];
 export const POLICY_JP: Record<Policy, string> = { block: '受け止め', deflect: '受け流し', evade: '回避', none: '防御しない' };
 export const ATTACK_JP: Record<AttackMode, string> = { fixed: '固定の一式', auto: '部位を自動選択', none: '攻撃しない' };
-export const PUSH_JP: Record<PushMode, string> = { off: '使わない', push: '押しのみ', mix: '押し＋攻撃（相手の体勢50未満で攻撃）' };
+export const PUSH_JP: Record<PushMode, string> = { off: '使わない', push: '押しのみ', mix: `押し＋攻撃（相手の体勢${MIX_PUSH_WHILE}未満で攻撃）` };
 export { isTwoHanded };

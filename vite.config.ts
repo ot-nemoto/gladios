@@ -20,5 +20,7 @@ export default defineConfig({
   },
   test: {
     include: ['tests/**/*.test.ts'],
+    // 全シナリオの戦闘を走らせるテストが並行すると、既定の 5 秒を超えることがある
+    testTimeout: 30_000,
   },
 });
