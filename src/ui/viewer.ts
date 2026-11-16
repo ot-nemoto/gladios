@@ -104,6 +104,11 @@ export function mountViewer(root: HTMLElement): void {
       case '時間上限':
         summaryEl.textContent = `結果: 決着せず（時間上限、${time}）`;
         break;
+      default: {
+        // 結果の種類が増えたら、ここで型検査が失敗する（表示の追加漏れを防ぐ）
+        const unhandled: never = s.reason;
+        summaryEl.textContent = `結果: ${String(unhandled)}（${time}）`;
+      }
     }
     buildLog();
     setPlaying(false);

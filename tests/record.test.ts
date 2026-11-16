@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import scenarios from '../src/scenarios/check-scenarios.json';
 import { Sim, type SimOptions } from '../src/sim/sim';
 import { frameIndexAt, parseLog, record } from '../src/sim/record';
+import golden from './golden/sim-prototype.json';
 
 const opts = (i: number) => scenarios[i]!.options as SimOptions;
 
@@ -106,7 +107,8 @@ describe('終了の判定（v3.45）', () => {
     expect(step(1, 1).over).toBe(false);
   });
   it('確認シナリオに相打ちで終わるものがある（相打ちの経路が正解データで検証されている）', () => {
-    const draws = scenarios.filter((sc) => new Sim(sc.options as SimOptions).run().summary.reason === '相打ち');
+    // 各シナリオが正解データと一致することは sim-golden.test.ts が確かめるので、ここでは正解データを数えるだけ
+    const draws = golden.scenarios.filter((sc) => sc.summary.reason === '相打ち');
     expect(draws.length).toBeGreaterThan(0);
   });
 });
