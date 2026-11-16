@@ -1,0 +1,32 @@
+# PR と develop への push のたびに、型チェック・テスト・ビルドを走らせる
+# （Biome の lint・整形チェックは #13 で Biome を導入してから追加する）
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+
+# テストとビルドしかしないので、トークンの権限は読み取りだけにする
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # テストは同期の処理なので、無限ループになると vitest の時間の制限では止まらない。ふだんは1分ほどで終わる
+    # （テストは Python 試作の出力を正解データとして tests/golden/ に持つため、CI で Python は不要）
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: 型チェック
+        run: npm run typecheck
+      - name: テスト
+        run: npm test
+      - name: ビルド
+        run: npm run build

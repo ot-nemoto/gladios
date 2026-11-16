@@ -71,7 +71,23 @@
 - **ブランチ**は `develop` から切る。名前は `<種類>/<Issue番号>-<短い説明>`（例: `feature/12-strategy-rules`、`fix/15-approach-overshoot`）。複数 Issue をまとめて扱う場合は代表の内容で名付ける。種類は `feature` / `fix` / `docs` / `chore` / `refactor`。
 - **コミットメッセージ**には対応する Issue 番号を `(#12)` の形で入れる。
 - **PR** は `develop` 向けに出し、本文に `Closes #12` の形で対応する Issue をすべて書いて紐づける（マージで自動クローズされる）。
+- **PR のマージはマージコミット**で行う（squash しない）。master への自動 PR が「Merge pull request #N」から PR と Issue を拾うため。
 - 作業中に見つかった別件は、その場で直さず新しい Issue にする。
+
+## CI・公開・リリース（GitHub Actions）
+
+| ワークフロー | いつ | 何をする |
+|---|---|---|
+| `ci.yml` | PR、develop への push | 型検査・テスト・ビルド |
+| `secret-scan.yml` | PR、毎週月曜 | gitleaks で秘密情報の混入を検出（PR は差分、定期は全履歴） |
+| `deploy-github-pages.yml` | develop への push | 戦闘ビューアを GitHub Pages に公開（https://ot-nemoto.github.io/gladios/） |
+| `auto-pr-to-master.yml` | 毎朝 6:00（JST） | develop → master の PR を作成・更新。含まれる Issue に `enhancement` があれば `bump:minor`、なければ `bump:patch` を付ける |
+| `bump-version.yml` | master 向け PR に bump ラベル | package.json の版を上げてコミット |
+| `release.yml` | master への push | package.json の版でタグと GitHub Release を作る |
+| `dependabot.yml` | 毎週 | npm・devcontainers・GitHub Actions の更新 PR を develop 向けに作る |
+
+- 自動 PR にはリポジトリのシークレット `AUTO_PR_TOKEN`（PR とラベルを操作できるトークン）が必要。
+- gitleaks の版は Dependabot の対象外なので、`secret-scan.yml` の版とチェックサムを手で更新する。
 
 ## 現在の状態（2026-11-16、v3.43）
 
