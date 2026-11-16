@@ -1,7 +1,7 @@
 # 開発ガイド
 
 gladios の開発者向けの情報。アプリでできることは [README](../README.md) を参照。
-エージェント（Claude Code）向けの要点は [CLAUDE.md](../CLAUDE.md) にあり、規則の正はこの文書。この文書の規則を変えたら、CLAUDE.md の要点も合わせて直すこと。
+開発の規則はこの文書だけに書く。[CLAUDE.md](../CLAUDE.md) はこの文書を `@docs/development.md` で取り込むだけなので、エージェント（Claude Code）にもこの文書がそのまま渡る。
 
 ## 設計資料（最初に読むもの）
 
@@ -54,9 +54,10 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 
 ### 実装の約束
 
+- 変更したら `npm run typecheck` と `npm test` を通す。
 - `src/sim/` は決定性を守る。`Math.random`・`Date`・DOM を使わない。三角関数は `trig.ts` 経由（現在は Python 試作と一致させるため標準の Math。環境間の完全一致が要る段階で自前実装に差し替える）。
 - 戦闘の正式な記録はイベントログ（設計書 §5.9）。
-- `src/sim/` の判定本体（`sim.ts` と、それが使う `body` / `contact` / `rules` / `select` など）は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。試作側の規則を変えたら `npm run sync:data` → `npm run golden` で正解データを更新し、TS 側を合わせる。
+- `src/sim/` の判定本体（`sim.ts` と、それが使う `body` / `contact` / `rules` / `select` など）は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。判定の規則を変えるときは、先に Python 試作を直し、`npm run sync:data`（キーフレーム・確認条件を写す）→ `npm run golden`（正解データを作り直す）の後に TS 側を合わせる。
 - `src/sim/record.ts`（リプレイの記録）と `src/sim/motion.ts`（モーション図鑑の計算）は移植ではなく、判定と同じ関数・定数を使う補助。判定と食い違わないよう、接触の分類（`contact.ts`）や行動時間の定数（`data.ts`）は判定と共有し、独自に書き写さない。表示用の名前は `src/ui/` に置く。
 
 ## 設計の進め方の約束（重要）
