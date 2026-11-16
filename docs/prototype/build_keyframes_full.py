@@ -265,12 +265,13 @@ for _s in sets:
             _kf["t"] = THRUST_T[_i]
         _s["markers"] = {"executionStart": 0.30, "finalPhaseStart": 0.70}
 
-# Reference distances (from the swing test, keyframe-swing-test.json): the new
-# weapons' sets carry refDistance so the sim can gate attacks to their proper
-# entry distance. Gladius sets keep the check conditions' distances instead.
+# Reference distances (from the swing test, keyframe-swing-test.json): every
+# attack set carries refDistance, the foot gap it is thrown from. Auto part
+# selection scores each part at its set's refDistance and the attacker moves to
+# it before attacking (design doc v3.44; gladius sets included from v3.44).
 _st = json.loads((OUT / "keyframe-swing-test.json").read_text(encoding="utf-8"))
 for _s in sets:
-    if _s["kind"] == "attack" and _s["weapon"] != "gladius":
+    if _s["kind"] == "attack":
         _nid = _s["id"].replace("-feint-", "-normal-").replace("-strong-", "-normal-")
         _s["refDistance"] = _st[_nid]["ref"]
 (OUT / "keyframes-full.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
