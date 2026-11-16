@@ -8,6 +8,9 @@ import conditionsJson from '../data/check-conditions-v1.json';
 export type Part = 'head' | 'torso' | 'arm' | 'leg';
 export const PARTS: readonly Part[] = ['head', 'torso', 'arm', 'leg'];
 export const PART_JP: Record<Part, string> = { head: '頭部', torso: '胴体', arm: '腕', leg: '脚' };
+/** 攻撃の強さ・攻撃方法の名前（ログの表示名とモーション図鑑で共用）。 */
+export const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
+export const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
 
 export type Stage = '軽微' | '通常' | '重傷' | '致命傷';
 export const STAGE_ORDER: readonly Stage[] = ['軽微', '通常', '重傷', '致命傷'];

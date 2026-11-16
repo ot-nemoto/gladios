@@ -26,8 +26,10 @@ import {
   REF_TOLERANCE,
   STAGE_ORDER,
   STAMINA_MAX,
+  METHOD_JP,
   STANCE,
   STRENGTH_CORR,
+  STRENGTH_JP,
   clampToArena,
   defenceSetId,
   kf,
@@ -57,13 +59,13 @@ import { cos, radians, sin } from './trig';
 
 export type GladId = 'A' | 'B';
 
-const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
-const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
-
 /** 攻撃一式の表示名（一式のデータから作る。例「デフォルト: 牽制攻撃（突く・脚）」。#11 の修正）。 */
-function attackLabel(setId: string): string {
+export function attackLabel(setId: string): string {
   const s = kf(setId);
-  return `デフォルト: ${STRENGTH_JP[s.strength!]}攻撃（${METHOD_JP[s.method!]}・${PART_JP[s.part as Part]}）`;
+  if (s.kind !== 'attack' || !s.strength || !s.method || !s.part) {
+    throw new Error(`not an attack set: ${setId}`);
+  }
+  return `デフォルト: ${STRENGTH_JP[s.strength]}攻撃（${METHOD_JP[s.method]}・${PART_JP[s.part as Part]}）`;
 }
 
 export interface SimOptions {

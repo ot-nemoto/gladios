@@ -185,6 +185,8 @@ def attack_label(set_id):
     """Display label of an attack set, from its data (e.g. 'デフォルト: 牽制攻撃（突く・脚）').
     Before this fix, fixed sets were always labelled as a normal slash (#11)."""
     s = KF[set_id]
+    if s.get("kind") != "attack":
+        raise ValueError(f"not an attack set: {set_id}")
     return f"デフォルト: {STRENGTH_JP[s['strength']]}攻撃（{METHOD_JP[s['method']]}・{PART_JP[s['part']]}）"
 
 
@@ -575,7 +577,6 @@ class Sim:
             else:
                 self.start_action(g, "wait", "ダミー: 待機する（攻撃しない）")
         elif not g.collapsed:
-            part_jp = {"torso": "胴体", "leg": "脚", "head": "頭部", "arm": "腕"}
             push_mode = self.push_users.get(g.id)
             if push_mode and (push_mode == "push" or o.posture >= 50):
                 if dist <= 1.1:
@@ -585,14 +586,14 @@ class Sim:
             elif g.id in self.auto:
                 pattern = self.auto[g.id]
                 part, scores = select_part(g, pattern)
-                detail = " ".join(f"{part_jp[p]}={'届かない' if scores[p] is None else scores[p]}"
+                detail = " ".join(f"{PART_JP[p]}={'届かない' if scores[p] is None else scores[p]}"
                                    for p in ("head", "torso", "arm", "leg"))
                 if part is None:
                     self.ev("選択", f"{g.id}: 自動選択 [{detail}] → 届く部位なし、接近する")
                     self.start_action(g, "approach", "自動選択: 届く位置まで接近する")
                 else:
                     sid = f"{pattern}-{part}"
-                    self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {part_jp[part]}")
+                    self.ev("選択", f"{g.id}: 自動選択 [{detail}] → {PART_JP[part]}")
                     self._move_or_hold(g, sid, attack_label(sid), "自動選択")
             else:
                 sid = self.atk_sets.get(g.id, "gladius-slash-normal-torso")
