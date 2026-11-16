@@ -51,7 +51,7 @@ import {
   staminaStage,
   totalTimeMult,
 } from './rules';
-import { refTargetX, selectPart } from './select';
+import { selectPart } from './select';
 import { cos, radians, sin } from './trig';
 
 export type GladId = 'A' | 'B';
@@ -209,7 +209,7 @@ export class Sim {
   /**
    * v3.44：攻撃は一式の基準間合いから行う。間隔が基準間合い ± REF_TOLERANCE の外なら、
    * 先に移動する（遠ければ接近、近ければ距離を取る）。移動が終わったら作戦を再評価する。
-   * 基準間合いの位置が移動範囲の外なら、今の間隔から攻撃する。
+   * 移動範囲の端に背を付けていて下がれないときは、今の間隔から攻撃する。
    */
   private moveOrHold(g: Glad, sid: string, label: string, prefix: string): void {
     const dist = Math.abs(g.opp.x - g.x);
@@ -219,7 +219,8 @@ export class Sim {
         this.startAction(g, 'approach', `${prefix}: 間合いまで接近する`, { until: refd });
         return;
       }
-      if (refTargetX(g, sid) !== null) {
+      if (g.x * g.facing > -ARENA_HALF + GAP_EPS) {
+        // 下がる余地がある
         this.startAction(g, 'retreat', `${prefix}: 間合いまで距離を取る`, { until: refd });
         return;
       }

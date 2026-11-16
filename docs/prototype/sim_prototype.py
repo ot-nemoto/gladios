@@ -51,7 +51,7 @@ Simplifications (prototype only):
 - Shield region is always present at its carried position when not defending
 - Reference distance (v3.44): every attack set carries refDistance. Auto part
   selection scores each part as if standing at that part's set refDistance
-  (parts whose refDistance cannot be reached inside the arena are excluded),
+  (if that spot is outside the arena, at the arena edge instead),
   and an attacker moves to the chosen set's refDistance (approach if farther,
   retreat if closer, tolerance REF_TOLERANCE) before entering the hold.
   Approach/retreat stop exactly at their target gap (no overshoot). The
@@ -358,12 +358,12 @@ def part_reachable(atk, set_id, part, regs):
 
 def ref_target_x(g, set_id):
     """Where g's feet would be when standing at the set's refDistance from the
-    opponent (v3.44), or None if that spot is outside the arena."""
+    opponent (v3.44). If that spot is outside the arena, the nearest spot inside
+    it (the edge) is used instead."""
     ref = KF[set_id].get("refDistance")
     if ref is None:
         return g.x
-    tx = g.opp.x - g.facing * ref
-    return tx if abs(tx) <= ARENA_HALF else None
+    return max(-ARENA_HALF, min(ARENA_HALF, g.opp.x - g.facing * ref))
 
 
 def select_part(g, pattern):
@@ -375,11 +375,10 @@ def select_part(g, pattern):
     scores = {}
     for part in ("head", "torso", "arm", "leg"):
         sid = f"{pattern}-{part}"
-        tx = ref_target_x(g, sid) if sid in KF else None
-        if tx is None:
+        if sid not in KF:
             scores[part] = None
             continue
-        at_ref = types.SimpleNamespace(x=tx, facing=g.facing, wlen=g.wlen, opp=dfn)
+        at_ref = types.SimpleNamespace(x=ref_target_x(g, sid), facing=g.facing, wlen=g.wlen, opp=dfn)
         if not part_reachable(at_ref, sid, part, regs):
             scores[part] = None
             continue
@@ -526,15 +525,15 @@ class Sim:
     def _move_or_hold(self, g, sid, label, prefix):
         """v3.44: attack from the set's refDistance. Outside +-REF_TOLERANCE,
         move there first (approach if farther, retreat if closer); the plan is
-        re-evaluated when the move ends. If the spot is outside the arena, the
-        attack is held from the current gap."""
+        re-evaluated when the move ends. Backed against the arena edge (no room
+        to retreat), the attack is held from the current gap."""
         dist = abs(g.opp.x - g.x)
         refd = KF[sid].get("refDistance")
         if refd is not None and abs(dist - refd) > REF_TOLERANCE:
             if dist > refd:
                 self.start_action(g, "approach", f"{prefix}: 間合いまで接近する", until=refd)
                 return
-            if ref_target_x(g, sid) is not None:
+            if g.x * g.facing > -ARENA_HALF + GAP_EPS:  # room to back off
                 self.start_action(g, "retreat", f"{prefix}: 間合いまで距離を取る", until=refd)
                 return
         self._enter_hold(g, sid, label)

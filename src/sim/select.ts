@@ -67,19 +67,18 @@ export type PartScores = Record<Part, number | null>;
 
 /**
  * 一式の基準間合いに立ったときの足裏の位置（v3.44）。基準間合いのない一式は今の位置。
- * その位置が移動範囲の外なら null。
+ * その位置が移動範囲の外なら、移動範囲の端を使う。
  */
-export function refTargetX(g: Glad, setId: string): number | null {
+export function refTargetX(g: Glad, setId: string): number {
   const ref = KF.get(setId)?.refDistance;
   if (ref === undefined) return g.x;
-  const tx = g.opp.x - g.facing * ref;
-  return Math.abs(tx) <= ARENA_HALF ? tx : null;
+  return Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.opp.x - g.facing * ref));
 }
 
 /**
  * pattern は「武器-攻撃方法-強さ」（例: gladius-slash-normal）。
  * v3.44：各部位を、その部位を狙う一式の基準間合いに立った場合で採点する（相手の姿勢は判断時点）。
- * 基準間合いへ移動できない部位は候補から外す。
+ * 基準間合いの位置が移動範囲の外なら、移動範囲の端に立った場合で採点する。
  */
 export function selectPart(g: Glad, pattern: string): { part: Part | null; scores: PartScores } {
   const dfn = g.opp;
@@ -89,8 +88,9 @@ export function selectPart(g: Glad, pattern: string): { part: Part | null; score
   for (const part of PARTS) {
     const sid = `${pattern}-${part}`;
     // 足切り（v3.11 / v3.44）：基準間合いでこの一式の軌道が部位に届くか（盾・腕による遮りは届く扱い）
-    const tx = KF.has(sid) ? refTargetX(g, sid) : null;
-    const atRef: BodyRef | null = tx === null ? null : { x: tx, facing: g.facing, wlen: g.wlen, shieldHalf: g.shieldHalf };
+    const atRef: BodyRef | null = KF.has(sid)
+      ? { x: refTargetX(g, sid), facing: g.facing, wlen: g.wlen, shieldHalf: g.shieldHalf }
+      : null;
     const scan = atRef ? scanTrajectory(atRef, sid, part, regs) : null;
     if (scan === null || scan.partStep === null) {
       scores[part] = null;
