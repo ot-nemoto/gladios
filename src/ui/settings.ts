@@ -77,7 +77,12 @@ export function patternLabel(pattern: string): string {
   return `${STRENGTH_JP[strength]}・${METHOD_JP[method]}`;
 }
 
-/** 武器を変えたとき、攻撃一式とパターンをその武器で使えるものに合わせる（攻撃方法・強さ・部位はなるべく保つ）。 */
+/**
+ * 設定を、画面で選べる組み合わせに合わせる。
+ * - 攻撃一式とパターンをその武器で使えるものにする（攻撃方法・強さ・部位はなるべく保つ）
+ * - 両手持ちは盾なし
+ * - 攻撃しない側・盾なしは盾押しを使わない（画面で選べないので、設定からも外す）
+ */
 export function fitToWeapon(g: GladSettings): GladSettings {
   const sets = setsFor(g.weapon);
   const pick = (want: string[]): KeyframeSet => {
@@ -96,7 +101,9 @@ export function fitToWeapon(g: GladSettings): GladSettings {
     const [, method, strength] = pattern.split('-');
     pattern = patterns.find((p) => p.endsWith(`-${method}-${strength}`)) ?? patterns.find((p) => p.endsWith('-normal')) ?? patterns[0]!;
   }
-  return { ...g, set, pattern, shield: effectiveShield(g.weapon, g.shield) };
+  const shield = effectiveShield(g.weapon, g.shield);
+  const push = g.attack === 'none' || shield === null ? 'off' : g.push;
+  return { ...g, set, pattern, shield, push };
 }
 
 /** 確認シナリオの条件 → 画面の設定。 */

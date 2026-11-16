@@ -6,30 +6,60 @@
  * ルールを上から順に評価して最初に当てはまったものを使う、という形はそのまま使える。
  */
 import type { Part } from './data';
-import type { PartScores } from './select';
+import type { StaminaStageName } from './glad';
+import type { PartScores, PartTerms } from './select';
 
 export type TraceGladId = 'A' | 'B';
 
+/**
+ * 行動の決定のルール（確認用の固定分岐。上から順に調べる）。
+ * 条件の文言・しきい値の説明は画面の側（src/ui/decision-panel.ts）で作る。
+ */
+export type RuleId =
+  /** ルール1：体勢 < RECOVER_BELOW なら立て直す。 */
+  | 'recover'
+  /** ルール2：スタミナ段階が「枯渇」なら待機。 */
+  | 'exhausted'
+  /** ルール3：攻撃しない側で、間隔 ≥ DUMMY_APPROACH_FROM なら接近。 */
+  | 'dummyApproach'
+  /** 攻撃しない側は待機。 */
+  | 'dummyWait'
+  /** 体勢崩れ中は待機。 */
+  | 'collapsed'
+  /** 盾押し（押しのみ、または押し＋攻撃で相手の体勢 ≥ MIX_PUSH_WHILE）。 */
+  | 'push'
+  /** デフォルト：攻撃（固定の一式、または部位の自動選択）。 */
+  | 'attack';
+
 /** ルール1つぶんの評価。 */
 export interface RuleEval {
-  /** ルールの名前（例「ルール1: 体勢を立て直す」）。 */
-  name: string;
-  /** 条件（例「体勢 < 50」）。 */
-  condition: string;
-  /** 判断時点の値（例「体勢 42」）。 */
-  value: string;
+  id: RuleId;
   /** matched = 当てはまった（これを使う）、unmatched = 外れた、notReached = 手前で決まったので見ていない。 */
   result: 'matched' | 'unmatched' | 'notReached';
+}
+
+/** 判断時点の、ルールが見る値。 */
+export interface DecisionFacts {
+  posture: number;
+  stamina: number;
+  staminaStage: StaminaStageName;
+  collapsed: boolean;
+  /** 足裏の間隔（m）。 */
+  gap: number;
+  oppPosture: number;
+  push: 'push' | 'mix' | null;
+  /** 攻撃のしかた。 */
+  attack: { kind: 'fixed'; set: string } | { kind: 'auto'; pattern: string };
 }
 
 /** 部位の自動選択（v3.11 / v3.37 / v3.44）。 */
 export interface SelectTrace {
   /** 「武器-攻撃方法-強さ」（例: gladius-slash-normal）。 */
   pattern: string;
-  /** 部位ごとの点数（null は基準間合いで届かない）。点数 = 防御の薄さ×100 + 相性×10 + 負傷。 */
+  /** 部位ごとの点数（null は基準間合いで届かない）。 */
   scores: PartScores;
-  /** 防御の薄さ（0 盾が先、1 腕が先、2 防具のみ、3 露出）。届かない部位は null。 */
-  exposure: Record<Part, number | null>;
+  /** 点数の内訳（防御の薄さ 0 盾が先・1 腕が先・2 防具のみ・3 露出、相性、負傷）。 */
+  terms: PartTerms;
   part: Part | null;
 }
 
@@ -48,6 +78,7 @@ export interface Decision {
   t: number;
   actor: TraceGladId;
   rules: RuleEval[];
+  facts: DecisionFacts;
   /** 選んだ行動（行動開始のログと同じ文言。構えは「構え（…）」）。 */
   action: string;
   select?: SelectTrace;

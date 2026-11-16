@@ -8,9 +8,10 @@ import { DT, HP_MAX, KF, STAMINA_MAX, type Pose } from './data';
 import type { BodyRef } from './body';
 import type { ActionKind, Glad, Policy } from './glad';
 import { Sim, type GladId, type SimOptions, type Summary } from './sim';
+import { phasesOf } from './motion';
 import type { Decision, ReactionPlan, Trace } from './trace';
 
-/** 攻撃の段階（実行開始印・完了直前開始印で区切る。設計書 §5.4）。 */
+/** 攻撃の段階（実行開始印・完了直前開始印で区切る。設計書 §5.4。区切りはモーション図鑑と共通の phasesOf）。 */
 export type AttackStage = '準備' | '実行' | '完了直前';
 
 /** その時点で何をしているか（判断パネルの「今の段階」）。 */
@@ -22,7 +23,15 @@ export type GladStatus =
   /** 寄る・下がる：目標の間隔まで。 */
   | { kind: 'approach' | 'retreat'; gap: number; target: number }
   | { kind: 'attack'; set: string | null; progress: number; dur: number; stage: AttackStage | null }
-  | { kind: 'defence'; set: string | null; policy: Policy; progress: number; phase: 'enter' | 'hold' | 'exit' | null }
+  /** 防御。start は防御を始めた時刻（きっかけの反応の予定と結びつける）。progress は姿勢の進み具合（受け流しの保持中は 0.5 のまま）。 */
+  | {
+      kind: 'defence';
+      set: string | null;
+      policy: Policy;
+      start: number;
+      progress: number;
+      phase: 'enter' | 'hold' | 'exit' | null;
+    }
   | { kind: 'push' | 'postureRecovery'; progress: number; dur: number }
   | { kind: 'wait' };
 
@@ -74,9 +83,10 @@ export interface Recording {
 }
 
 function attackStage(set: string | null, progress: number): AttackStage | null {
-  const m = set !== null ? KF.get(set)?.markers : undefined;
-  if (!m) return null;
-  return progress < m.executionStart ? '準備' : progress < m.finalPhaseStart ? '実行' : '完了直前';
+  const s = set !== null ? KF.get(set) : undefined;
+  const phases = s ? phasesOf(s) : null;
+  if (!phases) return null;
+  return (phases.find((p) => progress < p.to) ?? phases[phases.length - 1]!).name;
 }
 
 function statusOf(g: Glad, t: number): GladStatus {
@@ -91,7 +101,8 @@ function statusOf(g: Glad, t: number): GladStatus {
     case 'attack':
       return { kind: 'attack', set: a.set, progress, dur: a.dur, stage: attackStage(a.set, progress) };
     case 'defence':
-      return { kind: 'defence', set: a.set, policy: a.policy ?? 'block', progress, phase: a.phase ?? null };
+      // 受け流しは「整える → 保持 → 戻る」で時間の進み方が変わるので、姿勢の進み具合（updatePose と同じ）を使う
+      return { kind: 'defence', set: a.set, policy: a.policy ?? 'block', start: a.start, progress: g.poseTau, phase: a.phase ?? null };
     case 'push':
     case 'postureRecovery':
       return { kind: a.kind, progress, dur: a.dur };
@@ -194,6 +205,11 @@ export function lastDecision(rec: Recording, actor: GladId, t: number): Decision
     if (d.actor === actor) found = d;
   }
   return found;
+}
+
+/** その剣闘士が時刻 start に始めた防御のきっかけになった反応の予定（なければ null）。 */
+export function reactionStarting(rec: Recording, actor: GladId, start: number): ReactionPlan | null {
+  return rec.trace.reactions.find((r) => r.actor === actor && r.outcome === 'switched' && r.settledAt === start) ?? null;
 }
 
 /** 時刻 t までに立てた、その剣闘士の最後の反応の予定（なければ null）。 */

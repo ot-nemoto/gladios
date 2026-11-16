@@ -1,5 +1,5 @@
 /** 攻撃対象部位の自動選択（v3.11、v3.37 で防御の薄さを軌道で評価）。 */
-import { COMPAT, KF, PARTS, clampToArena, type Part } from './data';
+import { COMPAT, KF, PARTS, PART_TIE_ORDER, clampToArena, type Part } from './data';
 import { HEAD_R, fkPoints, interpPose, regionsOf, type BodyRef, type Regions } from './body';
 import { segCircle, segObb, type Obb } from './geometry';
 import type { Glad } from './glad';
@@ -65,6 +65,9 @@ function exposureOf(atk: Glad, setId: string, part: Part, scan: Scan): number {
 
 export type PartScores = Record<Part, number | null>;
 
+/** 点数の内訳：点数 = 防御の薄さ×100 + 相性×10 + 負傷。届かない部位は null。 */
+export type PartTerms = Record<Part, { exposure: number; compat: number; injury: number } | null>;
+
 /**
  * 一式の基準間合いに立ったときの足裏の位置（v3.44）。基準間合いのない一式は今の位置。
  * その位置が移動範囲の外なら、移動範囲の端を使う。
@@ -83,13 +86,13 @@ export function refTargetX(g: Glad, setId: string): number {
 export function selectPart(
   g: Glad,
   pattern: string,
-): { part: Part | null; scores: PartScores; exposure: PartScores } {
+): { part: Part | null; scores: PartScores; terms: PartTerms } {
   const dfn = g.opp;
   const method = pattern.split('-')[1] as 'slash' | 'thrust';
   const { regs } = regionsOf(dfn, dfn.pose);
   const scores = {} as PartScores;
-  // 防御の薄さ（判断パネルの表示用。#33）
-  const exposure = {} as PartScores;
+  // 点数の内訳（判断パネルの表示用。#33）
+  const terms = {} as PartTerms;
   for (const part of PARTS) {
     const sid = `${pattern}-${part}`;
     // 足切り（v3.11 / v3.44）：基準間合いでこの一式の軌道が部位に届くか（盾・腕による遮りは届く扱い）
@@ -99,19 +102,20 @@ export function selectPart(
     const scan = atRef ? scanTrajectory(atRef, sid, part, regs) : null;
     if (scan === null || scan.partStep === null) {
       scores[part] = null;
-      exposure[part] = null;
+      terms[part] = null;
       continue;
     }
     const inj = ([0, 1, 1, 2] as const)[injuryDegree(dfn, part)];
-    const exp = exposureOf(g, sid, part, scan);
-    exposure[part] = exp;
-    scores[part] = exp * 100 + COMPAT[method][part] * 10 + inj;
+    const exposure = exposureOf(g, sid, part, scan);
+    const compat = COMPAT[method][part];
+    terms[part] = { exposure, compat, injury: inj };
+    scores[part] = exposure * 100 + compat * 10 + inj;
   }
   let best: Part | null = null;
   // 同点時の固定順（v3.44 で脚を腕より前に）
-  for (const part of ['torso', 'head', 'leg', 'arm'] as const) {
+  for (const part of PART_TIE_ORDER) {
     const s = scores[part];
     if (s !== null && (best === null || s > scores[best]!)) best = part;
   }
-  return { part: best, scores, exposure };
+  return { part: best, scores, terms };
 }

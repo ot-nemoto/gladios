@@ -2,11 +2,21 @@
  * 戦闘ビューアの「判断」パネル（#33）：剣闘士ごとに、今の段階・最後の判断の過程・
  * 狙いの決め方・間合い・相手への反応の予定を表示する。記録（Recording）を読むだけ。
  */
-import { COMPAT, KF, PARTS, PART_JP, type Part } from '../sim/data';
-import { lastDecision, lastReaction, type GladStatus, type Recording } from '../sim/record';
+import {
+  DUMMY_APPROACH_FROM,
+  KF,
+  MIX_PUSH_WHILE,
+  PARTS,
+  PART_JP,
+  PART_TIE_ORDER,
+  PUSH_REACH,
+  RECOVER_BELOW,
+  type Part,
+} from '../sim/data';
+import { lastDecision, lastReaction, reactionStarting, type GladStatus, type Recording } from '../sim/record';
 import { attackLabel, type GladId } from '../sim/sim';
-import type { Decision, ReactionPlan, RuleEval } from '../sim/trace';
-import { POLICY_JP } from './settings';
+import type { Decision, DecisionFacts, ReactionPlan, RuleEval, RuleId } from '../sim/trace';
+import { POLICY_JP, patternLabel } from './settings';
 
 const esc = (s: string): string =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -49,40 +59,78 @@ export function statusText(st: GladStatus, t: number): string {
   }
 }
 
+/** ルールの名前・条件・判断時点の値（しきい値は判定と同じ定数から）。 */
+export function ruleText(id: RuleId, f: DecisionFacts): { name: string; condition: string; value: string } {
+  const gap = `間隔 ${m(f.gap)}`;
+  switch (id) {
+    case 'recover':
+      return { name: 'ルール1: 体勢を立て直す', condition: `体勢 < ${RECOVER_BELOW}`, value: `体勢 ${f.posture.toFixed(1)}` };
+    case 'exhausted':
+      return {
+        name: 'ルール2: 待機する',
+        condition: 'スタミナ段階が「枯渇」',
+        value: `スタミナ ${f.stamina.toFixed(1)}（${f.staminaStage}）`,
+      };
+    case 'dummyApproach':
+      return { name: 'ルール3: 接近する', condition: `攻撃しない側で、間隔 ≥ ${m(DUMMY_APPROACH_FROM)}`, value: gap };
+    case 'dummyWait':
+      return { name: 'ダミー: 待機する', condition: '攻撃しない側', value: '攻撃しない' };
+    case 'collapsed':
+      return { name: '体勢崩れ: 待機する', condition: '体勢崩れ中', value: f.collapsed ? '体勢崩れ' : '崩れていない' };
+    case 'push': {
+      const reach = `${gap}（押せるのは ${m(PUSH_REACH)} 以内）`;
+      return f.push === 'mix'
+        ? {
+            name: '盾押し（押し＋攻撃）',
+            condition: `相手の体勢 ≥ ${MIX_PUSH_WHILE}`,
+            value: `相手の体勢 ${f.oppPosture.toFixed(1)}、${reach}`,
+          }
+        : { name: '盾押し（押しのみ）', condition: 'なし（常に押す）', value: reach };
+    }
+    case 'attack':
+      return {
+        name: 'デフォルト: 攻撃',
+        condition: 'なし（常に当てはまる）',
+        value:
+          f.attack.kind === 'auto'
+            ? `自動選択（${patternLabel(f.attack.pattern)}、部位は自動）`
+            : `固定（${setName(f.attack.set)}）`,
+      };
+  }
+}
+
 function rulesHtml(d: Decision): string {
   return d.rules
-    .map(
-      (r) => `<li class="rule rule-${r.result}" title="${RESULT_JP[r.result]}">
+    .map((r) => {
+      const { name, condition, value } = ruleText(r.id, d.facts);
+      return `<li class="rule rule-${r.result}" title="${RESULT_JP[r.result]}">
         <span class="mark">${RESULT_MARK[r.result]}</span>
-        <span class="rule-name">${esc(r.name)}</span>
-        <span class="rule-cond">${esc(r.condition)}</span>
-        <span class="rule-val">${r.result === 'notReached' ? '' : esc(r.value)}</span>
-      </li>`,
-    )
+        <span class="rule-name">${esc(name)}</span>
+        <span class="rule-cond">${esc(condition)}</span>
+        <span class="rule-val">${r.result === 'notReached' ? '' : esc(value)}</span>
+      </li>`;
+    })
     .join('');
 }
 
 function selectHtml(d: Decision): string {
   const s = d.select;
   if (!s) return '';
-  const method = s.pattern.split('-')[1] as 'slash' | 'thrust';
   const rows = PARTS.map((p: Part) => {
     const score = s.scores[p];
-    const exp = s.exposure[p];
-    if (score === null || exp === null) {
+    const tm = s.terms[p];
+    if (score === null || tm === null) {
       return `<tr class="unreach"><th>${PART_JP[p]}</th><td colspan="4">届かない</td></tr>`;
     }
-    const compat = COMPAT[method][p];
-    const inj = score - exp * 100 - compat * 10;
     return `<tr class="${s.part === p ? 'chosen' : ''}"><th>${PART_JP[p]}</th>
-      <td>${exp}（${EXPOSURE_JP[exp]}）</td><td>${compat}</td><td>${inj}</td><td class="num">${score}</td></tr>`;
+      <td>${tm.exposure}（${EXPOSURE_JP[tm.exposure as 0 | 1 | 2 | 3]}）</td><td>${tm.compat}</td><td>${tm.injury}</td><td class="num">${score}</td></tr>`;
   }).join('');
   const result = s.part === null ? '届く部位なし → 接近する' : `→ ${PART_JP[s.part]}`;
-  return `<h3>狙いの決め方 <span class="muted">自動選択・${esc(s.pattern)}</span></h3>
+  return `<h3>狙いの決め方 <span class="muted">自動選択・${esc(patternLabel(s.pattern))}</span></h3>
     <div class="table-wrap"><table class="scores">
       <thead><tr><th>部位</th><th>防御の薄さ×100</th><th>相性×10</th><th>負傷</th><th>点数</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
-    <p class="note">${result}。点数の高い部位を狙う（同点なら 胴体＞頭部＞脚＞腕）。各部位は、その一式の基準間合いに立った場合で採点する。</p>`;
+    <p class="note">${result}。点数の高い部位を狙う（同点なら ${PART_TIE_ORDER.map((p) => PART_JP[p]).join('＞')}）。各部位は、その一式の基準間合いに立った場合で採点する。</p>`;
 }
 
 function spacingHtml(d: Decision, gapNow: number): string {
@@ -137,10 +185,9 @@ export function decisionPanelHtml(rec: Recording, id: GladId, k: number, policyN
        ${selectHtml(d)}${spacingHtml(d, Math.abs(opp.x - g.x))}`
     : '<h3>判断の過程</h3><p class="muted">最初の判断の前（判断の遅れ）</p>';
   // 防御は判断ではなく相手への反応で始まるので、きっかけを添える
-  const trigger =
-    g.status.kind === 'defence' && plan?.outcome === 'switched' && plan.settledAt! <= f.t
-      ? `<p class="muted">きっかけ：相手の「${esc(plan.cause)}」</p>`
-      : '';
+  // （防御中に相手が次の構えに入ると新しい予定が立つので、最後の予定ではなく、この防御を始めた予定を引く）
+  const cause = g.status.kind === 'defence' ? reactionStarting(rec, id, g.status.start) : null;
+  const trigger = cause ? `<p class="muted">きっかけ：相手の「${esc(cause.cause)}」</p>` : '';
   return `<h2 class="who who-${id}">${id} の判断</h2>
     <h3>今の段階</h3><p class="status">${esc(statusText(g.status, f.t))}</p>${trigger}
     ${decision}

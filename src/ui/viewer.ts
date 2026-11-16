@@ -126,6 +126,8 @@ export function mountViewer(root: HTMLElement): void {
   let lastTs: number | null = null;
   let logItems: HTMLLIElement[] = [];
   let currentLog = -1;
+  /** 判断パネルを最後に作ったフレーム（-1 = 作り直しが要る）。 */
+  let panelFrame = -1;
 
   const endTime = () => rec.frames[rec.frames.length - 1]!.t;
 
@@ -176,7 +178,7 @@ export function mountViewer(root: HTMLElement): void {
       }
       <label>盾押し <select data-field="push"${g.attack === 'none' || g.shield === null ? ' disabled title="攻撃しない側・盾なしは使わない"' : ''}>${opts(
         (['off', 'push', 'mix'] as PushMode[]).map((p) => [p, PUSH_JP[p]]),
-        g.attack === 'none' || g.shield === null ? 'off' : g.push,
+        g.push,
       )}</select></label>
       <label>判断能力 <input data-field="judgment" type="number" min="0" max="100" step="5" value="${g.judgment}" /></label>`;
   }
@@ -207,24 +209,26 @@ export function mountViewer(root: HTMLElement): void {
         g.push = v as PushMode;
         break;
       case 'judgment': {
-        const n = Number(v);
-        if (!Number.isFinite(n)) return;
+        // 空欄や数でない入力（Number('') は 0 になる）は受け付けず、元の値に戻す
+        const n = v.trim() === '' ? NaN : Number(v);
+        if (!Number.isFinite(n)) {
+          el.value = String(settings[id].judgment);
+          return;
+        }
         g.judgment = Math.max(0, Math.min(100, n));
         break;
       }
       default:
         return;
     }
-    const fitted = fitToWeapon(g);
-    // 攻撃しない側・盾なしは盾押しを使わない（画面で選べないので設定からも外す）
-    if (fitted.attack === 'none' || fitted.shield === null) fitted.push = 'off';
-    settings = { ...settings, [id]: fitted };
+    settings = { ...settings, [id]: fitToWeapon(g) };
     changed();
   }
 
   function run(): void {
     rec = record(optionsFromSettings(settings));
     t = 0;
+    panelFrame = -1;
     seek.max = String(endTime());
     const s = rec.summary;
     const time = `${s.time.toFixed(2)}秒`;
@@ -341,7 +345,11 @@ export function mountViewer(root: HTMLElement): void {
     drawFrame(ctx, rec, frame, { showRegions: regionsChk.checked, recentContacts: recentContacts(fi) });
     renderHud('A', frame.A);
     renderHud('B', frame.B);
-    for (const id of GLAD_IDS) dec[id].innerHTML = decisionPanelHtml(rec, id, fi, settings[id].policy === 'none');
+    // 判断パネルはフレームが変わったときだけ作り直す（再生中は毎描画で呼ばれるため）
+    if (fi !== panelFrame) {
+      panelFrame = fi;
+      for (const id of GLAD_IDS) dec[id].innerHTML = decisionPanelHtml(rec, id, fi, settings[id].policy === 'none');
+    }
     seek.value = String(t);
     timeEl.textContent = `${t.toFixed(2)} / ${endTime().toFixed(2)} 秒`;
 
@@ -392,7 +400,7 @@ export function mountViewer(root: HTMLElement): void {
     });
   }
   capInput.addEventListener('change', () => {
-    const n = Number(capInput.value);
+    const n = capInput.value.trim() === '' ? NaN : Number(capInput.value);
     if (!Number.isFinite(n) || n <= 0) {
       capInput.value = String(settings.cap);
       return;

@@ -3,7 +3,9 @@ import scenarios from '../src/scenarios/check-scenarios.json';
 import { pyFixed } from '../src/sim/format';
 import { record, type Recording } from '../src/sim/record';
 import type { SimOptions } from '../src/sim/sim';
-import { decisionPanelHtml, statusText } from '../src/ui/decision-panel';
+import { PARTS } from '../src/sim/data';
+import { decisionPanelHtml, ruleText, statusText } from '../src/ui/decision-panel';
+import { reactionStarting } from '../src/sim/record';
 
 /**
  * 判断の過程（#33）が、ログ（判定の正式な記録）と食い違わないことを確かめる。
@@ -45,8 +47,10 @@ describe('判断の過程の記録', () => {
         const line = rec.log.find((l) => l.startsWith(head(d.t, '選択')) && l.includes(` ${d.actor}: 自動選択`));
         expect(line, name).toBeDefined();
         if (d.select.part !== null) expect(line).toMatch(/→ (頭部|胴体|腕|脚)$/);
-        for (const [p, sc] of Object.entries(d.select.scores)) {
-          expect(sc === null, `${name} ${p}`).toBe(d.select.exposure[p as keyof typeof d.select.exposure] === null);
+        for (const p of PARTS) {
+          const tm = d.select.terms[p];
+          // 内訳は点数の式（防御の薄さ×100 + 相性×10 + 負傷）と合う
+          expect(d.select.scores[p], `${name} ${p}`).toBe(tm === null ? null : tm.exposure * 100 + tm.compat * 10 + tm.injury);
         }
       }
     }
@@ -75,7 +79,66 @@ describe('判断の過程の記録', () => {
   });
 });
 
+describe('今の段階', () => {
+  it('攻撃の段階はモーション図鑑と同じ区切り、防御の進み具合は 0〜1 に収まる', () => {
+    let deflectExit = 0;
+    for (const [name, rec] of recs) {
+      for (const f of rec.frames) {
+        for (const g of [f.A, f.B]) {
+          const st = g.status;
+          if (st.kind === 'attack') expect(st.stage, name).not.toBeNull();
+          if (st.kind === 'defence') {
+            expect(st.progress, name).toBeGreaterThanOrEqual(0);
+            expect(st.progress, name).toBeLessThanOrEqual(1);
+            if (st.phase === 'exit') {
+              deflectExit++;
+              // 受け流しの「戻る」は保持（0.5）の先から進む
+              expect(st.progress, name).toBeGreaterThanOrEqual(0.5);
+            }
+          }
+        }
+      }
+    }
+    expect(deflectExit).toBeGreaterThan(0);
+  });
+
+  it('防御中は、その防御を始めた反応の予定をきっかけとして引ける', () => {
+    let seen = 0;
+    for (const [name, rec] of recs) {
+      for (const f of rec.frames) {
+        for (const id of ['A', 'B'] as const) {
+          const st = f[id].status;
+          if (st.kind !== 'defence') continue;
+          const r = reactionStarting(rec, id, st.start);
+          expect(r, `${name} ${f.t}`).not.toBeNull();
+          seen++;
+        }
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+});
+
 describe('判断パネル', () => {
+  it('ルールの文言は、ルールが見た値から作る', () => {
+    const facts = {
+      posture: 42,
+      stamina: 8,
+      staminaStage: '枯渇' as const,
+      collapsed: false,
+      gap: 1.2,
+      oppPosture: 60,
+      push: 'mix' as const,
+      attack: { kind: 'fixed' as const, set: 'gladius-slash-normal-leg' },
+    };
+    expect(ruleText('recover', facts)).toEqual({ name: 'ルール1: 体勢を立て直す', condition: '体勢 < 50', value: '体勢 42.0' });
+    expect(ruleText('push', facts).value).toBe('相手の体勢 60.0、間隔 1.20m（押せるのは 1.10m 以内）');
+    expect(ruleText('attack', facts).value).toBe('固定（通常攻撃（斬る・脚））');
+    expect(ruleText('attack', { ...facts, attack: { kind: 'auto', pattern: 'gladius-thrust-strong' } }).value).toBe(
+      '自動選択（強・突く、部位は自動）',
+    );
+  });
+
   it('どのシナリオのどの時点でも、パネルの文言に未定義や非数が出ない', () => {
     for (const [name, rec] of recs) {
       const step = Math.max(1, Math.floor(rec.frames.length / 300));

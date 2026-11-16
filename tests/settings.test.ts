@@ -43,6 +43,17 @@ describe('ビューアの設定と判定の入力の変換（#33）', () => {
     expect(sica.set).toBe('sica-slash-strong-head');
   });
 
+  it('攻撃しない側・盾なしの盾押しは、読み込み時に外す（画面で選べない設定を判定に渡さない）', () => {
+    const s = settingsFromOptions({
+      policies: { A: 'block', B: 'block' },
+      passive: ['A'],
+      pushUsers: { A: 'push', B: 'mix' },
+      equip: { B: { shield: null } },
+    });
+    expect([s.A.push, s.B.push]).toEqual(['off', 'off']);
+    expect(optionsFromSettings(s).pushUsers).toEqual({});
+  });
+
   it('どの武器にも攻撃一式と自動選択のパターンがある', () => {
     for (const w of WEAPON_CHOICES) {
       expect(setsFor(w).length, w).toBeGreaterThan(0);

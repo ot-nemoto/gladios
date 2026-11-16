@@ -14,6 +14,11 @@ import {
   ARENA_HALF,
   CONDITIONS,
   DEFAULT_APPROACH_UNTIL,
+  DUMMY_APPROACH_FROM,
+  MIX_PUSH_WHILE,
+  PUSH_APPROACH_TO,
+  PUSH_REACH,
+  RECOVER_BELOW,
   GAP_EPS,
   DT,
   HP_LOSS,
@@ -56,7 +61,7 @@ import {
 } from './rules';
 import { selectPart } from './select';
 import { cos, radians, sin } from './trig';
-import type { Decision, ReactionPlan, RuleEval, SpacingTrace, Trace } from './trace';
+import type { Decision, DecisionFacts, ReactionPlan, RuleId, SpacingTrace, Trace } from './trace';
 
 export type GladId = 'A' | 'B';
 
@@ -75,12 +80,6 @@ export function attackLabel(setId: string): string {
     throw new Error(`not an attack set: ${setId}`);
   }
   return `デフォルト: ${STRENGTH_JP[s.strength]}攻撃（${METHOD_JP[s.method]}・${PART_JP[s.part as Part]}）`;
-}
-
-/** 自動選択のパターンの表示名（例「通常・斬る、部位は自動」）。判断の過程の表示用。 */
-function patternText(pattern: string): string {
-  const [, method, strength] = pattern.split('-') as [string, keyof typeof METHOD_JP, keyof typeof STRENGTH_JP];
-  return `${STRENGTH_JP[strength]}・${METHOD_JP[method]}、部位は自動`;
 }
 
 export interface SimOptions {
@@ -315,73 +314,47 @@ export class Sim {
   /**
    * 試作と同じ固定分岐を、上から順に条件を調べて最初に当てはまったルールを使う形で書く。
    * 分岐の結果は試作の if/elif と同じ（体勢崩れは盾押し・攻撃より先に調べる）。
-   * 調べた条件と値は判断の過程として trace に残す（表示用。#33）。
+   * 調べたルールと、ルールが見た値を判断の過程として trace に残す（表示用。文言は画面の側で作る。#33）。
    */
   private decide(g: Glad): void {
     const o = g.opp;
     const dist = Math.abs(o.x - g.x);
     const gid = g.id as GladId;
-    const stage = staminaStage(g)[0];
     const passive = this.passive.has(g.id);
     const pushMode = this.pushUsers[gid];
     const pattern = this.auto[gid];
     const fixedSet = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
-    const gapText = `間隔 ${dist.toFixed(2)}m`;
-    type Rule = Omit<RuleEval, 'result'> & { hit: boolean; key: string };
-    const rules: Rule[] = [
-      { key: 'recover', name: 'ルール1: 体勢を立て直す', condition: '体勢 < 50', value: `体勢 ${g.posture.toFixed(1)}`, hit: g.posture < 50 },
-      {
-        key: 'exhausted',
-        name: 'ルール2: 待機する',
-        condition: 'スタミナ段階が「枯渇」',
-        value: `スタミナ ${g.stamina.toFixed(1)}（${stage}）`,
-        hit: stage === '枯渇',
-      },
+    const facts: DecisionFacts = {
+      posture: g.posture,
+      stamina: g.stamina,
+      staminaStage: staminaStage(g)[0],
+      collapsed: g.collapsed,
+      gap: dist,
+      oppPosture: o.posture,
+      push: pushMode ?? null,
+      attack: pattern !== undefined ? { kind: 'auto', pattern } : { kind: 'fixed', set: fixedSet },
+    };
+    const rules: [RuleId, boolean][] = [
+      ['recover', g.posture < RECOVER_BELOW],
+      ['exhausted', facts.staminaStage === '枯渇'],
     ];
-    if (passive) {
-      rules.push(
-        { key: 'dummyApproach', name: 'ルール3: 接近する', condition: '攻撃しない側で、間隔 ≥ 1.50m', value: gapText, hit: dist >= 1.5 },
-        { key: 'dummyWait', name: 'ダミー: 待機する', condition: '攻撃しない側', value: '攻撃しない', hit: true },
-      );
-    }
-    rules.push({
-      key: 'collapsed',
-      name: '体勢崩れ: 待機する',
-      condition: '体勢崩れ中',
-      value: g.collapsed ? '体勢崩れ' : '崩れていない',
-      hit: g.collapsed,
-    });
-    if (pushMode) {
-      rules.push({
-        key: 'push',
-        name: pushMode === 'push' ? '盾押し（押しのみ）' : '盾押し（押し＋攻撃）',
-        condition: pushMode === 'push' ? 'なし（常に押す）' : '相手の体勢 ≥ 50',
-        value:
-          (pushMode === 'push' ? '' : `相手の体勢 ${o.posture.toFixed(1)}、`) + `${gapText}（押せるのは 1.10m 以内）`,
-        hit: pushMode === 'push' || o.posture >= 50,
-      });
-    }
-    rules.push({
-      key: 'attack',
-      name: 'デフォルト: 攻撃',
-      condition: 'なし（常に当てはまる）',
-      value: pattern !== undefined ? `自動選択（${patternText(pattern)}）` : `固定（${attackLabel(fixedSet).replace(/^デフォルト: /, '')}）`,
-      hit: true,
-    });
-    const chosen = rules.findIndex((r) => r.hit);
+    if (passive) rules.push(['dummyApproach', dist >= DUMMY_APPROACH_FROM], ['dummyWait', true]);
+    rules.push(['collapsed', g.collapsed]);
+    if (pushMode) rules.push(['push', pushMode === 'push' || o.posture >= MIX_PUSH_WHILE]);
+    rules.push(['attack', true]);
+    const chosen = rules.findIndex(([, hit]) => hit);
     const decision: Decision = {
       t: this.t,
       actor: gid,
-      rules: rules.map(({ name, condition, value }, i) => ({
-        name,
-        condition,
-        value,
+      rules: rules.map(([id], i) => ({
+        id,
         result: i < chosen ? 'unmatched' : i === chosen ? 'matched' : 'notReached',
       })),
+      facts,
       action: '',
     };
 
-    switch (rules[chosen]!.key) {
+    switch (rules[chosen]![0]) {
       case 'recover':
         this.startAction(g, 'postureRecovery', 'ルール1: 体勢を立て直す');
         break;
@@ -399,13 +372,13 @@ export class Sim {
         this.startAction(g, 'wait', '体勢崩れ: 待機する');
         break;
       case 'push':
-        if (dist <= 1.1) this.startAction(g, 'push', '盾押し: 押し込み');
-        else this.startAction(g, 'approach', '盾押し: 押し込む位置まで接近する', { until: 1.05 });
+        if (dist <= PUSH_REACH) this.startAction(g, 'push', '盾押し: 押し込み');
+        else this.startAction(g, 'approach', '盾押し: 押し込む位置まで接近する', { until: PUSH_APPROACH_TO });
         break;
-      default:
+      case 'attack':
         if (pattern !== undefined) {
-          const { part, scores, exposure } = selectPart(g, pattern);
-          decision.select = { pattern, scores, exposure, part };
+          const { part, scores, terms } = selectPart(g, pattern);
+          decision.select = { pattern, scores, terms, part };
           const detail = PARTS.map((p) => `${PART_JP[p]}=${scores[p] === null ? '届かない' : scores[p]}`).join(' ');
           if (part === null) {
             this.ev('選択', `${g.id}: 自動選択 [${detail}] → 届く部位なし、接近する`);
