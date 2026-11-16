@@ -1,74 +1,47 @@
 /**
- * モーション図鑑の計算（キーフレーム一式の時間・段階・軌道・最初の接触）。
+ * モーション図鑑の計算（キーフレーム一式の所要時間・段階・軌道・最初の接触）。
  *
- * 画面から独立した純粋な関数。接触の判定は Sim の contactScan と同じ順序・規則で、
- * 相手が一定の姿勢で立っている場合の「最初の接触」を求める（tests/motion.test.ts で
- * 実際の戦闘の判定と一致することを確認している）。
+ * 判定（sim.ts）と同じ関数・定数を使う補助モジュールで、Python 試作の移植ではない。
+ * 接触の分類は戦闘の判定と共通の classifyContact を使い、所要時間も Sim.startAction と
+ * 同じ定数から求める。表示用の名前は src/ui/motion-labels.ts に置く。
  */
-import { HEAD_R, fkPoints, interpPose, regionsOf, type BodyRef } from './body';
+import { fkPoints, interpPose, regionsOf, type BodyRef } from './body';
+import { classifyContact, type ContactTarget } from './contact';
 import {
+  DEFENCE_SET_PREFIX,
+  DEFENCE_TIME,
   DT,
+  MOVE_TIME_PER_M,
+  POSTURE_RECOVERY_TIME,
+  PUSH_TIME,
   SHIELDS,
   STANCE,
   WEAPONS,
-  kf,
+  attackWeightFactor,
+  defenceSetId,
   type KeyframeSet,
   type Pose,
   type ShieldName,
   type WeaponName,
 } from './data';
-import { segCircle, segObb, segSeg, type Vec } from './geometry';
+import type { Vec } from './geometry';
 
-export const WEAPON_JP: Record<WeaponName, string> = {
-  gladius: 'グラディウス',
-  sica: 'スィカ',
-  pugio: 'プギオ',
-  trident: 'トライデント',
-  hasta: 'ハスタ',
-};
-export const SHIELD_JP: Record<ShieldName | 'none', string> = {
-  scutum: 'スクートゥム',
-  parmula: 'パルムラ',
-  small: '小盾',
-  none: '盾なし',
-};
-const METHOD_JP = { slash: '斬る', thrust: '突く' } as const;
-const STRENGTH_JP = { feint: '牽制', normal: '通常', strong: '強' } as const;
-const PART_JP: Record<string, string> = { head: '頭部', torso: '胴体', arm: '腕', leg: '脚' };
-const POLICY_JP: Record<string, string> = { block: '受け止め', deflect: '受け流し', evade: '回避' };
-const COMMON_JP: Record<string, string> = {
-  'common-advance-1m': '接近（1m）',
-  'common-retreat-1m': '距離を取る（1m）',
-  'common-posture-recovery': '体勢を立て直す',
-  'common-shield-push': '盾の押し込み',
-};
-const DEFENCE_SHIELD: Record<string, ShieldName | null> = {
-  scutum: 'scutum',
-  parmula: 'parmula',
-  smallshield: 'small',
-  weapononly: null,
-};
+export type { ContactTarget } from './contact';
+
+/** 防御一式 ID → 盾（DEFENCE_SET_PREFIX の逆引き）。 */
+const SHIELD_BY_DEFENCE_PREFIX = new Map(
+  (Object.entries(DEFENCE_SET_PREFIX) as [ShieldName | 'none', string][]).map(([shield, prefix]) => [
+    prefix,
+    shield === 'none' ? null : shield,
+  ]),
+);
 
 /** 防御一式の盾と方針（例: defence-parmula-deflect → parmula, deflect）。 */
 export function defenceOf(set: KeyframeSet): { shield: ShieldName | null; policy: string } | null {
-  const m = /^defence-(\w+)-(\w+)$/.exec(set.id);
-  if (!m) return null;
-  return { shield: DEFENCE_SHIELD[m[1]!] ?? null, policy: m[2]! };
-}
-
-/** 一式の日本語名。 */
-export function setLabel(set: KeyframeSet): string {
-  if (set.kind === 'attack') {
-    return [
-      WEAPON_JP[set.weapon as WeaponName],
-      METHOD_JP[set.method!],
-      STRENGTH_JP[set.strength!],
-      PART_JP[set.part!],
-    ].join('・');
+  for (const [prefix, shield] of SHIELD_BY_DEFENCE_PREFIX) {
+    if (set.id.startsWith(prefix)) return { shield, policy: set.id.slice(prefix.length) };
   }
-  const d = defenceOf(set);
-  if (d) return `${SHIELD_JP[d.shield ?? 'none']}・${POLICY_JP[d.policy] ?? d.policy}`;
-  return COMMON_JP[set.id] ?? set.id;
+  return null;
 }
 
 /** その一式を演じる剣闘士の装備。攻撃は一式の武器、防御は一式の盾。 */
@@ -90,24 +63,16 @@ export function bodyRef(weapon: WeaponName, shield: ShieldName | null, x: number
 }
 
 /**
- * 実際の所要時間（秒）。全能力 50・スタミナ余裕・体勢通常のとき（倍率 1.0）。
- * Sim.startAction と同じ式：攻撃は基準時間 ×（0.85 + 0.15 × 武器重量）、防御 0.6、
- * 盾の押し込み 0.8、体勢を立て直す 1.2、移動は 1m あたり 0.55。
+ * 実際の所要時間（秒）。全能力 50・スタミナ余裕・体勢通常のとき（状態の倍率 1.0）。
+ * Sim.startAction と同じ定数：攻撃は基準時間 × 武器重量の倍率、防御・盾の押し込み・
+ * 体勢を立て直すは各基準時間、移動は 1m ぶん。
  */
 export function actionDuration(set: KeyframeSet, weapon: WeaponName): number {
-  if (set.kind === 'attack') return (set.baseTime ?? 1.0) * (0.85 + 0.15 * WEAPONS[weapon].weight);
-  if (set.kind === 'defence') return 0.6;
-  if (set.id === 'common-shield-push') return 0.8;
-  if (set.id === 'common-posture-recovery') return 1.2;
-  return 0.55; // 接近・距離を取る：1m ぶん
-}
-
-/** キーフレームの名前（作成標準 §5.4.2）。 */
-export function keyframeNames(set: KeyframeSet): string[] {
-  const n = set.keyframes.length;
-  if (n === 5) return ['開始', '予備完了', set.method === 'thrust' ? '突き中間' : '振り中間', '到達想定', '終了'];
-  if (set.kind === 'defence') return ['開始', '防御姿勢', '終了'];
-  return set.keyframes.map((_, i) => (i === 0 ? '開始' : i === n - 1 ? '終了' : `中間${i}`));
+  if (set.kind === 'attack') return (set.baseTime ?? 1.0) * attackWeightFactor(WEAPONS[weapon].weight);
+  if (set.kind === 'defence') return DEFENCE_TIME;
+  if (set.id === 'common-shield-push') return PUSH_TIME;
+  if (set.id === 'common-posture-recovery') return POSTURE_RECOVERY_TIME;
+  return MOVE_TIME_PER_M; // 接近・距離を取る：1m ぶん
 }
 
 export interface Phase {
@@ -151,16 +116,6 @@ export function trajectory(set: KeyframeSet, actor: BodyRef, samples = 120): Tra
   return out;
 }
 
-export type ContactTarget = 'shield' | 'weapon' | 'arm' | 'leg' | 'torso' | 'head';
-export const CONTACT_JP: Record<ContactTarget, string> = {
-  shield: '盾',
-  weapon: '武器',
-  arm: '腕',
-  leg: '脚',
-  torso: '胴体',
-  head: '頭部',
-};
-
 export interface Contact {
   /** 何ステップ目（DT 刻み、1 から）で接触したか。 */
   step: number;
@@ -173,9 +128,8 @@ export interface Contact {
 
 /**
  * 攻撃一式が、一定の姿勢で立つ相手に最初に触れる瞬間を求める。
- * 戦闘の判定（Sim.contactScan）と同じ規則：開始姿勢では判定しない（R1）、
- * 盾 → 武器（相手が防御中のみ。実行開始印 0.35 より前は構え同士の触れ合いで解決しない）
- * → 腕 → 脚 → 胴体 → 頭部 の順に、同じステップ内の優先を決める。
+ * 戦闘の判定と同じく、開始姿勢では判定せず（R1）、DT 刻みの各ステップで classifyContact する。
+ * 構え同士の触れ合い（R1b）は解決しないので、その先の接触を探し続ける。
  */
 export function firstContact(
   setId: string,
@@ -189,33 +143,17 @@ export function firstContact(
   for (let step = 1; step * DT < duration; step++) {
     const tau = (step * DT) / duration;
     const P = fkPoints(actor, interpPose(setId, tau));
-    const w1 = P.grip;
-    const w2 = P.tip;
-    let target: ContactTarget | null = null;
-    if (regs.shield && segObb(w1, w2, regs.shield)) target = 'shield';
-    else if (opponentDefending && segSeg(w1, w2, regs.weapon[0], regs.weapon[1])) {
-      if (tau < 0.35) continue; // R1b：構え同士の触れ合い
-      target = 'weapon';
-    } else if (regs.arm.some((r) => segObb(w1, w2, r))) target = 'arm';
-    else if (regs.leg.some((r) => segObb(w1, w2, r))) target = 'leg';
-    else if (segObb(w1, w2, regs.torso)) target = 'torso';
-    else if (segCircle(w1, w2, regs.head, HEAD_R)) target = 'head';
-    if (target) return { step, time: step * DT, tau, target };
+    const target = classifyContact(P.grip, P.tip, regs, { defending: opponentDefending, progress: tau });
+    if (target && target !== 'bind') return { step, time: step * DT, tau, target };
   }
   return null;
 }
 
 export type OpponentPose = 'stance' | 'block' | 'deflect' | 'evade';
-export const OPPONENT_POSE_JP: Record<OpponentPose, string> = {
-  stance: '構え',
-  block: '受け止め（防御姿勢）',
-  deflect: '受け流し（防御姿勢）',
-  evade: '回避（防御姿勢）',
-};
+export const OPPONENT_POSES: readonly OpponentPose[] = ['stance', 'block', 'deflect', 'evade'];
 
 /** 相手の姿勢：構え、または防御一式の防御姿勢（中央のキーフレーム）。 */
 export function opponentPoseOf(pose: OpponentPose, shield: ShieldName | null): { pose: Pose; defending: boolean } {
   if (pose === 'stance') return { pose: { ...STANCE }, defending: false };
-  const prefix = shield === null ? 'weapononly' : shield === 'small' ? 'smallshield' : shield;
-  return { pose: interpPose(kf(`defence-${prefix}-${pose}`).id, 0.5), defending: true };
+  return { pose: interpPose(defenceSetId(shield, pose), 0.5), defending: true };
 }

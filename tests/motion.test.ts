@@ -4,13 +4,13 @@ import {
   actionDuration,
   actorEquipment,
   bodyRef,
+  defenceOf,
   firstContact,
-  keyframeNames,
   opponentPoseOf,
   phasesOf,
-  setLabel,
   trajectory,
 } from '../src/sim/motion';
+import { keyframeNames, setLabel } from '../src/ui/motion-labels';
 import { Sim, type SimOptions } from '../src/sim/sim';
 
 /**
@@ -101,6 +101,18 @@ describe('モーション図鑑の計算', () => {
 
   it('トライデントは両手持ちで盾を持たない', () => {
     expect(actorEquipment(kf('trident-thrust-normal-torso'), 'scutum').shield).toBeNull();
+  });
+
+  it('キーフレーム名：攻撃は作成標準の 5 枚、盾押しは押し、防御は 3 枚', () => {
+    expect(keyframeNames(kf('gladius-thrust-normal-torso'))[2]).toBe('突き中間');
+    expect(keyframeNames(kf('common-shield-push'))).toEqual(['開始', '予備完了', '押し中間', '到達想定', '終了']);
+    expect(keyframeNames(kf('defence-scutum-block'))).toEqual(['開始', '防御姿勢', '終了']);
+  });
+
+  it('防御一式から盾と方針を逆引きできる', () => {
+    expect(defenceOf(kf('defence-smallshield-evade'))).toEqual({ shield: 'small', policy: 'evade' });
+    expect(defenceOf(kf('defence-weapononly-block'))).toEqual({ shield: null, policy: 'block' });
+    expect(defenceOf(kf('common-shield-push'))).toBeNull();
   });
 
   it('相手の防御姿勢は防御一式の中央のキーフレーム', () => {

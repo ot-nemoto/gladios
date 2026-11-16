@@ -3,28 +3,24 @@
  * 計算は src/sim/motion.ts（判定と同じ関数）に任せ、ここは表示と操作だけを持つ。
  */
 import { drawBackground, drawBody, makeView, obbPath, toPx, type View } from '../render/arena';
-import { fkPoints, interpPose, regionsOf, type BodyRef } from '../sim/body';
-import { KF, type KeyframeSet, type Pose, type ShieldName } from '../sim/data';
+import { fkPoints, interpPose, regionsOf, type BodyRef, type Regions } from '../sim/body';
+import { KF, SHIELDS, type KeyframeSet, type Pose, type ShieldName } from '../sim/data';
 import {
-  CONTACT_JP,
-  OPPONENT_POSE_JP,
-  SHIELD_JP,
-  WEAPON_JP,
+  OPPONENT_POSES,
   actionDuration,
   actorEquipment,
   bodyRef,
   defenceOf,
   firstContact,
-  keyframeNames,
   opponentPoseOf,
   phasesOf,
-  setLabel,
   trajectory,
   travelOf,
   type Contact,
   type OpponentPose,
   type Phase,
 } from '../sim/motion';
+import { CONTACT_JP, OPPONENT_POSE_JP, SHIELD_JP, WEAPON_JP, groupOf, keyframeNames, setLabel } from './motion-labels';
 
 const html = String.raw;
 const SETS = [...KF.values()];
@@ -60,23 +56,17 @@ interface State {
   tau: number;
   playing: boolean;
   speed: number;
-  loop: boolean;
-  onion: boolean;
-  trail: boolean;
-  regions: boolean;
-  showOpp: boolean;
 }
 
 const shieldOf = (c: ShieldChoice): ShieldName | null => (c === 'none' ? null : c);
+const isShieldChoice = (v: string | null): v is ShieldChoice => v === 'none' || (v !== null && v in SHIELDS);
+const isOpponentPose = (v: string | null): v is OpponentPose => OPPONENT_POSES.includes(v as OpponentPose);
+const GAP_MIN = 0.35;
+const GAP_MAX = 4;
+const clampGap = (g: number) => Math.max(GAP_MIN, Math.min(GAP_MAX, g));
 /** 既定の間隔：基準間合い、なければ試作の既定の接近先 1.40m。接近は 1m 進んで 1.40m になる位置から。 */
 const defaultGap = (set: KeyframeSet) => set.refDistance ?? (set.id === 'common-advance-1m' ? 2.4 : 1.4);
 const fmt = (x: number, d = 3) => x.toFixed(d);
-
-function groupOf(set: KeyframeSet): string {
-  if (set.kind === 'attack') return `攻撃：${WEAPON_JP[set.weapon as keyof typeof WEAPON_JP]}`;
-  if (set.kind === 'defence') return '防御';
-  return '共通';
-}
 
 export function mountMotions(root: HTMLElement): void {
   root.innerHTML = html`
@@ -163,7 +153,7 @@ export function mountMotions(root: HTMLElement): void {
     mySel.add(new Option(SHIELD_JP[c], c));
     oppSel.add(new Option(SHIELD_JP[c], c));
   }
-  for (const p of Object.keys(OPPONENT_POSE_JP) as OpponentPose[]) poseSel.add(new Option(OPPONENT_POSE_JP[p], p));
+  for (const p of OPPONENT_POSES) poseSel.add(new Option(OPPONENT_POSE_JP[p], p));
   for (const s of SPEEDS) speedSel.add(new Option(`×${s}`, String(s), s === 0.25, s === 0.25));
 
   // ---- 状態（URL のハッシュから復元） ----
@@ -176,11 +166,6 @@ export function mountMotions(root: HTMLElement): void {
     tau: 0,
     playing: false,
     speed: 0.25,
-    loop: true,
-    onion: true,
-    trail: true,
-    regions: false,
-    showOpp: true,
   };
   const h = new URLSearchParams(location.hash.slice(1));
   const hs = h.get('set');
@@ -188,10 +173,12 @@ export function mountMotions(root: HTMLElement): void {
     st.set = KF.get(hs)!;
     st.gap = defaultGap(st.set);
   }
-  if (h.get('gap')) st.gap = Number(h.get('gap'));
-  if (h.get('opp')) st.oppShield = h.get('opp') as ShieldChoice;
-  if (h.get('pose')) st.oppPose = h.get('pose') as OpponentPose;
-  if (h.get('my')) st.myShield = h.get('my') as ShieldChoice;
+  // 古いリンクや手で書き換えた URL でもページが壊れないよう、値を検証してから使う
+  const hg = Number(h.get('gap'));
+  if (h.get('gap') && Number.isFinite(hg)) st.gap = clampGap(hg);
+  if (isShieldChoice(h.get('opp'))) st.oppShield = h.get('opp') as ShieldChoice;
+  if (isOpponentPose(h.get('pose'))) st.oppPose = h.get('pose') as OpponentPose;
+  if (isShieldChoice(h.get('my'))) st.myShield = h.get('my') as ShieldChoice;
 
   // ---- 派生値（一式・条件が変わったときだけ計算し直す） ----
   interface Derived {
@@ -200,6 +187,7 @@ export function mountMotions(root: HTMLElement): void {
     actor: BodyRef;
     opp: BodyRef;
     oppPose: Pose;
+    oppRegs: Regions;
     oppDefending: boolean;
     phases: Phase[] | null;
     names: string[];
@@ -222,6 +210,7 @@ export function mountMotions(root: HTMLElement): void {
       actor,
       opp,
       oppPose: op.pose,
+      oppRegs: regionsOf(opp, op.pose).regs,
       oppDefending: op.defending,
       phases: phasesOf(set),
       names: keyframeNames(set),
@@ -292,18 +281,18 @@ export function mountMotions(root: HTMLElement): void {
     drawBackground(ctx, v);
 
     // 相手
-    if (st.showOpp) {
+    if (checks.showOpp.checked) {
       const flash =
         d.contact && st.tau >= d.contact.tau && st.tau <= d.contact.tau + 0.15 / d.dur
           ? d.contact.target === 'shield' || d.contact.target === 'weapon'
             ? 'block'
             : 'hit'
           : null;
-      drawBody(ctx, v, 'B', d.opp, d.oppPose, { flash, showRegions: st.regions, label: `相手：${OPPONENT_POSE_JP[st.oppPose]}` });
+      drawBody(ctx, v, 'B', d.opp, d.oppPose, { flash, showRegions: checks.regions.checked, label: `相手：${OPPONENT_POSE_JP[st.oppPose]}` });
     }
 
     // 残像（各キーフレームの姿勢）
-    if (st.onion) {
+    if (checks.onion.checked) {
       ctx.save();
       ctx.globalAlpha = 0.16;
       st.set.keyframes.forEach((k, i) => drawBody(ctx, v, 'A', actorAt(k.t), d.kfPoses[i]!));
@@ -311,7 +300,7 @@ export function mountMotions(root: HTMLElement): void {
     }
 
     // 軌道（剣先は段階で色分け、握りは細い線）
-    if (st.trail) {
+    if (checks.trail.checked) {
       const lw = Math.max(1.5, v.scale * 0.012);
       for (let i = 1; i < d.traj.length; i++) {
         const a = d.traj[i - 1]!;
@@ -366,15 +355,12 @@ export function mountMotions(root: HTMLElement): void {
 
     // 本人（現在の姿勢）
     const pose = interpPose(st.set.id, st.tau);
-    drawBody(ctx, v, 'A', actorAt(st.tau), pose, { showRegions: st.regions, label: setLabel(st.set) });
-    if (st.regions && st.showOpp) {
+    drawBody(ctx, v, 'A', actorAt(st.tau), pose, { showRegions: checks.regions.checked, label: setLabel(st.set) });
+    if (checks.regions.checked && checks.showOpp.checked && d.oppRegs.shield) {
       // 相手の判定領域は drawBody が描く。盾の輪郭だけ強調
-      const { regs } = regionsOf(d.opp, d.oppPose);
-      if (regs.shield) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        obbPath(ctx, v, regs.shield);
-        ctx.stroke();
-      }
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      obbPath(ctx, v, d.oppRegs.shield);
+      ctx.stroke();
     }
   }
 
@@ -410,24 +396,20 @@ export function mountMotions(root: HTMLElement): void {
       <div class="tl-label">秒</div><div class="tl-track ticks">${ticks.join('')}</div>
       <div class="tl-head" id="tl-head"></div>
     `;
-    timeline.querySelectorAll<HTMLButtonElement>('.tl-kf').forEach((b) =>
-      b.addEventListener('click', (e) => {
-        e.stopPropagation();
-        seek(Number(b.dataset.tau));
-      }),
-    );
+    measureTrack();
   }
 
-  function trackRect(): DOMRect {
-    return timeline.querySelector('.tl-track')!.getBoundingClientRect();
+  // トラックの位置は、組み直し・大きさの変更のときだけ測る（毎フレームのレイアウト計算を避ける）
+  let track = { left: 0, width: 1, offset: 0 };
+  function measureTrack(): void {
+    const r = timeline.querySelector('.tl-track')?.getBoundingClientRect();
+    if (!r) return;
+    track = { left: r.left, width: Math.max(1, r.width), offset: r.left - timeline.getBoundingClientRect().left };
   }
 
   function updatePlayhead(): void {
     const head = timeline.querySelector<HTMLElement>('#tl-head');
-    if (!head) return;
-    const r = trackRect();
-    const t0 = timeline.getBoundingClientRect();
-    head.style.left = `${r.left - t0.left + st.tau * r.width}px`;
+    if (head) head.style.left = `${track.offset + st.tau * track.width}px`;
   }
 
   // ---- サムネイル ----
@@ -621,7 +603,16 @@ export function mountMotions(root: HTMLElement): void {
 
   function seek(tau: number): void {
     st.tau = Math.max(0, Math.min(1, tau));
-    st.playing = false;
+    setPlaying(false);
+  }
+
+  /** 再生中だけアニメーションのフレームを回す（停止中は何もしない）。 */
+  let raf = 0;
+  function setPlaying(p: boolean): void {
+    st.playing = p;
+    lastTs = null;
+    cancelAnimationFrame(raf);
+    if (p) raf = requestAnimationFrame(tick);
     render();
   }
 
@@ -635,18 +626,28 @@ export function mountMotions(root: HTMLElement): void {
   // タイムラインのクリック・ドラッグでシーク
   let dragging = false;
   const seekFromPointer = (e: PointerEvent) => {
-    const r = trackRect();
-    seek((e.clientX - r.left) / r.width);
+    measureTrack(); // スクロール後でも位置がずれないよう、操作の開始時に測り直す
+    seek((e.clientX - track.left) / track.width);
   };
   timeline.addEventListener('pointerdown', (e) => {
+    // キーフレームの番号はその時刻へ正確に飛ぶ（ドラッグは始めない）
+    const kfBtn = (e.target as HTMLElement).closest<HTMLElement>('.tl-kf');
+    if (kfBtn) {
+      seek(Number(kfBtn.dataset.tau));
+      return;
+    }
     dragging = true;
     timeline.setPointerCapture(e.pointerId);
     seekFromPointer(e);
   });
-  timeline.addEventListener('pointermove', (e) => dragging && seekFromPointer(e));
-  timeline.addEventListener('pointerup', () => {
-    dragging = false;
+  timeline.addEventListener('pointermove', (e) => {
+    if (dragging) seek((e.clientX - track.left) / track.width);
   });
+  const endDrag = () => {
+    dragging = false;
+  };
+  timeline.addEventListener('pointerup', endDrag);
+  timeline.addEventListener('pointercancel', endDrag);
 
   // ---- 操作 ----
   const idx = () => SETS.indexOf(st.set);
@@ -667,7 +668,7 @@ export function mountMotions(root: HTMLElement): void {
   });
   gapIn.addEventListener('change', () => {
     const g = Number(gapIn.value);
-    if (Number.isFinite(g)) st.gap = Math.max(0.35, Math.min(4, g));
+    if (Number.isFinite(g)) st.gap = clampGap(g);
     rebuild();
   });
   $('#gap-reset').addEventListener('click', () => {
@@ -677,20 +678,16 @@ export function mountMotions(root: HTMLElement): void {
   speedSel.addEventListener('change', () => {
     st.speed = Number(speedSel.value);
   });
-  for (const [k, el] of Object.entries(checks)) {
-    el.addEventListener('change', () => {
-      (st as unknown as Record<string, boolean>)[k] = el.checked;
-      render();
-    });
-  }
+  for (const el of Object.values(checks)) el.addEventListener('change', render);
   playBtn.addEventListener('click', () => {
     if (!st.playing && st.tau >= 1) st.tau = 0;
-    st.playing = !st.playing;
-    lastTs = null;
-    render();
+    setPlaying(!st.playing);
   });
   window.addEventListener('keydown', (e) => {
-    if (e.target instanceof HTMLSelectElement || (e.target instanceof HTMLInputElement && e.target.type === 'number')) return;
+    // 入力欄・選択欄・チェックボックスの操作は奪わない。ボタンの Space / Enter は押下として扱わせる
+    const t = e.target;
+    if (t instanceof HTMLInputElement || t instanceof HTMLSelectElement || t instanceof HTMLTextAreaElement) return;
+    if (t instanceof HTMLButtonElement && (e.key === ' ' || e.key === 'Enter')) return;
     const kfs = st.set.keyframes;
     if (e.key === ' ') playBtn.click();
     else if (e.key === 'ArrowRight') seek(kfs.find((k) => k.t > st.tau + 1e-6)?.t ?? 1);
@@ -705,21 +702,21 @@ export function mountMotions(root: HTMLElement): void {
 
   let lastTs: number | null = null;
   function tick(ts: number): void {
-    if (st.playing) {
-      if (lastTs !== null) {
-        st.tau += ((ts - lastTs) / 1000) * (st.speed / d.dur);
-        if (st.tau >= 1) {
-          if (checks.loop.checked) st.tau %= 1;
-          else {
-            st.tau = 1;
-            st.playing = false;
-          }
+    if (!st.playing) return;
+    if (lastTs !== null) {
+      st.tau += ((ts - lastTs) / 1000) * (st.speed / d.dur);
+      if (st.tau >= 1) {
+        if (checks.loop.checked) st.tau %= 1;
+        else {
+          st.tau = 1;
+          setPlaying(false);
+          return;
         }
       }
-      lastTs = ts;
-      render();
-    } else lastTs = null;
-    requestAnimationFrame(tick);
+    }
+    lastTs = ts;
+    render();
+    raf = requestAnimationFrame(tick);
   }
 
   function resize(): void {
@@ -733,12 +730,14 @@ export function mountMotions(root: HTMLElement): void {
     chart.style.height = '220px';
     chart.width = Math.round(cw * dpr);
     chart.height = Math.round(220 * dpr);
-    if (d) render();
+    if (d) {
+      measureTrack();
+      render();
+    }
   }
 
   buildLegend();
   new ResizeObserver(resize).observe(root);
   resize();
   rebuild();
-  requestAnimationFrame(tick);
 }

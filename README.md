@@ -53,7 +53,8 @@
 
 - `src/sim/` は決定性を守る。`Math.random`・`Date`・DOM を使わない。三角関数は `trig.ts` 経由（現在は Python 試作と一致させるため標準の Math。環境間の完全一致が要る段階で自前実装に差し替える）。
 - 戦闘の正式な記録はイベントログ（設計書 §5.9）。
-- `src/sim/` は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。試作側の規則を変えたら `npm run sync:data` → `npm run golden` で正解データを更新し、TS 側を合わせる。
+- `src/sim/` の判定本体（`sim.ts` と、それが使う `body` / `contact` / `rules` / `select` など）は Python 試作 `sim_prototype.py` の忠実な移植で、`src/scenarios/check-scenarios.json` の全シナリオでログ・結果・最終状態が Python と完全一致することをテストで確認している。試作側の規則を変えたら `npm run sync:data` → `npm run golden` で正解データを更新し、TS 側を合わせる。
+- `src/sim/record.ts`（リプレイの記録）と `src/sim/motion.ts`（モーション図鑑の計算）は移植ではなく、判定と同じ関数・定数を使う補助。判定と食い違わないよう、接触の分類（`contact.ts`）や行動時間の定数（`data.ts`）は判定と共有し、独自に書き写さない。表示用の名前は `src/ui/` に置く。
 
 ## 進め方の約束（重要）
 
