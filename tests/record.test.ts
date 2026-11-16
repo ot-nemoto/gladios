@@ -84,3 +84,29 @@ describe('レビュー指摘の回帰テスト', () => {
     expect(ev.map((e) => e.actor)).toEqual(['A', 'A', 'B', 'B', 'A']);
   });
 });
+
+describe('終了の判定（v3.45）', () => {
+  const step = (hpA: number, hpB: number) => {
+    const sim = new Sim({ policies: { A: 'none', B: 'none' }, passive: ['A', 'B'] });
+    sim.a.hp = hpA;
+    sim.b.hp = hpB;
+    sim.step();
+    return { over: sim.over, summary: sim.summary, last: sim.log[sim.log.length - 1] };
+  };
+  it('同じ刻みで両者の体力が 0 以下なら相打ち（引き分け）', () => {
+    const r = step(-6, 0);
+    expect(r.summary).toEqual({ winner: null, time: 0, reason: '相打ち' });
+    expect(r.last).toContain('両者の体力が0。相打ち（引き分け）');
+  });
+  it('片方だけなら、もう片方の勝ち（A・B どちらでも）', () => {
+    expect(step(0, 50).summary).toEqual({ winner: 'B', time: 0, reason: '体力0' });
+    expect(step(50, -1).summary).toEqual({ winner: 'A', time: 0, reason: '体力0' });
+  });
+  it('両者に体力が残っていれば続く', () => {
+    expect(step(1, 1).over).toBe(false);
+  });
+  it('確認シナリオに相打ちで終わるものがある（相打ちの経路が正解データで検証されている）', () => {
+    const draws = scenarios.filter((sc) => new Sim(sc.options as SimOptions).run().summary.reason === '相打ち');
+    expect(draws.length).toBeGreaterThan(0);
+  });
+});
