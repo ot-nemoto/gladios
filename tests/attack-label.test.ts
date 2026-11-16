@@ -14,10 +14,20 @@ describe('attackLabel', () => {
     expect(attackLabel(id)).toBe(want);
   });
 
-  it('全 72 の攻撃一式で、表示名に undefined が入らない', () => {
+  it('すべての攻撃一式で、表示名が一式の強さ・攻撃方法・部位と一致する', () => {
     const attacks = [...KF.values()].filter((s) => s.kind === 'attack');
-    expect(attacks).toHaveLength(72);
-    for (const s of attacks) expect(attackLabel(s.id)).not.toMatch(/undefined/);
+    expect(attacks.length).toBeGreaterThan(0);
+    const STR: Record<string, string> = { feint: '牽制', normal: '通常', strong: '強' };
+    const MET: Record<string, string> = { slash: '斬る', thrust: '突く' };
+    const PRT: Record<string, string> = { head: '頭部', torso: '胴体', arm: '腕', leg: '脚' };
+    for (const s of attacks) {
+      expect(attackLabel(s.id), s.id).toBe(`デフォルト: ${STR[s.strength!]}攻撃（${MET[s.method!]}・${PRT[s.part!]}）`);
+    }
+  });
+
+  it('攻撃の指定が誤っていれば、戦闘を始める前にエラーにする', () => {
+    expect(() => new Sim({ policies: { A: 'none', B: 'none' }, atkSets: { A: 'defence-scutum-block' } })).toThrow(/not an attack set/);
+    expect(() => new Sim({ policies: { A: 'none', B: 'none' }, auto: { A: 'gladius-slash-mega' } })).toThrow(/unknown attack pattern/);
   });
 
   it('攻撃以外の一式はエラーにする（Python 試作も同じ）', () => {

@@ -62,7 +62,15 @@ export type GladId = 'A' | 'B';
 /** 攻撃一式の表示名（一式のデータから作る。例「デフォルト: 牽制攻撃（突く・脚）」。#11 の修正）。 */
 export function attackLabel(setId: string): string {
   const s = kf(setId);
-  if (s.kind !== 'attack' || !s.strength || !s.method || !s.part) {
+  if (
+    s.kind !== 'attack' ||
+    !s.strength ||
+    !Object.hasOwn(STRENGTH_JP, s.strength) ||
+    !s.method ||
+    !Object.hasOwn(METHOD_JP, s.method) ||
+    !s.part ||
+    !Object.hasOwn(PART_JP, s.part)
+  ) {
     throw new Error(`not an attack set: ${setId}`);
   }
   return `デフォルト: ${STRENGTH_JP[s.strength]}攻撃（${METHOD_JP[s.method]}・${PART_JP[s.part as Part]}）`;
@@ -130,6 +138,13 @@ export class Sim {
     this.b.opp = this.a;
     this.policies = o.policies;
     this.atkSets = o.atkSets ?? {};
+    // 攻撃の指定は、戦闘を始める前に確かめる（途中でエラーにしない）
+    for (const sid of Object.values(this.atkSets)) if (sid !== undefined) attackLabel(sid);
+    for (const pattern of Object.values(o.auto ?? {})) {
+      if (pattern !== undefined && !PARTS.some((p) => KF.has(`${pattern}-${p}`))) {
+        throw new Error(`unknown attack pattern: ${pattern}`);
+      }
+    }
     this.auto = o.auto ?? {};
     this.pushUsers = o.pushUsers ?? {};
     for (const [gid, ov] of Object.entries(o.armour ?? {})) Object.assign(this.glad(gid).armour, ov);

@@ -449,6 +449,12 @@ class Sim:
         self.a.opp, self.b.opp = self.b, self.a
         self.policies = defence_policies  # {id: "block" | "none"}
         self.atk_sets = atk_sets or {}
+        # validate attack choices before the bout starts (not mid-run)
+        for sid in self.atk_sets.values():
+            attack_label(sid)
+        for pattern in (auto or {}).values():
+            if not any(f"{pattern}-{p}" in KF for p in ("head", "torso", "arm", "leg")):
+                raise ValueError(f"unknown attack pattern: {pattern}")
         self.auto = auto or {}  # {id: set pattern e.g. "gladius-slash-normal"} -> v3.11 auto selection
         self.push_users = push_users or {}  # {id: "push" (push only) | "mix" (push until opp posture < 50)}
         for gid, ov in (armour or {}).items():
