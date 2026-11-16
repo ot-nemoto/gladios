@@ -21,6 +21,7 @@ import {
   PART_MOD,
   POSTURE_LOSS,
   STAGE_ORDER,
+  STAMINA_MAX,
   STANCE,
   STRENGTH_CORR,
   kf,
@@ -559,12 +560,12 @@ export class Sim {
       }
       // 行動していない間の回復
       if (g.action === null) {
-        g.stamina = Math.min(100.0, g.stamina + 5 * DT);
+        g.stamina = Math.min(STAMINA_MAX, g.stamina + 5 * DT);
         g.posture = Math.min(100.0, g.posture + 10 * DT);
       }
       if (g.action && g.action.kind === 'wait') {
         const rec = 10 * ([1.0, 0.8, 0.6, 0.4] as const)[injuryDegree(g, 'torso')];
-        g.stamina = Math.min(100.0, g.stamina + rec * DT);
+        g.stamina = Math.min(STAMINA_MAX, g.stamina + rec * DT);
         g.posture = Math.min(100.0, g.posture + 10 * DT);
       }
       // 体勢崩れの出入り

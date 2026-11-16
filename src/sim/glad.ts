@@ -1,8 +1,10 @@
 /** 剣闘士1人ぶんの戦闘中の状態。 */
 import {
   ARMOUR,
+  HP_MAX,
   PARTS,
   SHIELDS,
+  STAMINA_MAX,
   STANCE,
   WEAPONS,
   type GladiatorSpec,
@@ -66,8 +68,8 @@ export class Glad {
   readonly id: string;
   x: number;
   readonly facing: 1 | -1;
-  hp = 150.0;
-  stamina = 100.0;
+  hp = HP_MAX;
+  stamina = STAMINA_MAX;
   posture = 100.0;
   injury: Record<Part, number> = { head: 0, torso: 0, arm: 0, leg: 0 };
   armour: Record<Part, number>;

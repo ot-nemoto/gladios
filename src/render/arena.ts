@@ -176,14 +176,36 @@ function drawGladiator(
   return regs;
 }
 
-/** 接触イベントの文面から、光らせる側（攻撃を受けた側）と種類を得る。 */
-function flashOf(events: readonly LogEvent[], id: GladId): 'hit' | 'block' | null {
-  let out: 'hit' | 'block' | null = null;
+export type Flash = 'hit' | 'block';
+
+/**
+ * 接触ログ1行から、光らせる側（受けた側）と光らせ方を得る。光らせないものは null。
+ * - 身体への命中 → hit（身体を明るくする）
+ * - 盾・武器での受け止め、受け流し（成否とも）、盾が弾かれた、滑り落ちた、押し込まれた → block（盾の縁を光らせる）
+ * - 回避中の接触、回避された押し込み → なし（防御処理が起きていない）
+ */
+export function contactFlash(text: string): { target: GladId; flash: Flash } | null {
+  if (text.includes('回避中')) return null;
+  const push = /^[AB] の盾が ([AB]) に接触（押し込み）/.exec(text);
+  if (push) return { target: push[1] as GladId, flash: 'block' };
+  const m = /→ ([AB]) (?:の|が)(.*)$/.exec(text);
+  if (!m) return null;
+  const target = m[1] as GladId;
+  const rest = m[2]!;
+  if (/^(頭部|胴体|腕|脚)に命中$/.test(rest)) return { target, flash: 'hit' };
+  if (/^(盾|武器)に接触$|^(盾|武器)を滑り落ちた|^受け流した|^受け流しが合わない|^盾が弾かれた/.test(rest)) {
+    return { target, flash: 'block' };
+  }
+  return null;
+}
+
+function flashOf(events: readonly LogEvent[], id: GladId): Flash | null {
+  let out: Flash | null = null;
   for (const e of events) {
-    const target = /→ ([AB]) の/.exec(e.text)?.[1];
-    if (target !== id) continue;
-    if (e.text.endsWith('に命中')) return 'hit';
-    if (e.text.includes('に接触') || e.text.includes('受け流し')) out = 'block';
+    const c = contactFlash(e.text);
+    if (c?.target !== id) continue;
+    if (c.flash === 'hit') return 'hit';
+    out = 'block';
   }
   return out;
 }

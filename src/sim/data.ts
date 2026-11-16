@@ -74,6 +74,9 @@ export interface GladiatorSpec {
 export const CONDITIONS = conditionsJson as unknown as { gladiators: GladiatorSpec[] };
 
 export const DT = 0.005;
+/** 体力・スタミナの最大値（試作は能力 50 の標準値で固定。設計書 5.7／5.8）。 */
+export const HP_MAX = 150.0;
+export const STAMINA_MAX = 100.0;
 export const STAGE: readonly [number, Stage][] = [
   [20, '軽微'],
   [50, '通常'],

@@ -1,5 +1,5 @@
 /** 状態から導く値（段階・判断レベル・遅延・時間倍率など）。 */
-import { KF, STAGE, type Part, type Stage } from './data';
+import { KF, STAGE, STAMINA_MAX, type Part, type Stage } from './data';
 import type { Glad, StaminaStageName } from './glad';
 
 export function stageOf(E: number): Stage {
@@ -7,14 +7,16 @@ export function stageOf(E: number): Stage {
   throw new Error(`unreachable stage for E=${E}`);
 }
 
-/** スタミナ段階：名前・行動時間倍率・判断レベル補正。 */
-export function staminaStage(g: Glad): [StaminaStageName, number, number] {
-  const r = g.stamina / 100.0;
+/** スタミナ段階：名前・行動時間倍率・判断レベル補正（設計書 5.8）。 */
+export function staminaStageOf(stamina: number): [StaminaStageName, number, number] {
+  const r = stamina / STAMINA_MAX;
   if (r > 0.5) return ['余裕', 1.0, 0];
   if (r >= 0.25) return ['低下', 1.1, 10];
   if (r >= 0.1) return ['不足', 1.25, 25];
   return ['枯渇', 1.5, 40];
 }
+
+export const staminaStage = (g: Glad): [StaminaStageName, number, number] => staminaStageOf(g.stamina);
 
 export function injuryDegree(g: Glad, part: Part): 0 | 1 | 2 | 3 {
   const p = g.injury[part];

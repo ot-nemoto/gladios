@@ -4,7 +4,7 @@
  * 記録は Sim.run() と同じ手順で進めるため、ログ・結果は run() と完全に同じになる
  * （tests/record.test.ts で確認）。描画はこの記録だけを読み、判定には関わらない。
  */
-import { DT, type Pose } from './data';
+import { DT, HP_MAX, STAMINA_MAX, type Pose } from './data';
 import type { BodyRef } from './body';
 import type { ActionKind, Glad } from './glad';
 import { Sim, type GladId, type SimOptions, type Summary } from './sim';
@@ -32,9 +32,12 @@ export interface Frame {
 
 export interface LogEvent {
   index: number;
+  /** ログに印字された時刻（0.01 秒に丸めた値）。表示用。 */
   t: number;
+  /** このイベントが起きた後の最初のフレーム番号（record() が設定。parseLog 単体では -1）。 */
+  frame: number;
   kind: string;
-  /** 主語の剣闘士（A/B）。戦闘終了などは null。 */
+  /** 主語の剣闘士（A/B）。結果の行は直前の接触の主語を引き継ぐ。戦闘終了などは null。 */
   actor: GladId | null;
   text: string;
 }
@@ -66,12 +69,17 @@ const snap = (g: Glad): GladFrame => ({
 const LINE = /^\[\s*([\d.]+)\] (\S+)\s+(.*)$/;
 
 export function parseLog(log: readonly string[]): LogEvent[] {
+  let lastContactActor: GladId | null = null;
   return log.map((line, index) => {
     const m = LINE.exec(line);
-    if (!m) return { index, t: 0, kind: '', actor: null, text: line };
+    if (!m) return { index, t: 0, frame: -1, kind: '', actor: null, text: line };
+    const kind = m[2]!;
     const text = m[3]!;
-    const actor = /^([AB])[ :]/.exec(text)?.[1] as GladId | undefined;
-    return { index, t: Number(m[1]), kind: m[2]!, actor: actor ?? null, text };
+    let actor = (/^([AB])[ :]/.exec(text)?.[1] as GladId | undefined) ?? null;
+    if (kind === '接触') lastContactActor = actor;
+    // 「E=35 → 通常。B 体力-12…」「受け止め: …」「押し込み成立: …」は直前の接触の結果
+    if (kind === '結果' && actor === null) actor = lastContactActor;
+    return { index, t: Number(m[1]), frame: -1, kind, actor, text };
   });
 }
 
@@ -82,7 +90,10 @@ export function record(options: SimOptions, stepsPerFrame = 2): Recording {
   let i = 0;
   while (!sim.over) {
     sim.step();
-    if (i % stepsPerFrame === 0) frames.push({ t: sim.t, logEnd: sim.log.length, A: snap(sim.a), B: snap(sim.b) });
+    // 決着したステップは間引かずに必ず記録する（最後の画面に決め手の命中を残す）
+    if (i % stepsPerFrame === 0 || sim.over) {
+      frames.push({ t: sim.t, logEnd: sim.log.length, A: snap(sim.a), B: snap(sim.b) });
+    }
     sim.t += DT;
     i++;
   }
@@ -90,19 +101,38 @@ export function record(options: SimOptions, stepsPerFrame = 2): Recording {
     facing: g.facing,
     wlen: g.wlen,
     shieldHalf: g.shieldHalf,
-    hpMax: 150,
-    staminaMax: 100,
+    hpMax: HP_MAX,
+    staminaMax: STAMINA_MAX,
   });
+  const events = parseLog(sim.log);
+  let k = 0;
+  for (const e of events) {
+    while (frames[k]!.logEnd <= e.index) k++;
+    e.frame = k;
+  }
   return {
     frameDt: DT * stepsPerFrame,
     frames,
     log: sim.log,
-    events: parseLog(sim.log),
+    events,
     summary: sim.summary!,
     bodies: { A: body(sim.a), B: body(sim.b) },
   };
 }
 
-/** 時刻 t に対応するフレーム番号。 */
-export const frameIndexAt = (rec: Recording, t: number): number =>
-  Math.max(0, Math.min(rec.frames.length - 1, Math.round(t / rec.frameDt)));
+/** 時刻 t に最も近いフレーム番号（最後のフレームは間隔が不揃いなことがあるため二分探索）。 */
+export function frameIndexAt(rec: Recording, t: number): number {
+  const fr = rec.frames;
+  let lo = 0;
+  let hi = fr.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (fr[mid]!.t < t) lo = mid + 1;
+    else hi = mid;
+  }
+  if (lo > 0 && Math.abs(fr[lo - 1]!.t - t) <= Math.abs(fr[lo]!.t - t)) return lo - 1;
+  return lo;
+}
+
+/** フレーム k の時点までに起きた最後のイベント番号（なければ -1）。 */
+export const lastEventAtFrame = (rec: Recording, k: number): number => rec.frames[k]!.logEnd - 1;

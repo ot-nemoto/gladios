@@ -37,3 +37,43 @@ describe('record（リプレイ用の記録）', () => {
     ]);
   });
 });
+
+describe('レビュー指摘の回帰テスト', () => {
+  it('決着したステップのフレームを必ず記録する（最後の画面に決め手が映る）', () => {
+    for (const [i, sc] of scenarios.entries()) {
+      const rec = record(sc.options as SimOptions);
+      const last = rec.frames[rec.frames.length - 1]!;
+      expect(last.logEnd, `${i}: 最後のフレームに全ログ行が含まれる`).toBe(rec.log.length);
+      if (rec.summary.reason === '体力0') {
+        const loser = rec.summary.winner === 'A' ? last.B : last.A;
+        expect(loser.hp, `${i}: 最後のフレームで負けた側の体力は 0 以下`).toBeLessThanOrEqual(0);
+      }
+    }
+  });
+
+  it('各イベントは、それが起きた後の最初のフレームに対応づく', () => {
+    const rec = record(opts(4));
+    for (const e of rec.events) {
+      expect(rec.frames[e.frame]!.logEnd).toBeGreaterThan(e.index);
+      if (e.frame > 0) expect(rec.frames[e.frame - 1]!.logEnd).toBeLessThanOrEqual(e.index);
+    }
+  });
+
+  it('最後のフレームの間隔が不揃いでも、frameIndexAt は最も近いフレームを返す', () => {
+    const rec = record(opts(4));
+    rec.frames.forEach((f, k) => {
+      if (k % 97 === 0 || k === rec.frames.length - 1) expect(frameIndexAt(rec, f.t)).toBe(k);
+    });
+  });
+
+  it('結果の行は直前の接触の主語を引き継ぐ', () => {
+    const ev = parseLog([
+      '[   2.34] 接触     A の攻撃 → B の脚に命中',
+      '[   2.34] 結果     E=25 → 通常。B 体力-12（残138） 負傷点+2（計2） 体勢-15',
+      '[   2.22] 接触     B の盾が A に接触（押し込み）',
+      '[   2.22] 結果     押し込み成立: A 体勢-25（通常）、0.5m後退',
+      '[   3.00] 結果     A: 体勢を立て直した（体勢80）',
+    ]);
+    expect(ev.map((e) => e.actor)).toEqual(['A', 'A', 'B', 'B', 'A']);
+  });
+});

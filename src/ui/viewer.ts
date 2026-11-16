@@ -4,7 +4,14 @@
  */
 import scenariosJson from '../scenarios/check-scenarios.json';
 import { drawFrame } from '../render/arena';
-import { frameIndexAt, record, type GladFrame, type LogEvent, type Recording } from '../sim/record';
+import {
+  frameIndexAt,
+  lastEventAtFrame,
+  record,
+  type GladFrame,
+  type LogEvent,
+  type Recording,
+} from '../sim/record';
 import type { GladId, SimOptions } from '../sim/sim';
 import { staminaStageName } from './labels';
 
@@ -104,7 +111,7 @@ export function mountViewer(root: HTMLElement): void {
       li.innerHTML = html`<time>${e.t.toFixed(2)}</time><b>${e.kind}</b><span></span>`;
       li.querySelector('span')!.textContent = e.text;
       li.addEventListener('click', () => {
-        t = e.t;
+        t = eventTime(e);
         setPlaying(false);
         render();
       });
@@ -136,40 +143,27 @@ export function mountViewer(root: HTMLElement): void {
     playBtn.textContent = p ? '❚❚' : '▶︎';
   }
 
-  /** 現在時刻以前で最後のイベント番号（二分探索）。 */
-  function lastEventAt(time: number): number {
-    const ev = rec.events;
-    let lo = 0;
-    let hi = ev.length - 1;
-    let ans = -1;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      if (ev[mid]!.t <= time + 1e-9) {
-        ans = mid;
-        lo = mid + 1;
-      } else hi = mid - 1;
-    }
-    return ans;
-  }
+  /** イベントが起きたフレームの時刻（ログの印字時刻は 0.01 秒に丸められているため使わない）。 */
+  const eventTime = (e: LogEvent): number => rec.frames[e.frame]!.t;
 
   function jumpEvent(dir: 1 | -1): void {
+    const cur = frameIndexAt(rec, t);
     const visible = rec.events.filter((e) => !logItems[e.index]!.hidden);
     const target =
-      dir === 1
-        ? visible.find((e) => e.t > t + 0.005)
-        : [...visible].reverse().find((e) => e.t < t - 0.005);
+      dir === 1 ? visible.find((e) => e.frame > cur) : [...visible].reverse().find((e) => e.frame < cur);
     if (target) {
-      t = target.t;
+      t = eventTime(target);
       setPlaying(false);
       render();
     }
   }
 
-  function recentContacts(): LogEvent[] {
+  function recentContacts(frameIndex: number): LogEvent[] {
     const out: LogEvent[] = [];
-    for (let k = lastEventAt(t); k >= 0; k--) {
+    const now = rec.frames[frameIndex]!.t;
+    for (let k = lastEventAtFrame(rec, frameIndex); k >= 0; k--) {
       const e = rec.events[k]!;
-      if (e.t < t - FLASH_WINDOW) break;
+      if (eventTime(e) < now - FLASH_WINDOW) break;
       if (e.kind === '接触') out.push(e);
     }
     return out;
@@ -194,14 +188,15 @@ export function mountViewer(root: HTMLElement): void {
 
   function render(): void {
     t = Math.max(0, Math.min(endTime(), t));
-    const frame = rec.frames[frameIndexAt(rec, t)]!;
-    drawFrame(ctx, rec, frame, { showRegions: regionsChk.checked, recentContacts: recentContacts() });
+    const fi = frameIndexAt(rec, t);
+    const frame = rec.frames[fi]!;
+    drawFrame(ctx, rec, frame, { showRegions: regionsChk.checked, recentContacts: recentContacts(fi) });
     renderHud('A', frame.A);
     renderHud('B', frame.B);
     seek.value = String(t);
     timeEl.textContent = `${t.toFixed(2)} / ${endTime().toFixed(2)} 秒`;
 
-    const k = lastEventAt(t);
+    const k = lastEventAtFrame(rec, fi);
     if (k !== currentLog) {
       logItems.forEach((li, i) => li.classList.toggle('past', i <= k));
       logItems[currentLog]?.classList.remove('current');
