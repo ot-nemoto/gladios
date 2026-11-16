@@ -46,7 +46,14 @@ describe('レビュー指摘の回帰テスト', () => {
       expect(last.logEnd, `${i}: 最後のフレームに全ログ行が含まれる`).toBe(rec.log.length);
       if (rec.summary.reason === '体力0') {
         const loser = rec.summary.winner === 'A' ? last.B : last.A;
+        const survivor = rec.summary.winner === 'A' ? last.A : last.B;
         expect(loser.hp, `${i}: 最後のフレームで負けた側の体力は 0 以下`).toBeLessThanOrEqual(0);
+        expect(survivor.hp, `${i}: 勝った側の体力は残っている`).toBeGreaterThan(0);
+      }
+      if (rec.summary.reason === '相打ち') {
+        // v3.45：同じステップで両者が戦闘不能なら引き分け
+        expect(rec.summary.winner, `${i}: 相打ちは勝者なし`).toBeNull();
+        expect(Math.max(last.A.hp, last.B.hp), `${i}: 相打ちは両者の体力が 0 以下`).toBeLessThanOrEqual(0);
       }
     }
   });

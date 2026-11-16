@@ -95,7 +95,9 @@ export function mountViewer(root: HTMLElement): void {
     const s = rec.summary;
     summaryEl.textContent =
       s.winner === null
-        ? `結果: 決着せず（${s.reason}、${s.time.toFixed(2)}秒）`
+        ? s.reason === '相打ち'
+          ? `結果: 相打ち（両者の体力0、引き分け、${s.time.toFixed(2)}秒）`
+          : `結果: 決着せず（${s.reason}、${s.time.toFixed(2)}秒）`
         : `結果: ${s.winner} の勝ち（${s.reason === '体力0' ? `${s.winner === 'A' ? 'B' : 'A'} の体力0` : s.reason}、${s.time.toFixed(2)}秒）`;
     buildLog();
     setPlaying(false);

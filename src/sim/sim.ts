@@ -82,7 +82,8 @@ export interface SimOptions {
 export interface Summary {
   winner: GladId | null;
   time: number;
-  reason: '体力0' | '時間上限';
+  /** 体力0：片方が戦闘不能。相打ち：同じステップで両者が戦闘不能（引き分け、v3.45）。時間上限：確認用の打ち切り。 */
+  reason: '体力0' | '相打ち' | '時間上限';
 }
 
 
@@ -617,14 +618,19 @@ export class Sim {
       }
       g.lastStaminaStage = st;
     }
-    // 終了条件
-    for (const g of [this.a, this.b]) {
-      if (g.hp <= 0 && !this.over) {
-        this.over = true;
-        const winner = g.opp;
-        this.ev('終了', `${g.id} の体力が0。勝者 ${winner.id}（経過 ${pyFixed(t, 2)}秒）`);
-        this.summary = { winner: winner.id as GladId, time: pyRound(t, 2), reason: '体力0' };
-      }
+    // 終了条件。同じステップで両者が戦闘不能なら相打ち（引き分け、v3.45）。
+    // ステップは時間の最小単位なので、どちらが先に倒れたとは言えない
+    const down = [this.a, this.b].filter((g) => g.hp <= 0);
+    if (down.length === 2 && !this.over) {
+      this.over = true;
+      this.ev('終了', `両者の体力が0。相打ち（引き分け）（経過 ${pyFixed(t, 2)}秒）`);
+      this.summary = { winner: null, time: pyRound(t, 2), reason: '相打ち' };
+    } else if (down.length === 1 && !this.over) {
+      const g = down[0]!;
+      this.over = true;
+      const winner = g.opp;
+      this.ev('終了', `${g.id} の体力が0。勝者 ${winner.id}（経過 ${pyFixed(t, 2)}秒）`);
+      this.summary = { winner: winner.id as GladId, time: pyRound(t, 2), reason: '体力0' };
     }
     if (t >= this.cap && !this.over) {
       this.over = true;

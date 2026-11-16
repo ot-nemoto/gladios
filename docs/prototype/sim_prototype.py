@@ -58,6 +58,8 @@ Simplifications (prototype only):
   general "rule 3" approach (gap >= 1.5 -> approach) now applies only to
   gladiators that do not attack (passive dummies); attackers' spacing is
   governed by the reference distance.
+- Double KO (v3.45): if both gladiators reach 0 HP in the same step, the
+  bout is a draw (winner None, reason 相打ち).
 - Tie-break order (v3.44): torso > head > leg > arm (leg moved ahead of arm:
   at their reference distances both often score "armour only", and the leg
   slash passes under the shield while the arm slash meets a raised shield).
@@ -893,13 +895,19 @@ class Sim:
             if getattr(g, "_last_stage", st) != st:
                 self.ev("状態変化", f"{g.id}: スタミナ段階が「{st}」に変化（残{g.stamina:.0f}）")
             g._last_stage = st
-        # end conditions
-        for g in (self.a, self.b):
-            if g.hp <= 0 and not self.over:
-                self.over = True
-                winner = g.opp
-                self.ev("終了", f"{g.id} の体力が0。勝者 {winner.id}（経過 {t:.2f}秒）")
-                self.summary = {"winner": winner.id, "time": round(t, 2), "reason": "体力0"}
+        # end conditions. Both down in the same step is a draw (v3.45): the
+        # step is the smallest unit of time, so neither fell first.
+        down = [g for g in (self.a, self.b) if g.hp <= 0]
+        if len(down) == 2 and not self.over:
+            self.over = True
+            self.ev("終了", f"両者の体力が0。相打ち（引き分け）（経過 {t:.2f}秒）")
+            self.summary = {"winner": None, "time": round(t, 2), "reason": "相打ち"}
+        elif len(down) == 1 and not self.over:
+            g = down[0]
+            self.over = True
+            winner = g.opp
+            self.ev("終了", f"{g.id} の体力が0。勝者 {winner.id}（経過 {t:.2f}秒）")
+            self.summary = {"winner": winner.id, "time": round(t, 2), "reason": "体力0"}
         if t >= self.cap and not self.over:
             self.over = True
             self.ev("終了", f"時間上限 {self.cap:.0f}秒に到達。決着せず（確認用の打ち切り）")
