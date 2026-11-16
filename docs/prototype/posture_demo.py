@@ -32,6 +32,6 @@ for ax, set_id, taus, title in (
         draw_pose(ax, set_id, tau, i * 1.55)
     ax.set_xlim(-0.6, 7.6); ax.set_ylim(-0.35, 1.95)
     ax.set_aspect("equal"); ax.axis("off"); ax.set_title(title, fontsize=11, loc="left")
-out = pathlib.Path.home() / "workspace/gladiator-game/posture-demo.png"
+out = pathlib.Path(__file__).resolve().parent / "posture-demo.png"
 fig.tight_layout(); fig.savefig(out, dpi=120)
 print("saved:", out)

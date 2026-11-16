@@ -8,11 +8,11 @@ plt.rcParams["font.family"] = "Noto Serif CJK JP"
 from matplotlib import animation
 import sim_prototype as S
 
-BASE = pathlib.Path.home() / "workspace/gladiator-game"
-DURATION = 18.0          # sim seconds to show
+BASE = pathlib.Path(__file__).resolve().parent
+DURATION = 30.0          # sim seconds to show
 SAMPLE_EVERY = 20        # sim steps (DT=0.005) -> one frame per 0.10s
 
-sim = S.Sim({"A": "block", "B": "none"}, time_cap=DURATION, atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45, passive=("B",))
+sim = S.Sim({"A": "block", "B": "block"}, time_cap=DURATION)
 frames = []
 step_i = 0
 while not sim.over:
@@ -73,6 +73,6 @@ def render(i):
     return []
 
 anim = animation.FuncAnimation(fig, render, frames=len(frames), interval=100, blit=False)
-out = BASE / "battle-viz-leg.gif"
+out = BASE / "battle-viz.gif"
 anim.save(out, writer="pillow", fps=10)
 print("frames:", len(frames), "saved:", out, out.stat().st_size // 1024, "KB")

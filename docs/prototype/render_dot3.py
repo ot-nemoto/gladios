@@ -5,7 +5,7 @@ import math, pathlib, random
 from PIL import Image, ImageDraw, ImageFilter
 import sim_prototype as S
 
-BASE = pathlib.Path.home() / "workspace/gladiator-game"
+BASE = pathlib.Path(__file__).resolve().parent
 SCALE = 80
 OX, OY = -3.3, 2.75
 W, H = 528, 248

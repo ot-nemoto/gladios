@@ -15,7 +15,7 @@ weapon angle 0 = horizontal toward opponent, + = up.
 """
 import json, pathlib
 
-OUT = pathlib.Path.home() / "workspace/gladiator-game"
+OUT = pathlib.Path(__file__).resolve().parent
 
 # rows: [t, torso, upperArm, forearm, thigh, shin, hipX, hipY, weapon]
 SLASH = {

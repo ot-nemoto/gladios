@@ -4,7 +4,7 @@ import math, pathlib
 from PIL import Image, ImageDraw
 import sim_prototype as S
 
-BASE = pathlib.Path.home() / "workspace/gladiator-game"
+BASE = pathlib.Path(__file__).resolve().parent
 SCALE = 50  # px per metre -> gladiator is ~88 px tall
 OX, OY = -0.8, 2.0  # world coords of the canvas top-left
 W, H = 140, 100

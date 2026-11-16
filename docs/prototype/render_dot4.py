@@ -7,7 +7,7 @@ import PIL.ImageChops as C
 import sim_prototype as S
 import render_dot3 as R3
 
-BASE = pathlib.Path.home() / "workspace/gladiator-game"
+BASE = pathlib.Path(__file__).resolve().parent
 SCALE = 80
 OX, OY = -2.6, 2.64
 W, H = 416, 264
@@ -60,7 +60,7 @@ def main():
                 Pt = S.fk_points(foe, foe.pose)
                 sparks.append([Pt["sho"][0] - 0.1 * foe.facing, Pt["sho"][1] - 0.15, 3, (255, 120, 70)])
             prev[gid] = dict(st)
-        if step_i % 20:
+        if step_i % 60:
             continue
         for gid, g in (("A", sim.a), ("B", sim.b)):
             drop = prev_hp[gid] - g.hp
@@ -122,8 +122,8 @@ def main():
         frames.append(img)
     pal = frames[len(frames) // 2].quantize(colors=256, dither=Image.NONE)
     qframes = [f.quantize(palette=pal, dither=Image.NONE) for f in frames]
-    out = BASE / "dot-sample4-realtime.gif"
-    qframes[0].save(out, save_all=True, append_images=qframes[1:], duration=100, loop=0, optimize=True)
+    out = BASE / "dot-sample4.gif"
+    qframes[0].save(out, save_all=True, append_images=qframes[1:], duration=80, loop=0, optimize=True)
     print("saved:", out, out.stat().st_size // 1024, "KB, frames:", len(frames), "winner:", winner)
 
 if __name__ == "__main__":

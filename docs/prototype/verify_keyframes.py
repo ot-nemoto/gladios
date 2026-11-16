@@ -23,7 +23,7 @@ strengths) and a JSON report; prints the table.
 import json, pathlib, types
 import sim_prototype as S
 
-OUT = pathlib.Path.home() / "workspace/gladiator-game"
+OUT = pathlib.Path(__file__).resolve().parent
 FULL = OUT / "keyframes-full.json"
 data = json.loads(FULL.read_text(encoding="utf-8"))
 SETS = {s["id"]: s for s in data["sets"]}

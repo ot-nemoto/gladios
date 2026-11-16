@@ -41,6 +41,6 @@ draw(axes[0], "正面気味（肩が重なる）", (0.0, 1.47), (0.0, 1.47), 0.1
 # bladed: shield shoulder +0.18, sword shoulder -0.18, torso thin, shield forward
 draw(axes[1], "半身（肩が前後に分かれる）", (0.18, 1.47), (-0.18, 1.47), 0.05, 0.33,
      "胴は薄く／盾が前へ／剣側の肩が下がる")
-out = pathlib.Path.home() / "workspace/gladiator-game/stance-yaw-demo.png"
+out = pathlib.Path(__file__).resolve().parent / "stance-yaw-demo.png"
 fig.tight_layout(); fig.savefig(out, dpi=130)
 print("saved:", out)

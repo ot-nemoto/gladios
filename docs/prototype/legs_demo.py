@@ -32,6 +32,6 @@ leg(axes[1], hip2, -6, 4, "tab:blue", 2.5)      # support (near)
 leg(axes[1], hip2, 34, -52, "gray", 2)          # swing (far), crosses the support leg's line
 axes[1].plot([hip2[0], hip2[0] + 0.02], [hip2[1], 1.45], "o-", color="tab:blue", lw=2, ms=3)
 axes[1].add_patch(plt.Circle((0.02, 1.62), 0.11, fill=False, color="tab:blue", lw=2))
-out = pathlib.Path.home() / "workspace/gladiator-game/legs-demo.png"
+out = pathlib.Path(__file__).resolve().parent / "legs-demo.png"
 fig.tight_layout(); fig.savefig(out, dpi=130)
 print("saved:", out)

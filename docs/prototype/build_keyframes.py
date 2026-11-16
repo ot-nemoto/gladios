@@ -7,7 +7,7 @@ Shield: offset (dx, dy) in metres from the torso centre point, angle 0 = upright
 """
 import json, math, pathlib
 
-OUT = pathlib.Path.home() / "workspace/gladiator-game"
+OUT = pathlib.Path(__file__).resolve().parent
 
 # rows: [t, torso, upperArm, forearm, thigh, shin, hipX, hipY, weapon]
 SLASH = {

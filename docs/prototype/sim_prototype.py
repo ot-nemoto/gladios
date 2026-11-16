@@ -52,7 +52,7 @@ Simplifications (prototype only):
 """
 import json, math, pathlib, sys
 
-BASE = pathlib.Path.home() / "workspace/gladiator-game"
+BASE = pathlib.Path(__file__).resolve().parent
 _kf_path = BASE / "keyframes-full.json"
 if not _kf_path.exists():
     _kf_path = BASE / "keyframes-vertical-slice.json"
