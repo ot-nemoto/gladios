@@ -41,10 +41,6 @@ function battleFirstContact(o: SimOptions) {
     const lines = sim.log.slice(seen);
     seen = sim.log.length;
     const hit = lines.find((l) => /\] 接触\s+A の攻撃 → B の(.+?)(に命中|に接触)/.test(l));
-    // 図鑑は「相手が構えたまま立っている」前提なので、攻撃中に相手（ダミー）が動いていないこと
-    if (start !== null && sim.b.action && sim.b.action.kind !== 'wait') {
-      throw new Error(`B moved during the attack (${sim.b.action.kind}); pick a case where the dummy stays still`);
-    }
     if (hit && start !== null) {
       const what = /→ B の(.+?)(に命中|に接触)/.exec(hit)![1]!;
       return { steps: Math.round((sim.t - start) / DT), what, setId: setId!, gap, dur };

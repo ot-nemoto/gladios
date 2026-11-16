@@ -1,5 +1,5 @@
 /** 攻撃対象部位の自動選択（v3.11、v3.37 で防御の薄さを軌道で評価）。 */
-import { ARENA_HALF, COMPAT, KF, PARTS, type Part } from './data';
+import { COMPAT, KF, PARTS, clampToArena, type Part } from './data';
 import { HEAD_R, fkPoints, interpPose, regionsOf, type BodyRef, type Regions } from './body';
 import { segCircle, segObb, type Obb } from './geometry';
 import type { Glad } from './glad';
@@ -72,7 +72,7 @@ export type PartScores = Record<Part, number | null>;
 export function refTargetX(g: Glad, setId: string): number {
   const ref = KF.get(setId)?.refDistance;
   if (ref === undefined) return g.x;
-  return Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.opp.x - g.facing * ref));
+  return clampToArena(g.opp.x - g.facing * ref);
 }
 
 /**

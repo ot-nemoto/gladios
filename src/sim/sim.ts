@@ -28,6 +28,7 @@ import {
   STAMINA_MAX,
   STANCE,
   STRENGTH_CORR,
+  clampToArena,
   defenceSetId,
   kf,
   type Part,
@@ -61,6 +62,10 @@ export interface SimOptions {
   cap?: number;
   /** 固定で使う攻撃一式（自動選択しない場合）。 */
   atkSets?: Partial<Record<GladId, string>>;
+  /**
+   * 攻撃しない側（ダミー）の接近先と、届く部位がないときの接近先（足裏の間隔、既定 1.40m）。
+   * v3.44 以降、攻撃する側の間合いは一式の基準間合いで決まり、この値は効かない。
+   */
   approachUntil?: number;
   /** 攻撃しない側。 */
   passive?: GladId[];
@@ -453,7 +458,7 @@ export class Sim {
     const loss = blocking ? 15 : 25;
     dfn.posture = Math.max(0.0, dfn.posture - loss);
     const oldX = dfn.x;
-    dfn.x = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, dfn.x - dfn.facing * 0.5));
+    dfn.x = clampToArena(dfn.x - dfn.facing * 0.5);
     this.ev('接触', `${g.id} の盾が ${dfn.id} に接触（押し込み）`);
     this.ev(
       '結果',
@@ -571,7 +576,7 @@ export class Sim {
           newX = g.x + g.facing * stepLen;
         } else {
           const want = Math.min(moveSpeed(g) * DT, Math.max(0.0, a.until! - gap));
-          newX = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.x - g.facing * want));
+          newX = clampToArena(g.x - g.facing * want);
           stepLen = Math.abs(newX - g.x);
         }
         g.x = newX;

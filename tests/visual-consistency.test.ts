@@ -89,6 +89,17 @@ function checkContact(rec: Recording, frames: Frame[], k: number, text: string):
   return { ok: false, what: `未分類の接触ログ: ${text}` };
 }
 
+/** シナリオごとの記録（1 ステップ 1 フレーム）。各テストで使い回し、シミュレーションは 1 回だけにする。 */
+const recordings = new Map<string, Recording>();
+function rec1(sc: (typeof scenarios)[number]): Recording {
+  let r = recordings.get(sc.name);
+  if (!r) {
+    r = record(sc.options as SimOptions, 1);
+    recordings.set(sc.name, r);
+  }
+  return r;
+}
+
 /** 接触ログを、その瞬間の記録した図形で検証する。検証した件数と失敗を返す。 */
 function verifyContacts(rec: Recording): { checked: number; failures: string[] } {
   const frames = rec.frames;
@@ -117,12 +128,13 @@ function verifyContacts(rec: Recording): { checked: number; failures: string[] }
 describe('接触の瞬間、記録した図形はログどおりに交わっている', () => {
   scenarios.forEach((sc) => {
     it(sc.name, () => {
-      // 接触が一度も起きないシナリオもある（間合いの取り合いなど、#26）。その場合は検証対象がないだけ
-      expect(verifyContacts(record(sc.options as SimOptions, 1)).failures).toEqual([]);
+      const { checked, failures } = verifyContacts(rec1(sc));
+      expect(failures).toEqual([]);
+      expect(checked, '接触が 1 件以上ある（0 件になったら間合いなどの退行を疑う）').toBeGreaterThan(0);
     });
   });
   it('全シナリオの合計で、十分な数の接触を検証できている', () => {
-    const total = scenarios.reduce((n, sc) => n + verifyContacts(record(sc.options as SimOptions, 1)).checked, 0);
+    const total = scenarios.reduce((n, sc) => n + verifyContacts(rec1(sc)).checked, 0);
     expect(total).toBeGreaterThan(500);
   });
 });
@@ -130,7 +142,7 @@ describe('接触の瞬間、記録した図形はログどおりに交わって�
 describe('見た目の破綻がない（全フレーム）', () => {
   scenarios.forEach((sc) => {
     it(sc.name, () => {
-      const rec = record(sc.options as SimOptions, 1);
+      const rec = rec1(sc);
       let minGap = Infinity;
       let maxAbsX = 0;
       let shieldBehind = 0;

@@ -133,6 +133,8 @@ export const DEFAULT_APPROACH_UNTIL = 1.4;
 export const REF_TOLERANCE = 0.02;
 /** 移動範囲の端（原点から ±12m、v3.25）。 */
 export const ARENA_HALF = 12.0;
+/** 位置を移動範囲（±ARENA_HALF）の中に収める。 */
+export const clampToArena = (x: number): number => Math.max(-ARENA_HALF, Math.min(ARENA_HALF, x));
 /** 移動が目標の間隔に達したとみなす浮動小数点の余裕（ごく小さな前進が終わらなくなるのを防ぐ）。 */
 export const GAP_EPS = 1e-9;
 /** 両手持ちの武器は盾を持てない（v3.22）。 */

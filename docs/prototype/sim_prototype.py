@@ -97,6 +97,11 @@ SHIELDS = {  # design doc v3.23: half = vertical half-length of the shield regio
 STRENGTH_CORR = {"feint": -20, "normal": 0, "strong": 20}  # v3.12 action correction to P
 REF_TOLERANCE = 0.02  # v3.44: move to the set's refDistance when the gap is outside +-this (provisional)
 ARENA_HALF = 12.0     # v3.25: movement bounds are +-12 m from the origin
+def clamp_arena(x):
+    """Keep a position inside the movement bounds (+-ARENA_HALF)."""
+    return max(-ARENA_HALF, min(ARENA_HALF, x))
+
+
 GAP_EPS = 1e-9        # float slack when a move has reached its target gap (avoids endless tiny steps)
 
 
@@ -363,7 +368,7 @@ def ref_target_x(g, set_id):
     ref = KF[set_id].get("refDistance")
     if ref is None:
         return g.x
-    return max(-ARENA_HALF, min(ARENA_HALF, g.opp.x - g.facing * ref))
+    return clamp_arena(g.opp.x - g.facing * ref)
 
 
 def select_part(g, pattern):
@@ -418,6 +423,9 @@ class Glad:
 
 
 class Sim:
+    # approach_until: the target gap for gladiators that do not attack (rule 3)
+    # and for the "no reachable part" fallback. From v3.44 an attacker's spacing
+    # follows the set's refDistance, so this has no effect on attackers.
     def __init__(self, defence_policies, time_cap=180.0, atk_sets=None, approach_until=1.4, passive=(),
                  auto=None, armour=None, push_users=None, equip=None):
         self.a = Glad(COND["gladiators"][0])
@@ -754,7 +762,7 @@ class Sim:
         loss = 15 if blocking else 25
         dfn.posture = max(0.0, dfn.posture - loss)
         old_x = dfn.x
-        dfn.x = max(-12.0, min(12.0, dfn.x - dfn.facing * 0.5))
+        dfn.x = clamp_arena(dfn.x - dfn.facing * 0.5)
         self.ev("接触", f"{g.id} の盾が {dfn.id} に接触（押し込み）")
         self.ev("結果", f"押し込み成立: {dfn.id} 体勢-{loss}（{'受け止め中' if blocking else '通常'}）、"
                         f"{abs(dfn.x - old_x):.1f}m後退")
@@ -853,7 +861,7 @@ class Sim:
                     new_x = g.x + g.facing * step
                 else:
                     want = min(move_speed(g) * DT, max(0.0, a["until"] - gap))
-                    new_x = max(-ARENA_HALF, min(ARENA_HALF, g.x - g.facing * want))
+                    new_x = clamp_arena(g.x - g.facing * want)
                     step = abs(new_x - g.x)
                 g.x = new_x
                 a["travelled"] += step
@@ -934,13 +942,13 @@ if __name__ == "__main__":
     out.append("\n".join(log2))
     log3_text, log3, s3 = run_battle("戦闘3: Aは脚狙い（作り直し後の脚セット）、Bは受け止める方針",
                                      {"A": "block", "B": "block"},
-                                     atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45)
+                                     atk_sets={"A": "gladius-slash-normal-leg"})
     out.append("\n" + log3_text)
     out.append("\n".join(log3))
     # 戦闘4（接近距離0.9m）は v3.44 で廃止：攻撃は基準間合いから行うため、近距離の攻撃は起きない
     log5_text, log5, s5 = run_battle("戦闘5: Aは脚狙い、Bは防御方針なし（決着までの確認用）",
                                      {"A": "block", "B": "none"}, cap=300.0,
-                                     atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45)
+                                     atk_sets={"A": "gladius-slash-normal-leg"})
     out.append("\n" + log5_text)
     out.append("\n".join(log5))
     log7_text, log7, s7 = run_battle("戦闘7: 両者とも回避方針（鏡合わせで攻撃が通るかの確認用）",
@@ -953,7 +961,7 @@ if __name__ == "__main__":
     out.append("\n".join(log8))
     log9_text, log9, s9 = run_battle("戦闘9: Aは判断が高い（構えが長く脚狙い）、Bは判断が低い（構えが短い）",
                                      {"A": "block", "B": "none"}, cap=180.0,
-                                     atk_sets={"A": "gladius-slash-normal-leg"}, approach_until=1.45,
+                                     atk_sets={"A": "gladius-slash-normal-leg"},
                                      judgment={"A": 80, "B": 20})
     out.append("\n" + log9_text)
     out.append("\n".join(log9))
