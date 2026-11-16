@@ -11,8 +11,10 @@
 import {
   BLOCK_POSTURE,
   BLOCK_STAMINA,
+  ARENA_HALF,
   CONDITIONS,
   DEFAULT_APPROACH_UNTIL,
+  GAP_EPS,
   DT,
   HP_LOSS,
   INJ_PTS,
@@ -22,6 +24,7 @@ import {
   PART_JP,
   PART_MOD,
   POSTURE_LOSS,
+  REF_TOLERANCE,
   STAGE_ORDER,
   STAMINA_MAX,
   STANCE,
@@ -48,7 +51,7 @@ import {
   staminaStage,
   totalTimeMult,
 } from './rules';
-import { selectPart } from './select';
+import { refTargetX, selectPart } from './select';
 import { cos, radians, sin } from './trig';
 
 export type GladId = 'A' | 'B';
@@ -174,6 +177,17 @@ export class Sim {
         travelled: 0.0,
         until: opts.until ?? this.approachUntil,
       };
+    } else if (kind === 'retreat') {
+      cost = 0.0;
+      g.action = {
+        kind,
+        set: 'common-retreat-1m',
+        start: this.t,
+        dur: Infinity,
+        label,
+        travelled: 0.0,
+        until: opts.until!,
+      };
     } else {
       cost = 0.0;
       g.action = { kind, set: null, start: this.t, dur: Infinity, label };
@@ -202,6 +216,27 @@ export class Sim {
     }
   }
 
+  /**
+   * v3.44：攻撃は一式の基準間合いから行う。間隔が基準間合い ± REF_TOLERANCE の外なら、
+   * 先に移動する（遠ければ接近、近ければ距離を取る）。移動が終わったら作戦を再評価する。
+   * 基準間合いの位置が移動範囲の外なら、今の間隔から攻撃する。
+   */
+  private moveOrHold(g: Glad, sid: string, label: string, prefix: string): void {
+    const dist = Math.abs(g.opp.x - g.x);
+    const refd = kf(sid).refDistance;
+    if (refd !== undefined && Math.abs(dist - refd) > REF_TOLERANCE) {
+      if (dist > refd) {
+        this.startAction(g, 'approach', `${prefix}: 間合いまで接近する`, { until: refd });
+        return;
+      }
+      if (refTargetX(g, sid) !== null) {
+        this.startAction(g, 'retreat', `${prefix}: 間合いまで距離を取る`, { until: refd });
+        return;
+      }
+    }
+    this.enterHold(g, sid, label);
+  }
+
   // ---- 行動の決定（確認用の固定分岐。作戦ルールは未実装） ----
   private decide(g: Glad): void {
     const o = g.opp;
@@ -211,10 +246,10 @@ export class Sim {
       this.startAction(g, 'postureRecovery', 'ルール1: 体勢を立て直す');
     } else if (staminaStage(g)[0] === '枯渇') {
       this.startAction(g, 'wait', 'ルール2: 待機する');
-    } else if (dist >= 1.5) {
-      this.startAction(g, 'approach', 'ルール3: 接近する');
     } else if (this.passive.has(g.id)) {
-      this.startAction(g, 'wait', 'ダミー: 待機する（攻撃しない）');
+      // ルール3（遠ければ接近）は攻撃しない側だけ。攻撃する側の間合いは基準間合いに従う（v3.44）
+      if (dist >= 1.5) this.startAction(g, 'approach', 'ルール3: 接近する');
+      else this.startAction(g, 'wait', 'ダミー: 待機する（攻撃しない）');
     } else if (!g.collapsed) {
       const pushMode = this.pushUsers[gid];
       const pattern = this.auto[gid];
@@ -231,24 +266,13 @@ export class Sim {
           const methodJp = pattern.includes('-slash-') ? '斬る' : '突く';
           const label = `デフォルト: 通常攻撃（${methodJp}・${PART_JP[part]}）`;
           this.ev('選択', `${g.id}: 自動選択 [${detail}] → ${PART_JP[part]}`);
-          const sid = `${pattern}-${part}`;
-          const refd = kf(sid).refDistance;
-          if (refd && dist > refd + 0.05) {
-            this.startAction(g, 'approach', '自動選択: 間合いまで接近する', { until: refd });
-          } else {
-            this.enterHold(g, sid, label);
-          }
+          this.moveOrHold(g, `${pattern}-${part}`, label, '自動選択');
         }
       } else {
         const sid = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
         const part = sid.slice(sid.lastIndexOf('-') + 1) as Part;
         const label = `デフォルト: 通常攻撃（斬る・${PART_JP[part]}）`;
-        const refd = kf(sid).refDistance;
-        if (refd && dist > refd + 0.05) {
-          this.startAction(g, 'approach', '固定: 間合いまで接近する', { until: refd });
-        } else {
-          this.enterHold(g, sid, label);
-        }
+        this.moveOrHold(g, sid, label, '固定');
       }
     } else {
       this.startAction(g, 'wait', '体勢崩れ: 待機する');
@@ -262,8 +286,8 @@ export class Sim {
       g.pose = { ...STANCE };
       return;
     }
-    if (a.kind === 'approach') {
-      g.pose = interpPose('common-advance-1m', a.travelled! % 1.0);
+    if (a.kind === 'approach' || a.kind === 'retreat') {
+      g.pose = interpPose(a.set!, a.travelled! % 1.0);
       return;
     }
     let tau = a.dur !== Infinity ? (this.t - a.start) / a.dur : 0.0;
@@ -438,7 +462,7 @@ export class Sim {
     const loss = blocking ? 15 : 25;
     dfn.posture = Math.max(0.0, dfn.posture - loss);
     const oldX = dfn.x;
-    dfn.x = Math.max(-12.0, Math.min(12.0, dfn.x - dfn.facing * 0.5));
+    dfn.x = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, dfn.x - dfn.facing * 0.5));
     this.ev('接触', `${g.id} の盾が ${dfn.id} に接触（押し込み）`);
     this.ev(
       '結果',
@@ -525,7 +549,16 @@ export class Sim {
         g.decisionAt = t + judgmentDelay(g);
       }
       // 継続行動の終了
-      if (g.action && g.action.kind === 'approach' && Math.abs(g.opp.x - g.x) <= g.action.until!) {
+      if (g.action && g.action.kind === 'approach' && Math.abs(g.opp.x - g.x) <= g.action.until! + GAP_EPS) {
+        g.action = null;
+        g.decisionAt = t + judgmentDelay(g);
+      }
+      if (
+        g.action &&
+        g.action.kind === 'retreat' &&
+        (Math.abs(g.opp.x - g.x) >= g.action.until! - GAP_EPS || g.x * g.facing <= -ARENA_HALF)
+      ) {
+        // 目標の間隔に達した、または移動範囲の端に背を付けた
         g.action = null;
         g.decisionAt = t + judgmentDelay(g);
       }
@@ -539,8 +572,21 @@ export class Sim {
       if (g.action && g.action.kind === 'approach') {
         const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
         const speed = 1 / MOVE_TIME_PER_M / mult;
-        const stepLen = Math.min(speed * DT, Math.max(0.0, Math.abs(g.opp.x - g.x) - 0.35));
+        const gap = Math.abs(g.opp.x - g.x);
+        // v3.44：目標の間隔を越えずに止まる
+        const stepLen = Math.min(speed * DT, Math.max(0.0, gap - 0.35), Math.max(0.0, gap - g.action.until!));
         g.x += g.facing * stepLen;
+        g.action.travelled! += stepLen;
+        g.stamina = Math.max(0.0, g.stamina - stepLen * 2 * g.equipMult);
+      }
+      if (g.action && g.action.kind === 'retreat') {
+        const mult = totalTimeMult(g) * ([1.0, 1.1, 1.3, 1.6] as const)[injuryDegree(g, 'leg')];
+        const speed = 1 / MOVE_TIME_PER_M / mult;
+        const gap = Math.abs(g.opp.x - g.x);
+        const want = Math.min(speed * DT, Math.max(0.0, g.action.until! - gap));
+        const newX = Math.max(-ARENA_HALF, Math.min(ARENA_HALF, g.x - g.facing * want));
+        const stepLen = Math.abs(newX - g.x);
+        g.x = newX;
         g.action.travelled! += stepLen;
         g.stamina = Math.max(0.0, g.stamina - stepLen * 2 * g.equipMult);
       }

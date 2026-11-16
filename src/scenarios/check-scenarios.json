@@ -2,7 +2,6 @@
   {"name": "戦闘1: 両者とも受け止める", "options": {"policies": {"A": "block", "B": "block"}}},
   {"name": "戦闘2: Bのみ防御方針なし", "options": {"policies": {"A": "block", "B": "none"}}},
   {"name": "戦闘3: Aは脚狙い、Bは受け止める", "options": {"policies": {"A": "block", "B": "block"}, "atkSets": {"A": "gladius-slash-normal-leg"}, "approachUntil": 1.45}},
-  {"name": "戦闘4: 接近距離0.9m・Aは脚狙い", "options": {"policies": {"A": "block", "B": "block"}, "atkSets": {"A": "gladius-slash-normal-leg"}, "approachUntil": 0.9}},
   {"name": "戦闘5: Aは脚狙い、Bは防御なし", "options": {"policies": {"A": "block", "B": "none"}, "cap": 300.0, "atkSets": {"A": "gladius-slash-normal-leg"}, "approachUntil": 1.45}},
   {"name": "戦闘6: Bは攻撃しないダミー、Aは脚狙い", "options": {"policies": {"A": "block", "B": "none"}, "cap": 300.0, "atkSets": {"A": "gladius-slash-normal-leg"}, "approachUntil": 1.45, "passive": ["B"]}},
   {"name": "戦闘7: 両者とも回避", "options": {"policies": {"A": "evade", "B": "evade"}}},

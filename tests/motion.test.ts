@@ -39,6 +39,10 @@ function battleFirstContact(o: SimOptions) {
     const lines = sim.log.slice(seen);
     seen = sim.log.length;
     const hit = lines.find((l) => /\] 接触\s+A の攻撃 → B の(.+?)(に命中|に接触)/.test(l));
+    // 図鑑は「相手が構えたまま立っている」前提なので、攻撃中に相手（ダミー）が動いていないこと
+    if (start !== null && sim.b.action && sim.b.action.kind !== 'wait') {
+      throw new Error(`B moved during the attack (${sim.b.action.kind}); pick a case where the dummy stays still`);
+    }
     if (hit && start !== null) {
       const what = /→ B の(.+?)(に命中|に接触)/.exec(hit)![1]!;
       return { steps: Math.round((sim.t - start) / DT), what, setId: setId!, gap, dur };
@@ -50,14 +54,18 @@ function battleFirstContact(o: SimOptions) {
 
 const JP: Record<string, string> = { 盾: 'shield', 武器: 'weapon', 腕: 'arm', 脚: 'leg', 胴体: 'torso', 頭部: 'head' };
 
+/*
+ * 実際の戦闘での照合は、攻撃しない側（ダミー）が動かない攻撃に限る。ダミーは間隔 1.5m 以上だと
+ * 接近するため、基準間合いが 1.5m 以上の攻撃では攻撃中に歩いてくる（#26）。長い間合いの照合は、
+ * 下の「相手が防御姿勢のときも…」の、相手を固定して判定そのものと突き合わせるテストが担う。
+ */
 describe('firstContact は戦闘の判定と一致する', () => {
   it.each<[string, SimOptions]>([
-    ['斬り胴 → 盾', { policies: { A: 'none', B: 'none' }, passive: ['B'] }],
-    ['斬り脚 → 脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-normal-leg' }, approachUntil: 1.45 }],
-    ['突き胴', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-thrust-normal-torso' } }],
+    ['斬り脚 → 脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-normal-leg' } }],
     ['強斬り頭', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-strong-head' } }],
-    ['ハスタ突き胴（小盾）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'hasta-thrust-normal-torso' }, equip: { A: { weapon: 'hasta' }, B: { shield: 'small' } } }],
+    ['牽制斬り脚', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'gladius-slash-feint-leg' } }],
     ['スィカ斬り脚（パルムラ）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'sica-slash-normal-leg' }, equip: { A: { weapon: 'sica' }, B: { shield: 'parmula' } } }],
+    ['スィカ強斬り頭（小盾）', { policies: { A: 'none', B: 'none' }, passive: ['B'], atkSets: { A: 'sica-slash-strong-head' }, equip: { A: { weapon: 'sica' }, B: { shield: 'small' } } }],
   ])('%s', (_name, o) => {
     const want = battleFirstContact(o);
     const set = kf(want.setId);
