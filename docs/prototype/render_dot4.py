@@ -110,7 +110,9 @@ def main():
         last = sim.log[-1] if sim.log else ""
         text(dr, (12, H * 2 - 20), last[:52], 19, anchor="lm")
         frames.append(img)
-    winner = "A" if sim.b.hp <= 0 else ("B" if sim.a.hp <= 0 else None)
+    # 勝敗はシミュレーションの結果を使う（同じ刻みで両者が倒れたら相打ち、v3.45）
+    winner = (sim.summary or {}).get("winner")
+    draw = (sim.summary or {}).get("reason") == "相打ち"
     # closing frames with the verdict banner
     for _ in range(14):
         img = frames[-1].copy()
@@ -119,6 +121,8 @@ def main():
         text(dr, (W, H - 14), "決着", 62, outline=(0, 0, 0))
         if winner:
             text(dr, (W, H + 42), f"{winner} の勝利", 30, fill=(255, 214, 120), outline=(0, 0, 0))
+        elif draw:
+            text(dr, (W, H + 42), "相打ち（引き分け）", 30, fill=(255, 214, 120), outline=(0, 0, 0))
         frames.append(img)
     pal = frames[len(frames) // 2].quantize(colors=256, dither=Image.NONE)
     qframes = [f.quantize(palette=pal, dither=Image.NONE) for f in frames]

@@ -93,10 +93,23 @@ export function mountViewer(root: HTMLElement): void {
     t = 0;
     seek.max = String(endTime());
     const s = rec.summary;
-    summaryEl.textContent =
-      s.winner === null
-        ? `結果: 決着せず（${s.reason}、${s.time.toFixed(2)}秒）`
-        : `結果: ${s.winner} の勝ち（${s.reason === '体力0' ? `${s.winner === 'A' ? 'B' : 'A'} の体力0` : s.reason}、${s.time.toFixed(2)}秒）`;
+    const time = `${s.time.toFixed(2)}秒`;
+    switch (s.reason) {
+      case '体力0':
+        summaryEl.textContent = `結果: ${s.winner} の勝ち（${s.winner === 'A' ? 'B' : 'A'} の体力0、${time}）`;
+        break;
+      case '相打ち':
+        summaryEl.textContent = `結果: 相打ち（両者の体力0、引き分け、${time}）`;
+        break;
+      case '時間上限':
+        summaryEl.textContent = `結果: 決着せず（時間上限、${time}）`;
+        break;
+      default: {
+        // 結果の種類が増えたら、ここで型検査が失敗する（表示の追加漏れを防ぐ）
+        const unhandled: never = s.reason;
+        summaryEl.textContent = `結果: ${String(unhandled)}（${time}）`;
+      }
+    }
     buildLog();
     setPlaying(false);
     render();
