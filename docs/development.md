@@ -1,7 +1,7 @@
 # 開発ガイド
 
 gladios の開発者向けの情報。アプリでできることは [README](../README.md) を参照。
-エージェント（Claude Code）向けの要点は [CLAUDE.md](../CLAUDE.md) にあり、規則の正はこの文書。
+エージェント（Claude Code）向けの要点は [CLAUDE.md](../CLAUDE.md) にあり、規則の正はこの文書。この文書の規則を変えたら、CLAUDE.md の要点も合わせて直すこと。
 
 ## 設計資料（最初に読むもの）
 
@@ -46,7 +46,9 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 |---|---|
 | `npm run dev` | 開発サーバー（http://localhost:5173/ 。`/` が戦闘ビューア、`/motions.html` がモーション図鑑） |
 | `npm run build` | 型検査＋本番ビルド |
-| `npm test` | テスト |
+| `npm run preview` | 本番ビルドを手元で確認 |
+| `npm run typecheck` | 型検査だけ |
+| `npm test` | テスト（`npm run test:watch` で変更を監視して繰り返す） |
 | `npm run sync:data` | `docs/prototype/` のデータを `src/data/` へ写す |
 | `npm run golden` | Python 試作の出力を `tests/golden/sim-prototype.json` に書き出す（TS 移植の正解データ） |
 
