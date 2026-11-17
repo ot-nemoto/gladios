@@ -4,12 +4,12 @@
   --foreground: light-dark(#242525, #eeece7);
   --muted-foreground: light-dark(#686866, #b1b0aa);
   --border: light-dark(#d8d6cf, #444542);
+  --selected: light-dark(#e9e7df, #363735);
   font-family: system-ui, sans-serif;
   color: var(--foreground);
   background: var(--background);
   line-height: 1.6;
 }
-
 * {
   box-sizing: border-box;
 }
@@ -17,48 +17,60 @@ body {
   margin: 0;
 }
 main {
-  max-width: 850px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 20px 48px;
+  padding: 24px 20px 32px;
 }
 header {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 600;
+}
+h1 span {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 12px;
+  display: inline-block;
 }
 h2 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 600;
 }
+h3 {
+  margin: 16px 0 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
 p {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
 }
-.note {
+.note,
+.facing,
+.current-state {
   color: var(--muted-foreground);
-  max-width: 65ch;
+  font-size: 0.85rem;
 }
-.sample {
-  display: grid;
-  gap: 12px;
+.case-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
 }
-.controls,
-.legend {
+.controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 24px;
 }
-.legend {
-  color: var(--muted-foreground);
-  font-size: 0.9rem;
-}
 label {
-  display: grid;
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
 }
 select,
@@ -69,16 +81,20 @@ button {
   border-radius: 6px;
 }
 select {
-  width: 100%;
   padding: 8px 32px 8px 10px;
   color: var(--foreground);
   background: var(--background);
 }
 button {
-  padding: 8px 16px;
-  color: var(--background);
-  background: var(--foreground);
+  padding: 8px 14px;
+  color: var(--foreground);
+  background: var(--background);
   cursor: pointer;
+}
+.play,
+[role="tab"][aria-selected="true"] {
+  background: var(--foreground);
+  color: var(--background);
 }
 button:hover {
   opacity: 0.85;
@@ -88,26 +104,105 @@ select:focus-visible {
   outline: 3px solid var(--muted-foreground);
   outline-offset: 3px;
 }
+.battle-layout {
+  display: grid;
+  grid-template-columns: 165px minmax(0, 1fr) 165px;
+  gap: 16px;
+  align-items: center;
+  margin-top: 12px;
+}
+.stage {
+  min-width: 0;
+}
 svg {
   display: block;
   width: 100%;
   height: auto;
 }
+.skills {
+  min-width: 0;
+  align-self: start;
+  padding-top: 26px;
+}
+.skills ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.skills li {
+  padding: 7px 9px;
+  border-left: 3px solid transparent;
+  overflow-wrap: anywhere;
+}
+.skills li.active {
+  background: var(--selected);
+  border-left-color: var(--foreground);
+  font-weight: 600;
+}
+.skill-indicator {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  visibility: hidden;
+}
+.active .skill-indicator {
+  visibility: visible;
+}
+.current-state {
+  margin-top: 10px;
+  min-height: 3.2em;
+}
 output {
   display: block;
+  margin-top: 12px;
   min-height: 3.2em;
   overflow-wrap: anywhere;
 }
-hr {
-  border: 0;
-  border-top: 1px solid var(--border);
-  margin: 24px 0;
-}
-@media (max-width: 400px) {
-  main {
-    padding: 20px 12px 32px;
+@media (max-width: 800px) {
+  .battle-layout {
+    grid-template-columns: 130px minmax(0, 1fr) 130px;
+    gap: 10px;
   }
-  .controls {
+  .skills li {
+    font-size: 0.85rem;
+  }
+}
+@media (max-width: 600px) {
+  main {
+    padding: 16px 12px 24px;
+  }
+  h1 span {
+    margin-left: 0;
+    display: block;
+  }
+  .case-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .case-tabs button {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+  .battle-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+  }
+  .stage {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .skills {
+    padding-top: 0;
+  }
+  .left-skills {
+    grid-column: 1;
+  }
+  .right-skills {
+    grid-column: 2;
+  }
+  h3 {
+    margin-top: 8px;
   }
 }
