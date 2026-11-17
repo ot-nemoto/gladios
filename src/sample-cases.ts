@@ -17,6 +17,7 @@ export const skillNames = {
 } as const;
 export type SkillId = keyof typeof skillNames;
 export type CaseId = "flow" | Scenario;
+// 境目の開始姿勢そのものでは次の技を強調せず、from直後からto直前を使用中とする。
 export interface SkillCue {
   from: number;
   to: number;
@@ -24,7 +25,6 @@ export interface SkillCue {
 }
 export interface SampleCase {
   id: CaseId;
-  label: string;
   frames: Keyframe[];
   left: SkillCue[];
   right: SkillCue[];
@@ -37,7 +37,6 @@ const branchCounter = (end: number): SkillCue[] => [
 export const sampleCases: SampleCase[] = [
   {
     id: "flow",
-    label: "連続攻防",
     frames: flowFrames,
     left: [
       { from: 0, to: 700, skill: "slash" },
@@ -52,7 +51,6 @@ export const sampleCases: SampleCase[] = [
   },
   {
     id: "hold",
-    label: "踏みとどまって防御",
     frames: branchKeys("hold"),
     left: [
       { from: 0, to: 700, skill: "slash" },
@@ -62,14 +60,12 @@ export const sampleCases: SampleCase[] = [
   },
   {
     id: "hit",
-    label: "崩れて被弾",
     frames: branchKeys("hit"),
     left: [{ from: 0, to: 700, skill: "slash" }],
     right: branchCounter(1180),
   },
   {
     id: "recover",
-    label: "崩れた姿勢から防御",
     frames: branchKeys("recover"),
     left: [
       { from: 0, to: 700, skill: "slash" },

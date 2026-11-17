@@ -54,6 +54,9 @@ p {
   color: var(--muted-foreground);
   font-size: 0.85rem;
 }
+.note {
+  max-width: 65ch;
+}
 .case-tabs {
   display: flex;
   flex-wrap: wrap;

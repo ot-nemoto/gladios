@@ -62,7 +62,7 @@ function mount(): void {
       update(t: number, duration: number): void {
         const skill =
           t > 0 && t < duration
-            ? (activeCase[side].find((cue) => t >= cue.from && t < cue.to)
+            ? (activeCase[side].find((cue) => t > cue.from && t < cue.to)
                 ?.skill ?? null)
             : null;
         if (previous !== skill) {
@@ -80,7 +80,7 @@ function mount(): void {
               ? "終了"
               : skill
                 ? `現在：${skillNames[skill]}`
-                : "動作のつなぎ・立て直し";
+                : "使用中のスキルなし";
         if (current.textContent !== text) current.textContent = text;
       },
     };
@@ -195,6 +195,8 @@ function mount(): void {
   for (const tab of tabs) {
     tab.addEventListener("click", () => selectCase(tab));
     tab.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+        return;
       const index = tabs.indexOf(tab);
       const next =
         event.key === "ArrowRight"
