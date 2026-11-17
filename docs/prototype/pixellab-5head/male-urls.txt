@@ -1,8 +1,0 @@
-east https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/east.png
-west https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/west.png
-north https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/north.png
-south https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/south.png
-north-east https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/north-east.png
-north-west https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/north-west.png
-south-east https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/south-east.png
-south-west https://backblaze.pixellab.ai/file/pixellab-characters/3bd0a46b-fe4e-4fdc-8d41-f66c3d041a25/6dbbb044-98af-42c3-9005-092d227cc037/rotations/south-west.png
