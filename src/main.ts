@@ -86,6 +86,10 @@ function mount(): void {
     };
   });
   function setSkillLists(): void {
+    required<HTMLElement>(root, '[data-role="left"]').textContent =
+      activeCase.leftRole ?? "最初に攻撃する側";
+    required<HTMLElement>(root, '[data-role="right"]').textContent =
+      activeCase.rightRole ?? "避けて反撃する側";
     skillPanels[0]!.setCues(activeCase.left);
     skillPanels[1]!.setCues(activeCase.right);
   }

@@ -1,4 +1,9 @@
 import {
+  shieldUpFrames,
+  swordStopFrames,
+  shieldPushFrames,
+} from "./motion-samples";
+import {
   branchKeys,
   flowFrames,
   type Keyframe,
@@ -14,9 +19,17 @@ export const skillNames = {
   counter: "反撃の突き",
   shield: "盾受け",
   lowShield: "低い姿勢の盾受け",
+  shieldUp: "盾で上へそらす",
+  swordStop: "剣で受け止める",
+  shieldPush: "盾の面で押す",
 } as const;
 export type SkillId = keyof typeof skillNames;
-export type CaseId = "flow" | Scenario;
+export type CaseId =
+  | "flow"
+  | Scenario
+  | "shield-up"
+  | "sword-stop"
+  | "shield-push";
 // 境目の開始姿勢そのものでは次の技を強調せず、from直後からto直前を使用中とする。
 export interface SkillCue {
   from: number;
@@ -26,6 +39,8 @@ export interface SkillCue {
 export interface SampleCase {
   id: CaseId;
   frames: Keyframe[];
+  leftRole?: string;
+  rightRole?: string;
   left: SkillCue[];
   right: SkillCue[];
 }
@@ -72,5 +87,43 @@ export const sampleCases: SampleCase[] = [
       { from: 800, to: 1680, skill: "lowShield" },
     ],
     right: branchCounter(1250),
+  },
+  {
+    id: "shield-up",
+    frames: shieldUpFrames,
+    rightRole: "盾でそらして反撃する側",
+    left: [
+      { from: 0, to: 650, skill: "thrust" },
+      { from: 750, to: 1150, skill: "shield" },
+    ],
+    right: [
+      { from: 220, to: 750, skill: "shieldUp" },
+      { from: 750, to: 1150, skill: "counter" },
+    ],
+  },
+  {
+    id: "sword-stop",
+    frames: swordStopFrames,
+    leftRole: "突きを繰り返す側",
+    rightRole: "剣で止め、後退して避ける側",
+    left: [
+      { from: 0, to: 700, skill: "thrust" },
+      { from: 850, to: 1400, skill: "thrust" },
+    ],
+    right: [
+      { from: 220, to: 800, skill: "swordStop" },
+      { from: 850, to: 1400, skill: "retreat" },
+    ],
+  },
+  {
+    id: "shield-push",
+    frames: shieldPushFrames,
+    leftRole: "盾の面で押す側",
+    rightRole: "盾で支え、後退する側",
+    left: [{ from: 0, to: 1200, skill: "shieldPush" }],
+    right: [
+      { from: 250, to: 1100, skill: "shield" },
+      { from: 1100, to: 1450, skill: "retreat" },
+    ],
   },
 ];
