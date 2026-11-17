@@ -12,14 +12,58 @@
   <body>
     <main>
       <header>
-        <h1>gladios</h1>
-        <p>攻防の動くサンプル</p>
+        <h1>gladios <span>攻防の動くサンプル</span></h1>
         <p class="note">
-          グラディウス＋パルムラ同士の動きのイメージです。展開は固定の演出で、能力値・命中・ダメージ・勝敗の判定はまだありません。
+          グラディウス＋パルムラ同士の固定の演出見本です。スキル名は仮称で、能力値・命中・ダメージ・勝敗の判定はまだありません。
         </p>
       </header>
-      <section id="gladios-lines" class="sample" aria-labelledby="flow-heading">
-        <h2 id="flow-heading">攻防をつなぐ</h2>
+      <div class="case-tabs" role="tablist" aria-label="攻防のケース">
+        <button
+          type="button"
+          role="tab"
+          id="tab-flow"
+          aria-controls="battle-panel"
+          aria-selected="true"
+          tabindex="0"
+          data-case="flow"
+        >
+          連続攻防
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-hold"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="hold"
+        >
+          踏みとどまって防御
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-hit"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="hit"
+        >
+          崩れて被弾
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-recover"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="recover"
+        >
+          崩れた姿勢から防御
+        </button>
+      </div>
+      <section id="battle-panel" role="tabpanel" aria-labelledby="tab-flow">
         <div class="controls">
           <button type="button" class="play" data-play>攻防を再生</button>
           <label
@@ -27,86 +71,49 @@
             <select data-speed>
               <option value="1">通常</option>
               <option value="0.35">ゆっくり</option>
-            </select></label
-          >
+            </select>
+          </label>
         </div>
-        <div class="legend">
-          <span>左：斜め前から</span><span>右：斜め後ろから</span>
+        <div class="battle-layout">
+          <aside class="skills left-skills" aria-labelledby="left-title">
+            <h2 id="left-title">左の剣闘士</h2>
+            <p class="facing">最初に攻撃する側<br />斜め前から</p>
+            <h3>使用スキル（仮）</h3>
+            <ul data-skills="left"></ul>
+            <p class="current-state" data-current="left">待機</p>
+          </aside>
+          <div class="stage">
+            <svg
+              viewBox="0 -40 680 400"
+              role="img"
+              aria-label="斜めに向かい合う剣闘士の攻防。左は顔と胸、右は背中が見える向き。"
+            >
+              <path
+                d="M125 202L555 377M213 172L643 347"
+                stroke="var(--border)"
+                fill="none"
+              />
+              <g data-fighter="left"></g>
+              <g data-fighter="right"></g>
+              <g
+                data-contact
+                stroke="var(--foreground)"
+                stroke-width="2"
+                fill="none"
+                opacity="0"
+              >
+                <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
+              </g>
+            </svg>
+          </div>
+          <aside class="skills right-skills" aria-labelledby="right-title">
+            <h2 id="right-title">右の剣闘士</h2>
+            <p class="facing">避けて反撃する側<br />斜め後ろから</p>
+            <h3>使用スキル（仮）</h3>
+            <ul data-skills="right"></ul>
+            <p class="current-state" data-current="right">待機</p>
+          </aside>
         </div>
-        <svg
-          viewBox="0 -40 680 400"
-          role="img"
-          aria-label="斜めに対面する二人。左は顔と胸、右は背中が見える向きで連続した攻防を行う"
-        >
-          <path
-            d="M125 202L555 377M213 172L643 347"
-            stroke="var(--border)"
-            fill="none"
-          />
-          <g data-fighter="left"></g>
-          <g data-fighter="right"></g>
-          <g
-            data-contact
-            stroke="var(--foreground)"
-            stroke-width="2"
-            fill="none"
-            opacity="0"
-          >
-            <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
-          </g>
-        </svg>
-        <output aria-live="polite">構え</output>
-      </section>
-      <hr />
-      <section
-        id="gladios-offbalance"
-        class="sample"
-        aria-labelledby="branch-heading"
-      >
-        <h2 id="branch-heading">攻撃を避けられたあとの3つの展開</h2>
-        <label
-          >展開
-          <select data-scenario>
-            <option value="hold">踏みとどまって反撃を防ぐ</option>
-            <option value="hit" selected>体勢を崩し、反撃を受ける</option>
-            <option value="recover">崩れた姿勢から盾で防ぐ</option>
-          </select>
-        </label>
-        <div class="controls">
-          <button type="button" class="play" data-play>攻防を再生</button>
-          <label
-            >再生速度
-            <select data-speed>
-              <option value="1">通常</option>
-              <option value="0.35">ゆっくり</option>
-            </select></label
-          >
-        </div>
-        <div class="legend">
-          <span>左：最初に攻撃する側</span><span>右：避けて反撃する側</span>
-        </div>
-        <svg
-          viewBox="0 -40 680 400"
-          role="img"
-          aria-label="左の斬撃を右が避けて反撃。左が踏みとどまって防ぐ、崩れて被弾する、崩れた姿勢から盾で防ぐ、の3つの見本"
-        >
-          <path
-            d="M125 202L555 377M213 172L643 347"
-            stroke="var(--border)"
-            fill="none"
-          />
-          <g data-fighter="left"></g>
-          <g data-fighter="right"></g>
-          <g
-            data-contact
-            stroke="var(--foreground)"
-            stroke-width="2"
-            fill="none"
-            opacity="0"
-          >
-            <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
-          </g>
-        </svg>
         <output aria-live="polite">構え</output>
       </section>
     </main>

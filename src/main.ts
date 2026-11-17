@@ -1,12 +1,12 @@
 import "./style.css";
+import type { Pose } from "./sample-data";
 import {
-  branchKeys,
-  branches,
-  flowFrames,
-  type Keyframe,
-  type Pose,
-  type Scenario,
-} from "./sample-data";
+  sampleCases,
+  skillNames,
+  type SampleCase,
+  type SkillCue,
+  type SkillId,
+} from "./sample-cases";
 import { createFighter, drawFighter, project } from "./sample-renderer";
 
 function required<T extends Element>(root: ParentNode, selector: string): T {
@@ -15,15 +15,16 @@ function required<T extends Element>(root: ParentNode, selector: string): T {
   return element;
 }
 
-function mount(rootId: string, hasBranches = false): void {
-  const root = required<HTMLElement>(document, `#${rootId}`);
+function mount(): void {
+  const root = required<HTMLElement>(document, "#battle-panel");
   const svg = required<SVGSVGElement>(root, "svg");
   const button = required<HTMLButtonElement>(root, "[data-play]");
   const speed = required<HTMLSelectElement>(root, "[data-speed]");
   const status = required<HTMLOutputElement>(root, "output");
-  const scenario = hasBranches
-    ? required<HTMLSelectElement>(root, "[data-scenario]")
-    : null;
+  const tabs = [
+    ...document.querySelectorAll<HTMLButtonElement>('[role="tab"][data-case]'),
+  ];
+  let activeCase: SampleCase = sampleCases[0]!;
   const left = createFighter(
     required<SVGGElement>(root, '[data-fighter="left"]'),
     1,
@@ -35,14 +36,59 @@ function mount(rootId: string, hasBranches = false): void {
   const contact = required<SVGGElement>(root, "[data-contact]");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
-  function selectedFrames(): Keyframe[] {
-    const value = scenario?.value;
-    return value && Object.hasOwn(branches, value)
-      ? branchKeys(value as Scenario)
-      : flowFrames;
+  let keys = activeCase.frames;
+  const skillPanels = (["left", "right"] as const).map((side) => {
+    const list = required<HTMLUListElement>(root, `[data-skills="${side}"]`);
+    const current = required<HTMLElement>(root, `[data-current="${side}"]`);
+    let items = new Map<SkillId, HTMLLIElement>();
+    let previous: SkillId | null | undefined;
+    return {
+      setCues(cues: SkillCue[]): void {
+        items = new Map();
+        list.replaceChildren();
+        for (const skill of new Set(cues.map((cue) => cue.skill))) {
+          const item = document.createElement("li");
+          item.dataset.skill = skill;
+          item.append(skillNames[skill]);
+          const indicator = document.createElement("span");
+          indicator.className = "skill-indicator";
+          indicator.textContent = "使用中";
+          item.append(indicator);
+          items.set(skill, item);
+          list.append(item);
+        }
+        previous = undefined;
+      },
+      update(t: number, duration: number): void {
+        const skill =
+          t > 0 && t < duration
+            ? (activeCase[side].find((cue) => t > cue.from && t < cue.to)
+                ?.skill ?? null)
+            : null;
+        if (previous !== skill) {
+          for (const [id, item] of items) {
+            item.classList.toggle("active", id === skill);
+            if (id === skill) item.setAttribute("aria-current", "true");
+            else item.removeAttribute("aria-current");
+          }
+          previous = skill;
+        }
+        const text =
+          t === 0
+            ? "待機"
+            : t >= duration
+              ? "終了"
+              : skill
+                ? `現在：${skillNames[skill]}`
+                : "使用中のスキルなし";
+        if (current.textContent !== text) current.textContent = text;
+      },
+    };
+  });
+  function setSkillLists(): void {
+    skillPanels[0]!.setCues(activeCase.left);
+    skillPanels[1]!.setCues(activeCase.right);
   }
-
-  let keys = selectedFrames();
   let time = 0;
   let last = 0;
   let raf = 0;
@@ -80,6 +126,7 @@ function mount(rootId: string, hasBranches = false): void {
         `translate(${project(point[0], point[1])})`,
       );
     svg.dataset.time = String(Math.round(t));
+    for (const panel of skillPanels) panel.update(t, duration());
   }
 
   function finish(): void {
@@ -122,16 +169,52 @@ function mount(rootId: string, hasBranches = false): void {
     raf = requestAnimationFrame(tick);
   });
 
-  scenario?.addEventListener("change", () => {
+  function selectCase(tab: HTMLButtonElement): void {
+    const selected = sampleCases.find(
+      (sample) => sample.id === tab.dataset.case,
+    );
+    if (!selected || selected === activeCase) return;
     cancelAnimationFrame(raf);
     running = false;
     time = 0;
-    keys = selectedFrames();
+    activeCase = selected;
+    keys = activeCase.frames;
+    for (const item of tabs) {
+      const isSelected = item === tab;
+      item.setAttribute("aria-selected", String(isSelected));
+      item.tabIndex = isSelected ? 0 : -1;
+    }
+    root.setAttribute("aria-labelledby", tab.id);
+    root.dataset.case = activeCase.id;
+    setSkillLists();
     button.textContent = reducedMotion.matches
       ? "次の動きを見る"
       : "攻防を再生";
     render(0);
-  });
+  }
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => selectCase(tab));
+    tab.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+        return;
+      const index = tabs.indexOf(tab);
+      const next =
+        event.key === "ArrowRight"
+          ? (index + 1) % tabs.length
+          : event.key === "ArrowLeft"
+            ? (index + tabs.length - 1) % tabs.length
+            : event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? tabs.length - 1
+                : null;
+      if (next === null) return;
+      event.preventDefault();
+      const target = tabs[next]!;
+      selectCase(target);
+      target.focus();
+    });
+  }
 
   reducedMotion.addEventListener("change", () => {
     if (running && reducedMotion.matches) {
@@ -150,8 +233,9 @@ function mount(rootId: string, hasBranches = false): void {
   });
 
   button.textContent = reducedMotion.matches ? "次の動きを見る" : "攻防を再生";
+  root.dataset.case = activeCase.id;
+  setSkillLists();
   render(0);
 }
 
-mount("gladios-lines");
-mount("gladios-offbalance", true);
+mount();

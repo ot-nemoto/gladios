@@ -22,6 +22,7 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ index.html          攻防サンプルのトップページ
 ├─ src/main.ts         サンプルの再生操作（戦闘判定なし）
 ├─ src/sample-data.ts     表示用の固定の振り付け
+├─ src/sample-cases.ts    ケース別の使用スキル表示
 ├─ src/sample-renderer.ts 棒人間の描画
 ├─ src/style.css          ページの表示
 ├─ vite.config.ts      開発サーバーの設定
