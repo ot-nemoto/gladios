@@ -3,12 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gladios</title>
+    <meta
+      name="description"
+      content="剣闘士オートバトルゲーム gladios の、攻防の動きを確認するサンプル。"
+    />
+    <title>gladios — 攻防の動くサンプル</title>
   </head>
   <body>
     <main>
-      <h1>gladios</h1>
-      <p>戦闘システムを再設計中です。</p>
+      <header>
+        <h1>gladios</h1>
+        <p>攻防の動くサンプル</p>
+        <p class="note">
+          グラディウス＋パルムラ同士の動きのイメージです。展開は固定の演出で、能力値・命中・ダメージ・勝敗の判定はまだありません。
+        </p>
+      </header>
+      <section id="gladios-lines" class="sample" aria-labelledby="flow-heading">
+        <h2 id="flow-heading">攻防をつなぐ</h2>
+        <div class="controls">
+          <button type="button" class="play" data-play>攻防を再生</button>
+          <label
+            >再生速度
+            <select data-speed>
+              <option value="1">通常</option>
+              <option value="0.35">ゆっくり</option>
+            </select></label
+          >
+        </div>
+        <div class="legend">
+          <span>左：斜め前から</span><span>右：斜め後ろから</span>
+        </div>
+        <svg
+          viewBox="0 0 680 360"
+          role="img"
+          aria-label="斜めに対面する二人。左は顔と胸、右は背中が見える向きで連続した攻防を行う"
+        >
+          <path
+            d="M125 202L555 377M213 172L643 347"
+            stroke="var(--border)"
+            fill="none"
+          />
+          <g data-fighter="left"></g>
+          <g data-fighter="right"></g>
+          <g
+            data-contact
+            stroke="var(--foreground)"
+            stroke-width="2"
+            fill="none"
+            opacity="0"
+          >
+            <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
+          </g>
+        </svg>
+        <output aria-live="polite">構え</output>
+      </section>
+      <hr />
+      <section
+        id="gladios-offbalance"
+        class="sample"
+        aria-labelledby="branch-heading"
+      >
+        <h2 id="branch-heading">攻撃を避けられたあとの3つの展開</h2>
+        <label
+          >展開
+          <select data-scenario>
+            <option value="hold">踏みとどまって反撃を防ぐ</option>
+            <option value="hit" selected>体勢を崩し、反撃を受ける</option>
+            <option value="recover">崩れた姿勢から盾で防ぐ</option>
+          </select>
+        </label>
+        <div class="controls">
+          <button type="button" class="play" data-play>攻防を再生</button>
+          <label
+            >再生速度
+            <select data-speed>
+              <option value="1">通常</option>
+              <option value="0.35">ゆっくり</option>
+            </select></label
+          >
+        </div>
+        <div class="legend">
+          <span>左：最初に攻撃する側</span><span>右：避けて反撃する側</span>
+        </div>
+        <svg
+          viewBox="0 0 680 360"
+          role="img"
+          aria-label="左の斬撃を右が避けて反撃。左が踏みとどまって防ぐ、崩れて被弾する、崩れた姿勢から盾で防ぐ、の3つの見本"
+        >
+          <path
+            d="M125 202L555 377M213 172L643 347"
+            stroke="var(--border)"
+            fill="none"
+          />
+          <g data-fighter="left"></g>
+          <g data-fighter="right"></g>
+          <g
+            data-contact
+            stroke="var(--foreground)"
+            stroke-width="2"
+            fill="none"
+            opacity="0"
+          >
+            <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
+          </g>
+        </svg>
+        <output aria-live="polite">構え</output>
+      </section>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

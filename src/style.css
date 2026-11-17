@@ -1,0 +1,113 @@
+:root {
+  color-scheme: light dark;
+  --background: light-dark(#faf9f6, #1b1c1e);
+  --foreground: light-dark(#242525, #eeece7);
+  --muted-foreground: light-dark(#686866, #b1b0aa);
+  --border: light-dark(#d8d6cf, #444542);
+  font-family: system-ui, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+header {
+  margin-bottom: 32px;
+}
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+p {
+  margin: 6px 0 0;
+}
+.note {
+  color: var(--muted-foreground);
+  max-width: 65ch;
+}
+.sample {
+  display: grid;
+  gap: 12px;
+}
+.controls,
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+.legend {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+select,
+button {
+  font: inherit;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+select {
+  width: 100%;
+  padding: 8px 32px 8px 10px;
+  color: var(--foreground);
+  background: var(--background);
+}
+button {
+  padding: 8px 16px;
+  color: var(--background);
+  background: var(--foreground);
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.85;
+}
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--muted-foreground);
+  outline-offset: 3px;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+output {
+  display: block;
+  min-height: 3.2em;
+  overflow-wrap: anywhere;
+}
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+@media (max-width: 400px) {
+  main {
+    padding: 20px 12px 32px;
+  }
+  .controls {
+    gap: 12px;
+  }
+}
