@@ -1,4 +1,2 @@
-import './ui/style.css';
-import { mountViewer } from './ui/viewer';
-
-mountViewer(document.querySelector<HTMLElement>('#app')!);
+// 新しいゲームロジックは、モーションと接続の設計を確認してから実装する。
+export {};
