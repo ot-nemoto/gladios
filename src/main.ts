@@ -26,9 +26,11 @@ function mount(rootId: string, hasBranches = false): void {
     : null;
   const left = createFighter(
     required<SVGGElement>(root, '[data-fighter="left"]'),
+    1,
   );
   const right = createFighter(
     required<SVGGElement>(root, '[data-fighter="right"]'),
+    -1,
   );
   const contact = required<SVGGElement>(root, "[data-contact]");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -63,7 +65,7 @@ function mount(rootId: string, hasBranches = false): void {
     drawFighter(left, mix(a.l, b.l, eased), 1);
     drawFighter(right, mix(a.r, b.r, eased), -1);
     const pose = fraction > 0.7 ? b : a;
-    const text = t === duration() ? keys[keys.length - 1]!.text : pose.text;
+    const text = pose.text;
     if (status.textContent !== text) status.textContent = text;
     const point =
       b.contact && fraction > 0.86
@@ -88,7 +90,10 @@ function mount(rootId: string, hasBranches = false): void {
   }
 
   function tick(now: number): void {
-    time = Math.min(duration(), time + (now - last) * Number(speed.value));
+    time = Math.min(
+      duration(),
+      time + Math.max(0, now - last) * Number(speed.value),
+    );
     last = now;
     render(time);
     if (time < duration()) raf = requestAnimationFrame(tick);
@@ -102,11 +107,15 @@ function mount(rootId: string, hasBranches = false): void {
       button.textContent = "続きを再生";
       return;
     }
-    if (time >= duration()) time = 0;
     if (reducedMotion.matches) {
-      finish();
+      // 動きを減らす場合も、各段階を静止画で確認できる。
+      time = time >= duration() ? 0 : keys.find((key) => key.t > time)!.t;
+      render(time);
+      button.textContent =
+        time >= duration() ? "もう一度見る" : "次の動きを見る";
       return;
     }
+    if (time >= duration()) time = 0;
     running = true;
     last = performance.now();
     button.textContent = "一時停止";
@@ -118,17 +127,29 @@ function mount(rootId: string, hasBranches = false): void {
     running = false;
     time = 0;
     keys = selectedFrames();
-    button.textContent = "攻防を再生";
+    button.textContent = reducedMotion.matches
+      ? "次の動きを見る"
+      : "攻防を再生";
     render(0);
   });
 
   reducedMotion.addEventListener("change", () => {
     if (running && reducedMotion.matches) {
       cancelAnimationFrame(raf);
-      finish();
+      running = false;
     }
+    button.textContent = reducedMotion.matches
+      ? time >= duration()
+        ? "もう一度見る"
+        : "次の動きを見る"
+      : time >= duration()
+        ? "もう一度再生"
+        : time > 0
+          ? "続きを再生"
+          : "攻防を再生";
   });
 
+  button.textContent = reducedMotion.matches ? "次の動きを見る" : "攻防を再生";
   render(0);
 }
 

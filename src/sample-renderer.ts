@@ -10,7 +10,7 @@ const make = <K extends keyof SVGElementTagNameMap>(
   parent.append(e);
   return e;
 };
-export function createFighter(g: SVGGElement) {
+export function createFighter(g: SVGGElement, mirror: 1 | -1) {
   g.setAttribute("stroke", "var(--foreground)");
   g.setAttribute("stroke-width", "5");
   g.setAttribute("stroke-linecap", "round");
@@ -44,6 +44,11 @@ export function createFighter(g: SVGGElement) {
     { rx: 15, ry: 24, fill: "var(--background)", "stroke-width": 3 },
     g,
   );
+  // The near fighter's back occludes the far shield arm.
+  if (mirror === -1) {
+    g.prepend(shield);
+    g.prepend(rear);
+  }
   return { g, rear, torso, detail, legs, arm, head, face, sword, shield };
 }
 const rad = (d: number) => (d * Math.PI) / 180;
@@ -171,9 +176,4 @@ export function drawFighter(
     "transform",
     `translate(${shieldScreen}) rotate(${-tilt * 0.5})`,
   );
-  // The near fighter's back occludes the far shield arm.
-  if (mirror === -1) {
-    f.g.prepend(f.shield);
-    f.g.prepend(f.rear);
-  }
 }
