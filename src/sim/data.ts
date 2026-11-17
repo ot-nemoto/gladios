@@ -134,6 +134,20 @@ export const attackWeightFactor = (weight: number): number => 0.85 + 0.15 * weig
 export const DEFAULT_APPROACH_UNTIL = 1.4;
 /** v3.44：足裏の間隔が基準間合い ± この幅の外なら、基準間合いへ移動してから攻撃する（仮置き）。 */
 export const REF_TOLERANCE = 0.02;
+/**
+ * 行動の決定（確認用の固定分岐）のしきい値。試作の decide と同じ値で、判断パネルの説明にも使う。
+ * - RECOVER_BELOW：体勢がこれ未満なら立て直す（ルール1）
+ * - DUMMY_APPROACH_FROM：攻撃しない側は間隔がこれ以上なら接近する（ルール3）
+ * - PUSH_REACH：盾押しは間隔がこれ以内なら押す。遠ければ PUSH_APPROACH_TO まで寄る
+ * - MIX_PUSH_WHILE：押し＋攻撃は、相手の体勢がこれ以上の間は押す
+ */
+export const RECOVER_BELOW = 50;
+export const DUMMY_APPROACH_FROM = 1.5;
+export const PUSH_REACH = 1.1;
+export const PUSH_APPROACH_TO = 1.05;
+export const MIX_PUSH_WHILE = 50;
+/** 部位の自動選択で、点数が同じときの優先順（v3.44）。 */
+export const PART_TIE_ORDER: readonly Part[] = ['torso', 'head', 'leg', 'arm'];
 /** 移動範囲の端（原点から ±12m、v3.25）。 */
 export const ARENA_HALF = 12.0;
 /** 位置を移動範囲（±ARENA_HALF）の中に収める。 */

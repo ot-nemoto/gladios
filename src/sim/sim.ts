@@ -14,6 +14,11 @@ import {
   ARENA_HALF,
   CONDITIONS,
   DEFAULT_APPROACH_UNTIL,
+  DUMMY_APPROACH_FROM,
+  MIX_PUSH_WHILE,
+  PUSH_APPROACH_TO,
+  PUSH_REACH,
+  RECOVER_BELOW,
   GAP_EPS,
   DT,
   HP_LOSS,
@@ -56,6 +61,7 @@ import {
 } from './rules';
 import { selectPart } from './select';
 import { cos, radians, sin } from './trig';
+import type { Decision, DecisionFacts, ReactionPlan, RuleId, SpacingTrace, Trace } from './trace';
 
 export type GladId = 'A' | 'B';
 
@@ -121,6 +127,10 @@ export class Sim {
   readonly log: string[] = [];
   over = false;
   summary: Summary | null = null;
+  /** 判断の過程（表示用。判定には使わない。#33）。 */
+  readonly trace: Trace = { decisions: [], reactions: [] };
+  /** 結果が未定の反応の予定（剣闘士ごと）。 */
+  private readonly pendingReaction: Record<GladId, ReactionPlan | null> = { A: null, B: null };
 
   private readonly policies: Record<GladId, Policy>;
   private readonly atkSets: Partial<Record<GladId, string>>;
@@ -218,9 +228,11 @@ export class Sim {
       const o = g.opp;
       const already = kind === 'attack' && holdStart !== null && o.switchFor === holdStart;
       if (!already && this.policyOf(o) !== 'none' && o.switchAt === null) {
-        o.switchAt =
-          this.t + DETECTION_DELAY + judgmentDelay(o) + (kind === 'attack' ? readShift(o, setId) : 0.0);
+        const jd = judgmentDelay(o);
+        const rs = kind === 'attack' ? readShift(o, setId) : 0.0;
+        o.switchAt = this.t + DETECTION_DELAY + jd + rs;
         if (kind === 'attack') o.switchFor = holdStart;
+        this.planReaction(o, label, jd, rs);
       }
     }
     g.stamina = Math.max(0.0, g.stamina - cost);
@@ -233,9 +245,37 @@ export class Sim {
     this.ev('行動開始', `${g.id}: 構え（${label}）`);
     const o = g.opp;
     if (this.policyOf(o) !== 'none' && o.switchAt === null) {
-      o.switchAt = this.t + DETECTION_DELAY + judgmentDelay(o) + readShift(o, setId);
+      const jd = judgmentDelay(o);
+      const rs = readShift(o, setId);
+      o.switchAt = this.t + DETECTION_DELAY + jd + rs;
       o.switchFor = this.t;
+      this.planReaction(o, `構え（${label}）`, jd, rs);
     }
+  }
+
+  /** 反応の予定を記録する（表示用）。switchAt と同じ値を同じ順で足す。 */
+  private planReaction(o: Glad, cause: string, judgment: number, read: number): void {
+    const plan: ReactionPlan = {
+      t: this.t,
+      actor: o.id as GladId,
+      cause,
+      at: o.switchAt!,
+      detect: DETECTION_DELAY,
+      judgment,
+      read,
+      policy: this.policyOf(o) as ReactionPlan['policy'],
+    };
+    this.trace.reactions.push(plan);
+    this.pendingReaction[o.id as GladId] = plan;
+  }
+
+  private settleReaction(g: Glad, outcome: NonNullable<ReactionPlan['outcome']>): void {
+    const plan = this.pendingReaction[g.id as GladId];
+    if (plan) {
+      plan.outcome = outcome;
+      plan.settledAt = this.t;
+    }
+    this.pendingReaction[g.id as GladId] = null;
   }
 
   /**
@@ -243,60 +283,117 @@ export class Sim {
    * 先に移動する（遠ければ接近、近ければ距離を取る）。移動が終わったら作戦を再評価する。
    * 移動範囲の端に背を付けていて下がれないときは、今の間隔から攻撃する。
    */
-  private moveOrHold(g: Glad, sid: string, label: string, prefix: string): void {
+  private moveOrHold(g: Glad, sid: string, label: string, prefix: string): SpacingTrace {
     const dist = Math.abs(g.opp.x - g.x);
     const refd = kf(sid).refDistance;
+    const spacing = (move: SpacingTrace['move']): SpacingTrace => ({
+      setId: sid,
+      gap: dist,
+      ref: refd ?? null,
+      tolerance: REF_TOLERANCE,
+      move,
+    });
     if (refd !== undefined && Math.abs(dist - refd) > REF_TOLERANCE) {
       if (dist > refd) {
         this.startAction(g, 'approach', `${prefix}: 間合いまで接近する`, { until: refd });
-        return;
+        return spacing('approach');
       }
       if (g.x * g.facing > -ARENA_HALF + GAP_EPS) {
         // 下がる余地がある
         this.startAction(g, 'retreat', `${prefix}: 間合いまで距離を取る`, { until: refd });
-        return;
+        return spacing('retreat');
       }
+      this.enterHold(g, sid, label);
+      return spacing('wall');
     }
     this.enterHold(g, sid, label);
+    return spacing(refd === undefined ? 'noRef' : 'inRange');
   }
 
   // ---- 行動の決定（確認用の固定分岐。作戦ルールは未実装） ----
+  /**
+   * 試作と同じ固定分岐を、上から順に条件を調べて最初に当てはまったルールを使う形で書く。
+   * 分岐の結果は試作の if/elif と同じ（体勢崩れは盾押し・攻撃より先に調べる）。
+   * 調べたルールと、ルールが見た値を判断の過程として trace に残す（表示用。文言は画面の側で作る。#33）。
+   */
   private decide(g: Glad): void {
     const o = g.opp;
     const dist = Math.abs(o.x - g.x);
     const gid = g.id as GladId;
-    if (g.posture < 50) {
-      this.startAction(g, 'postureRecovery', 'ルール1: 体勢を立て直す');
-    } else if (staminaStage(g)[0] === '枯渇') {
-      this.startAction(g, 'wait', 'ルール2: 待機する');
-    } else if (this.passive.has(g.id)) {
-      // ルール3（遠ければ接近）は攻撃しない側だけ。攻撃する側の間合いは基準間合いに従う（v3.44）
-      if (dist >= 1.5) this.startAction(g, 'approach', 'ルール3: 接近する');
-      else this.startAction(g, 'wait', 'ダミー: 待機する（攻撃しない）');
-    } else if (!g.collapsed) {
-      const pushMode = this.pushUsers[gid];
-      const pattern = this.auto[gid];
-      if (pushMode && (pushMode === 'push' || o.posture >= 50)) {
-        if (dist <= 1.1) this.startAction(g, 'push', '盾押し: 押し込み');
-        else this.startAction(g, 'approach', '盾押し: 押し込む位置まで接近する', { until: 1.05 });
-      } else if (pattern !== undefined) {
-        const { part, scores } = selectPart(g, pattern);
-        const detail = PARTS.map((p) => `${PART_JP[p]}=${scores[p] === null ? '届かない' : scores[p]}`).join(' ');
-        if (part === null) {
-          this.ev('選択', `${g.id}: 自動選択 [${detail}] → 届く部位なし、接近する`);
-          this.startAction(g, 'approach', '自動選択: 届く位置まで接近する');
+    const passive = this.passive.has(g.id);
+    const pushMode = this.pushUsers[gid];
+    const pattern = this.auto[gid];
+    const fixedSet = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
+    const facts: DecisionFacts = {
+      posture: g.posture,
+      stamina: g.stamina,
+      staminaStage: staminaStage(g)[0],
+      collapsed: g.collapsed,
+      gap: dist,
+      oppPosture: o.posture,
+      push: pushMode ?? null,
+      attack: pattern !== undefined ? { kind: 'auto', pattern } : { kind: 'fixed', set: fixedSet },
+    };
+    const rules: [RuleId, boolean][] = [
+      ['recover', g.posture < RECOVER_BELOW],
+      ['exhausted', facts.staminaStage === '枯渇'],
+    ];
+    if (passive) rules.push(['dummyApproach', dist >= DUMMY_APPROACH_FROM], ['dummyWait', true]);
+    rules.push(['collapsed', g.collapsed]);
+    if (pushMode) rules.push(['push', pushMode === 'push' || o.posture >= MIX_PUSH_WHILE]);
+    rules.push(['attack', true]);
+    const chosen = rules.findIndex(([, hit]) => hit);
+    const decision: Decision = {
+      t: this.t,
+      actor: gid,
+      rules: rules.map(([id], i) => ({
+        id,
+        result: i < chosen ? 'unmatched' : i === chosen ? 'matched' : 'notReached',
+      })),
+      facts,
+      action: '',
+    };
+
+    switch (rules[chosen]![0]) {
+      case 'recover':
+        this.startAction(g, 'postureRecovery', 'ルール1: 体勢を立て直す');
+        break;
+      case 'exhausted':
+        this.startAction(g, 'wait', 'ルール2: 待機する');
+        break;
+      case 'dummyApproach':
+        // ルール3（遠ければ接近）は攻撃しない側だけ。攻撃する側の間合いは基準間合いに従う（v3.44）
+        this.startAction(g, 'approach', 'ルール3: 接近する');
+        break;
+      case 'dummyWait':
+        this.startAction(g, 'wait', 'ダミー: 待機する（攻撃しない）');
+        break;
+      case 'collapsed':
+        this.startAction(g, 'wait', '体勢崩れ: 待機する');
+        break;
+      case 'push':
+        if (dist <= PUSH_REACH) this.startAction(g, 'push', '盾押し: 押し込み');
+        else this.startAction(g, 'approach', '盾押し: 押し込む位置まで接近する', { until: PUSH_APPROACH_TO });
+        break;
+      case 'attack':
+        if (pattern !== undefined) {
+          const { part, scores, terms } = selectPart(g, pattern);
+          decision.select = { pattern, scores, terms, part };
+          const detail = PARTS.map((p) => `${PART_JP[p]}=${scores[p] === null ? '届かない' : scores[p]}`).join(' ');
+          if (part === null) {
+            this.ev('選択', `${g.id}: 自動選択 [${detail}] → 届く部位なし、接近する`);
+            this.startAction(g, 'approach', '自動選択: 届く位置まで接近する');
+          } else {
+            const sid = `${pattern}-${part}`;
+            this.ev('選択', `${g.id}: 自動選択 [${detail}] → ${PART_JP[part]}`);
+            decision.spacing = this.moveOrHold(g, sid, attackLabel(sid), '自動選択');
+          }
         } else {
-          const sid = `${pattern}-${part}`;
-          this.ev('選択', `${g.id}: 自動選択 [${detail}] → ${PART_JP[part]}`);
-          this.moveOrHold(g, sid, attackLabel(sid), '自動選択');
+          decision.spacing = this.moveOrHold(g, fixedSet, attackLabel(fixedSet), '固定');
         }
-      } else {
-        const sid = this.atkSets[gid] ?? 'gladius-slash-normal-torso';
-        this.moveOrHold(g, sid, attackLabel(sid), '固定');
-      }
-    } else {
-      this.startAction(g, 'wait', '体勢崩れ: 待機する');
     }
+    decision.action = g.hold ? `構え（${g.hold.label}）` : g.action!.label;
+    this.trace.decisions.push(decision);
   }
 
   // ---- ステップごとの更新 ----
@@ -507,6 +604,7 @@ export class Sim {
       if (g.hold !== null && t >= g.hold.until) {
         const h = g.hold;
         g.hold = null;
+        if (g.switchAt !== null) this.settleReaction(g, 'cancelled');
         g.switchAt = null;
         this.startAction(g, 'attack', h.label, { setId: h.set, holdStart: h.start });
       }
@@ -514,8 +612,10 @@ export class Sim {
       if (g.switchAt !== null && t >= g.switchAt) {
         g.switchAt = null;
         if (g.action && (g.action.kind === 'attack' || g.action.kind === 'defence')) {
+          this.settleReaction(g, 'tooLate');
           this.ev('状態変化', `${g.id}: 防御に切り替えられず（行動開始済み）`);
         } else {
+          this.settleReaction(g, 'switched');
           const prev = g.hold ? '構え' : g.action ? g.action.kind : '待機中';
           g.hold = null;
           g.action = null;

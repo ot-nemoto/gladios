@@ -4,10 +4,36 @@
  * 記録は Sim.run() と同じ手順で進めるため、ログ・結果は run() と完全に同じになる
  * （tests/record.test.ts で確認）。描画はこの記録だけを読み、判定には関わらない。
  */
-import { DT, HP_MAX, STAMINA_MAX, type Pose } from './data';
+import { DT, HP_MAX, KF, STAMINA_MAX, type Pose } from './data';
 import type { BodyRef } from './body';
-import type { ActionKind, Glad } from './glad';
+import type { ActionKind, Glad, Policy } from './glad';
 import { Sim, type GladId, type SimOptions, type Summary } from './sim';
+import { phasesOf } from './motion';
+import type { Decision, ReactionPlan, Trace } from './trace';
+
+/** 攻撃の段階（実行開始印・完了直前開始印で区切る。設計書 §5.4。区切りはモーション図鑑と共通の phasesOf）。 */
+export type AttackStage = '準備' | '実行' | '完了直前';
+
+/** その時点で何をしているか（判断パネルの「今の段階」）。 */
+export type GladStatus =
+  /** 行動の合間。判断の遅れが明けると次を決める。 */
+  | { kind: 'idle'; decideAt: number }
+  /** 構え：攻撃の開始を待っている。 */
+  | { kind: 'hold'; set: string; start: number; until: number }
+  /** 寄る・下がる：目標の間隔まで。 */
+  | { kind: 'approach' | 'retreat'; gap: number; target: number }
+  | { kind: 'attack'; set: string | null; progress: number; dur: number; stage: AttackStage | null }
+  /** 防御。start は防御を始めた時刻（きっかけの反応の予定と結びつける）。progress は姿勢の進み具合（受け流しの保持中は 0.5 のまま）。 */
+  | {
+      kind: 'defence';
+      set: string | null;
+      policy: Policy;
+      start: number;
+      progress: number;
+      phase: 'enter' | 'hold' | 'exit' | null;
+    }
+  | { kind: 'push' | 'postureRecovery'; progress: number; dur: number }
+  | { kind: 'wait' };
 
 export interface GladFrame {
   x: number;
@@ -20,6 +46,7 @@ export interface GladFrame {
   label: string | null;
   /** 構え（攻撃開始前の待ち）の最中か。 */
   holding: boolean;
+  status: GladStatus;
 }
 
 export interface Frame {
@@ -49,11 +76,42 @@ export interface Recording {
   log: string[];
   events: LogEvent[];
   summary: Summary;
+  /** 判断の過程（判断・反応の予定）。時刻の順に並ぶ。 */
+  trace: Trace;
   /** 骨格計算用の固定情報（位置はフレーム側）。 */
   bodies: Record<GladId, Omit<BodyRef, 'x'> & { hpMax: number; staminaMax: number }>;
 }
 
-const snap = (g: Glad): GladFrame => ({
+function attackStage(set: string | null, progress: number): AttackStage | null {
+  const s = set !== null ? KF.get(set) : undefined;
+  const phases = s ? phasesOf(s) : null;
+  if (!phases) return null;
+  return (phases.find((p) => progress < p.to) ?? phases[phases.length - 1]!).name;
+}
+
+function statusOf(g: Glad, t: number): GladStatus {
+  if (g.hold) return { kind: 'hold', set: g.hold.set, start: g.hold.start, until: g.hold.until };
+  const a = g.action;
+  if (a === null) return { kind: 'idle', decideAt: g.decisionAt };
+  const progress = a.dur === Infinity ? 0 : (t - a.start) / a.dur;
+  switch (a.kind) {
+    case 'approach':
+    case 'retreat':
+      return { kind: a.kind, gap: Math.abs(g.opp.x - g.x), target: a.until! };
+    case 'attack':
+      return { kind: 'attack', set: a.set, progress, dur: a.dur, stage: attackStage(a.set, progress) };
+    case 'defence':
+      // 受け流しは「整える → 保持 → 戻る」で時間の進み方が変わるので、姿勢の進み具合（updatePose と同じ）を使う
+      return { kind: 'defence', set: a.set, policy: a.policy ?? 'block', start: a.start, progress: g.poseTau, phase: a.phase ?? null };
+    case 'push':
+    case 'postureRecovery':
+      return { kind: a.kind, progress, dur: a.dur };
+    case 'wait':
+      return { kind: 'wait' };
+  }
+}
+
+const snap = (g: Glad, t: number): GladFrame => ({
   x: g.x,
   // pose は毎ステップ新しいオブジェクトに差し替わるため、参照を保持してよい
   pose: g.pose,
@@ -64,6 +122,7 @@ const snap = (g: Glad): GladFrame => ({
   action: g.action?.kind ?? null,
   label: g.hold ? g.hold.label : (g.action?.label ?? null),
   holding: g.hold !== null,
+  status: statusOf(g, t),
 });
 
 const LINE = /^\[\s*([\d.]+)\] (\S+)\s+(.*)$/;
@@ -92,7 +151,7 @@ export function record(options: SimOptions, stepsPerFrame = 2): Recording {
     sim.step();
     // 決着したステップは間引かずに必ず記録する（最後の画面に決め手の命中を残す）
     if (i % stepsPerFrame === 0 || sim.over) {
-      frames.push({ t: sim.t, logEnd: sim.log.length, A: snap(sim.a), B: snap(sim.b) });
+      frames.push({ t: sim.t, logEnd: sim.log.length, A: snap(sim.a, sim.t), B: snap(sim.b, sim.t) });
     }
     sim.t += DT;
     i++;
@@ -116,6 +175,7 @@ export function record(options: SimOptions, stepsPerFrame = 2): Recording {
     log: sim.log,
     events,
     summary: sim.summary!,
+    trace: sim.trace,
     bodies: { A: body(sim.a), B: body(sim.b) },
   };
 }
@@ -136,3 +196,28 @@ export function frameIndexAt(rec: Recording, t: number): number {
 
 /** フレーム k の時点までに起きた最後のイベント番号（なければ -1）。 */
 export const lastEventAtFrame = (rec: Recording, k: number): number => rec.frames[k]!.logEnd - 1;
+
+/** 時刻 t までに行った、その剣闘士の最後の判断（なければ null）。 */
+export function lastDecision(rec: Recording, actor: GladId, t: number): Decision | null {
+  let found: Decision | null = null;
+  for (const d of rec.trace.decisions) {
+    if (d.t > t) break;
+    if (d.actor === actor) found = d;
+  }
+  return found;
+}
+
+/** その剣闘士が時刻 start に始めた防御のきっかけになった反応の予定（なければ null）。 */
+export function reactionStarting(rec: Recording, actor: GladId, start: number): ReactionPlan | null {
+  return rec.trace.reactions.find((r) => r.actor === actor && r.outcome === 'switched' && r.settledAt === start) ?? null;
+}
+
+/** 時刻 t までに立てた、その剣闘士の最後の反応の予定（なければ null）。 */
+export function lastReaction(rec: Recording, actor: GladId, t: number): ReactionPlan | null {
+  let found: ReactionPlan | null = null;
+  for (const r of rec.trace.reactions) {
+    if (r.t > t) break;
+    if (r.actor === actor) found = r;
+  }
+  return found;
+}

@@ -1,5 +1,6 @@
 /**
- * 戦闘ビューア：確認用シナリオを選び、再演した戦闘を再生・一時停止・シークする。
+ * 戦闘ビューア：確認用シナリオを選び（A・B の設定は画面で変えられる）、再演した戦闘を
+ * 再生・一時停止・シークする。判断パネルで、各時点の判断とその理由を見せる（#33）。
  * 表示は記録（Recording）を読むだけで、判定には関わらない。
  */
 import scenariosJson from '../scenarios/check-scenarios.json';
@@ -13,7 +14,30 @@ import {
   type Recording,
 } from '../sim/record';
 import type { GladId, SimOptions } from '../sim/sim';
+import { decisionPanelHtml } from './decision-panel';
 import { staminaStageName } from './labels';
+import { SHIELD_JP, WEAPON_JP } from './motion-labels';
+import {
+  ATTACK_JP,
+  GLAD_IDS,
+  POLICY_CHOICES,
+  POLICY_JP,
+  PUSH_JP,
+  SHIELD_CHOICES,
+  WEAPON_CHOICES,
+  fitToWeapon,
+  isTwoHanded,
+  optionsFromSettings,
+  patternLabel,
+  patternsFor,
+  setShortLabel,
+  setsFor,
+  settingsFromOptions,
+  type AttackMode,
+  type BattleSettings,
+  type GladSettings,
+  type PushMode,
+} from './settings';
 
 const scenarios = scenariosJson as { name: string; options: SimOptions }[];
 const SPEEDS = [0.1, 0.25, 0.5, 1, 2, 4, 8];
@@ -31,6 +55,14 @@ export function mountViewer(root: HTMLElement): void {
       </label>
       <p id="summary" class="summary"></p>
     </header>
+    <details class="settings" id="settings-box">
+      <summary>剣闘士の設定 <span class="muted">（確認シナリオの設定を変えて戦わせる）</span></summary>
+      <div class="settings-grid">
+        <fieldset id="set-A"></fieldset>
+        <fieldset id="set-B"></fieldset>
+      </div>
+      <label class="cap">時間上限 <input id="cap" type="number" min="10" max="600" step="10" /> 秒</label>
+    </details>
     <section class="stage">
       <div class="hud" id="hud-A"></div>
       <div class="canvas-wrap"><canvas id="arena"></canvas></div>
@@ -45,6 +77,10 @@ export function mountViewer(root: HTMLElement): void {
       <span id="time" class="time"></span>
       <label>速度 <select id="speed"></select></label>
       <label class="check"><input id="regions" type="checkbox" /> 判定領域</label>
+    </section>
+    <section class="decisions">
+      <div class="decision" id="dec-A"></div>
+      <div class="decision" id="dec-B"></div>
     </section>
     <section class="log">
       <div class="log-filters">
@@ -75,22 +111,124 @@ export function mountViewer(root: HTMLElement): void {
   const followChk = $<HTMLInputElement>('#follow');
   const logList = $<HTMLOListElement>('#log-list');
   const hud = { A: $('#hud-A'), B: $('#hud-B') };
+  const dec = { A: $('#dec-A'), B: $('#dec-B') };
+  const setBox = { A: $<HTMLFieldSetElement>('#set-A'), B: $<HTMLFieldSetElement>('#set-B') };
+  const capInput = $<HTMLInputElement>('#cap');
+  const customOpt = new Option('（設定を変更）', 'custom');
 
   scenarios.forEach((s, i) => scenarioSel.add(new Option(s.name, String(i))));
   SPEEDS.forEach((s) => speedSel.add(new Option(`×${s}`, String(s), s === 1, s === 1)));
 
   let rec: Recording;
+  let settings: BattleSettings;
   let t = 0;
   let playing = false;
   let lastTs: number | null = null;
   let logItems: HTMLLIElement[] = [];
   let currentLog = -1;
+  /** 判断パネルを最後に作ったフレーム（-1 = 作り直しが要る）。 */
+  let panelFrame = -1;
 
   const endTime = () => rec.frames[rec.frames.length - 1]!.t;
 
+  /** 確認シナリオを読み込み、その設定で戦わせる。 */
   function load(i: number): void {
-    rec = record(scenarios[i]!.options);
+    customOpt.remove();
+    settings = settingsFromOptions(scenarios[i]!.options);
+    buildSettings();
+    run();
+  }
+
+  /** 画面の設定を変えたとき。 */
+  function changed(): void {
+    if (!customOpt.parentElement) scenarioSel.add(customOpt);
+    scenarioSel.value = 'custom';
+    buildSettings();
+    run();
+  }
+
+  function buildSettings(): void {
+    for (const id of GLAD_IDS) buildGladSettings(id, settings[id]);
+    capInput.value = String(settings.cap);
+  }
+
+  function buildGladSettings(id: GladId, g: GladSettings): void {
+    const opts = <T extends string>(pairs: [T, string][], value: T) =>
+      pairs.map(([v, label]) => `<option value="${v}"${v === value ? ' selected' : ''}>${label}</option>`).join('');
+    const shieldKey = (x: (typeof SHIELD_CHOICES)[number]) => x ?? 'none';
+    const twoHanded = isTwoHanded(g.weapon);
+    setBox[id].innerHTML = html`
+      <legend class="who-${id}">${id}</legend>
+      <label>武器 <select data-field="weapon">${opts(WEAPON_CHOICES.map((w) => [w, WEAPON_JP[w]]), g.weapon)}</select></label>
+      <label>盾 <select data-field="shield"${twoHanded ? ' disabled title="両手持ちの武器は盾を持てない"' : ''}>${opts(
+        SHIELD_CHOICES.map((x) => [shieldKey(x), SHIELD_JP[shieldKey(x)]]),
+        shieldKey(g.shield),
+      )}</select></label>
+      <label>防御の方針 <select data-field="policy">${opts(POLICY_CHOICES.map((p) => [p, POLICY_JP[p]]), g.policy)}</select></label>
+      <label>攻撃のしかた <select data-field="attack">${opts(
+        (['fixed', 'auto', 'none'] as AttackMode[]).map((a) => [a, ATTACK_JP[a]]),
+        g.attack,
+      )}</select></label>
+      ${
+        g.attack === 'fixed'
+          ? `<label>攻撃の一式 <select data-field="set">${opts(setsFor(g.weapon).map((x) => [x.id, setShortLabel(x)]), g.set)}</select></label>`
+          : g.attack === 'auto'
+            ? `<label>攻撃（部位は自動） <select data-field="pattern">${opts(patternsFor(g.weapon).map((p) => [p, patternLabel(p)]), g.pattern)}</select></label>`
+            : ''
+      }
+      <label>盾押し <select data-field="push"${g.attack === 'none' || g.shield === null ? ' disabled title="攻撃しない側・盾なしは使わない"' : ''}>${opts(
+        (['off', 'push', 'mix'] as PushMode[]).map((p) => [p, PUSH_JP[p]]),
+        g.push,
+      )}</select></label>
+      <label>判断能力 <input data-field="judgment" type="number" min="0" max="100" step="5" value="${g.judgment}" /></label>`;
+  }
+
+  function onSettingChange(id: GladId, el: HTMLSelectElement | HTMLInputElement): void {
+    const g = { ...settings[id] };
+    const v = el.value;
+    switch (el.dataset.field) {
+      case 'weapon':
+        g.weapon = v as GladSettings['weapon'];
+        break;
+      case 'shield':
+        g.shield = v === 'none' ? null : (v as NonNullable<GladSettings['shield']>);
+        break;
+      case 'policy':
+        g.policy = v as GladSettings['policy'];
+        break;
+      case 'attack':
+        g.attack = v as AttackMode;
+        break;
+      case 'set':
+        g.set = v;
+        break;
+      case 'pattern':
+        g.pattern = v;
+        break;
+      case 'push':
+        g.push = v as PushMode;
+        break;
+      case 'judgment': {
+        // 空欄や数でない入力（Number('') は 0 になる）は受け付けず、元の値に戻す
+        const n = v.trim() === '' ? NaN : Number(v);
+        if (!Number.isFinite(n)) {
+          el.value = String(settings[id].judgment);
+          return;
+        }
+        g.judgment = Math.max(0, Math.min(100, n));
+        break;
+      }
+      default:
+        return;
+    }
+    settings = { ...settings, [id]: fitToWeapon(g) };
+    changed();
+  }
+
+  function run(): void {
+    rec = record(optionsFromSettings(settings));
     t = 0;
+    panelFrame = -1;
     seek.max = String(endTime());
     const s = rec.summary;
     const time = `${s.time.toFixed(2)}秒`;
@@ -207,6 +345,11 @@ export function mountViewer(root: HTMLElement): void {
     drawFrame(ctx, rec, frame, { showRegions: regionsChk.checked, recentContacts: recentContacts(fi) });
     renderHud('A', frame.A);
     renderHud('B', frame.B);
+    // 判断パネルはフレームが変わったときだけ作り直す（再生中は毎描画で呼ばれるため）
+    if (fi !== panelFrame) {
+      panelFrame = fi;
+      for (const id of GLAD_IDS) dec[id].innerHTML = decisionPanelHtml(rec, id, fi, settings[id].policy === 'none');
+    }
     seek.value = String(t);
     timeEl.textContent = `${t.toFixed(2)} / ${endTime().toFixed(2)} 秒`;
 
@@ -247,7 +390,24 @@ export function mountViewer(root: HTMLElement): void {
     if (rec) render();
   }
 
-  scenarioSel.addEventListener('change', () => load(Number(scenarioSel.value)));
+  scenarioSel.addEventListener('change', () => {
+    if (scenarioSel.value !== 'custom') load(Number(scenarioSel.value));
+  });
+  for (const id of GLAD_IDS) {
+    setBox[id].addEventListener('change', (e) => {
+      const el = e.target;
+      if (el instanceof HTMLSelectElement || el instanceof HTMLInputElement) onSettingChange(id, el);
+    });
+  }
+  capInput.addEventListener('change', () => {
+    const n = capInput.value.trim() === '' ? NaN : Number(capInput.value);
+    if (!Number.isFinite(n) || n <= 0) {
+      capInput.value = String(settings.cap);
+      return;
+    }
+    settings = { ...settings, cap: Math.min(600, n) };
+    changed();
+  });
   playBtn.addEventListener('click', () => setPlaying(!playing));
   $('#restart').addEventListener('click', () => {
     t = 0;
