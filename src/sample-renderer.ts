@@ -88,7 +88,7 @@ export function drawFighter(
   p: Pose,
   mirror: 1 | -1,
 ) {
-  const [x, y, tilt, hx, hy, angle, sx, sy, front, back] = p;
+  const [x, y, tilt, hx, hy, angle, sx, sy, front, back, sweep = 0] = p;
   const at = (point: Point, depth = 0): Point =>
     project(x + mirror * point[0], point[1], depth);
   const line = (points: readonly Point[], depth = 0) =>
@@ -145,7 +145,14 @@ export function drawFighter(
         ]),
     );
   }
-  f.arm.setAttribute("d", line([shoulder, elbow, hand], swordDepth));
+  // 剣腕を肩まわりで横に回す。0なら既存の側面姿勢と同じ描画になる。
+  const yaw = rad(sweep);
+  const swordPoint = (point: Point): Point =>
+    at(
+      [shoulder[0] + (point[0] - shoulder[0]) * Math.cos(yaw), point[1]],
+      swordDepth + mirror * (point[0] - shoulder[0]) * Math.sin(yaw),
+    );
+  f.arm.setAttribute("d", path([shoulder, elbow, hand].map(swordPoint)));
   const head = at([
     neck[0] + Math.sin(rad(tilt)) * 14,
     neck[1] - Math.cos(rad(tilt)) * 14,
@@ -165,12 +172,14 @@ export function drawFighter(
           ])
       : "",
   );
-  const handScreen = at(hand, swordDepth),
+  const handScreen = swordPoint(hand),
     shieldScreen = at(sh, shieldDepth),
     a = rad(angle);
+  const forward = mirror * (0.86 * Math.cos(yaw) + 0.75 * Math.sin(yaw));
+  const rise = mirror * (0.35 * Math.cos(yaw) + 0.38 * Math.sin(yaw));
   f.sword.setAttribute(
     "transform",
-    `matrix(${mirror * 0.86 * Math.cos(a)} ${mirror * 0.35 * Math.cos(a) + Math.sin(a)} ${-mirror * 0.86 * Math.sin(a)} ${-mirror * 0.35 * Math.sin(a) + Math.cos(a)} ${handScreen[0]} ${handScreen[1]})`,
+    `matrix(${forward * Math.cos(a)} ${rise * Math.cos(a) + Math.sin(a)} ${-forward * Math.sin(a)} ${-rise * Math.sin(a) + Math.cos(a)} ${handScreen[0]} ${handScreen[1]})`,
   );
   f.shield.setAttribute(
     "transform",

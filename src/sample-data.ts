@@ -1,6 +1,7 @@
 // 表示用の振り付け。能力値・命中・勝敗の判定には使わない。
 export type Point = readonly [number, number];
 // 腰x/y、上体の傾き、剣の手x/y、剣角度、盾の手x/y、前足x、後足x。
+// 任意の11項目目は剣腕の横振り角度。正は本人の右側、負は左側（表示用）。
 export type Pose = readonly [
   number,
   number,
@@ -12,6 +13,7 @@ export type Pose = readonly [
   number,
   number,
   number,
+  number?,
 ];
 export interface Keyframe {
   t: number;
