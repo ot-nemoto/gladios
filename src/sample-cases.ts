@@ -152,7 +152,7 @@ export const sampleCases: SampleCase[] = [
     frames: singleRightSlashFrames,
     leftRole: "右への斬撃を確認する側",
     rightRole: "位置の目安（動かない）",
-    left: [{ from: 0, to: 950, skill: "slashRight" }],
+    left: [{ from: 0, to: 1050, skill: "slashRight" }],
     right: [],
   },
 ];
