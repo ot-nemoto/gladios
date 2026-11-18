@@ -102,12 +102,13 @@ async function select(style: Style): Promise<void> {
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(image, x, y, image.naturalWidth * scale, image.naturalHeight * scale);
     selected = style;
+    // Identify the actually displayed style for browser checks and inspection.
     canvas.dataset.style = style;
     canvas.setAttribute("aria-label", variant.alt);
     label.textContent = variant.name;
     selectedName.textContent = variant.name;
     selectedDetail.textContent = variant.detail;
-    counter.textContent = `0${styles.indexOf(style) + 1} / 03`;
+    counter.textContent = `${String(styles.indexOf(style) + 1).padStart(2, "0")} / ${String(styles.length).padStart(2, "0")}`;
     download.href = variant.src;
     download.download = `gladiator-chibi-${style}.png`;
     download.removeAttribute("aria-disabled");
@@ -142,4 +143,3 @@ download.addEventListener("click", (event) => {
   if (download.getAttribute("aria-disabled") === "true") event.preventDefault();
 });
 void select("silver");
-for (const style of styles) void load(variants[style].src).catch(() => {});
