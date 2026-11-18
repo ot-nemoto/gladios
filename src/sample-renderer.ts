@@ -16,14 +16,22 @@ export function createFighter(g: SVGGElement, mirror: 1 | -1) {
   g.setAttribute("stroke-linecap", "round");
   g.setAttribute("stroke-linejoin", "round");
   g.setAttribute("fill", "none");
-  const rear = make("path", { opacity: ".45" }, g),
+  const rear = make(
+      "path",
+      { "data-arm": "left", opacity: mirror === 1 ? "1" : ".45" },
+      g,
+    ),
     legs = make("path", {}, g),
     torso = make("path", { "stroke-width": 3, fill: "var(--background)" }, g),
     detail = make("path", { "stroke-width": 2 }, g),
-    arm = make("path", {}, g),
+    arm = make(
+      "path",
+      { "data-arm": "right", opacity: mirror === 1 ? ".45" : "1" },
+      g,
+    ),
     head = make("circle", { r: 13, fill: "var(--background)" }, g),
     face = make("path", { "stroke-width": 2 }, g);
-  const sword = make("g", {}, g);
+  const sword = make("g", { "data-equipment": "sword" }, g);
   make(
     "path",
     { d: "M-12 0H0", stroke: "var(--muted-foreground)", "stroke-width": 5 },
@@ -41,13 +49,22 @@ export function createFighter(g: SVGGElement, mirror: 1 | -1) {
   );
   const shield = make(
     "ellipse",
-    { rx: 15, ry: 24, fill: "var(--background)", "stroke-width": 3 },
+    {
+      "data-equipment": "shield",
+      rx: 15,
+      ry: 24,
+      fill: "var(--background)",
+      "stroke-width": 3,
+    },
     g,
   );
-  // The near fighter's back occludes the far shield arm.
-  if (mirror === -1) {
-    g.prepend(shield);
-    g.prepend(rear);
+  // 左は前面が見えるので、右の剣腕が奥・左の盾腕が手前。
+  // 右は背面が見えるので、左の盾腕が奥・右の剣腕が手前。
+  if (mirror === 1) {
+    g.insertBefore(rear, shield);
+    g.prepend(arm, sword);
+  } else {
+    g.prepend(rear, shield);
   }
   return { g, rear, torso, detail, legs, arm, head, face, sword, shield };
 }
@@ -110,8 +127,8 @@ export function drawFighter(
     fk = joint(hip, ff, 47, 47, -1),
     bk = joint(hip, bf, 47, 47, -1);
   // Actor's right arm carries the sword; actor's left carries the shield.
-  const swordDepth = mirror * 14,
-    shieldDepth = -mirror * 14;
+  const swordDepth = -mirror * 14,
+    shieldDepth = mirror * 14;
   f.rear.setAttribute("d", line([shoulder, leftElbow, sh], shieldDepth));
   f.legs.setAttribute(
     "d",
@@ -151,7 +168,7 @@ export function drawFighter(
   const yaw = rad(sweep);
   const swordPoint = (point: Point): Point => {
     const along = point[0] - shoulder[0];
-    const side = mirror * along * Math.sin(yaw);
+    const side = -mirror * along * Math.sin(yaw);
     const base = at(
       [shoulder[0] + along * Math.cos(yaw), point[1]],
       swordDepth,
@@ -185,10 +202,10 @@ export function drawFighter(
     a = rad(angle);
   const forward =
     mirror *
-    (cameraForward[0] * Math.cos(yaw) + cameraDepth[0] * Math.sin(yaw));
+    (cameraForward[0] * Math.cos(yaw) - cameraDepth[0] * Math.sin(yaw));
   const rise =
     mirror *
-    (cameraForward[1] * Math.cos(yaw) - cameraDepth[1] * Math.sin(yaw));
+    (cameraForward[1] * Math.cos(yaw) + cameraDepth[1] * Math.sin(yaw));
   f.sword.setAttribute(
     "transform",
     `matrix(${forward * Math.cos(a)} ${rise * Math.cos(a) + Math.sin(a)} ${-forward * Math.sin(a)} ${-rise * Math.sin(a) + Math.cos(a)} ${handScreen[0]} ${handScreen[1]})`,
