@@ -209,3 +209,8 @@ output {
     margin-top: 8px;
   }
 }
+
+.facing [data-role] {
+  display: block;
+  min-height: 3.2em;
+}

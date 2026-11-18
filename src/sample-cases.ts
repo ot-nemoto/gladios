@@ -94,11 +94,11 @@ export const sampleCases: SampleCase[] = [
     rightRole: "盾でそらして反撃する側",
     left: [
       { from: 0, to: 650, skill: "thrust" },
-      { from: 750, to: 1150, skill: "shield" },
+      { from: 750, to: 1100, skill: "shield" },
     ],
     right: [
       { from: 220, to: 750, skill: "shieldUp" },
-      { from: 750, to: 1150, skill: "counter" },
+      { from: 750, to: 1100, skill: "counter" },
     ],
   },
   {
@@ -107,11 +107,11 @@ export const sampleCases: SampleCase[] = [
     leftRole: "突きを繰り返す側",
     rightRole: "剣で止め、後退して避ける側",
     left: [
-      { from: 0, to: 700, skill: "thrust" },
+      { from: 0, to: 850, skill: "thrust" },
       { from: 850, to: 1400, skill: "thrust" },
     ],
     right: [
-      { from: 220, to: 800, skill: "swordStop" },
+      { from: 220, to: 850, skill: "swordStop" },
       { from: 850, to: 1400, skill: "retreat" },
     ],
   },
@@ -121,9 +121,6 @@ export const sampleCases: SampleCase[] = [
     leftRole: "盾の面で押す側",
     rightRole: "盾で支え、後退する側",
     left: [{ from: 0, to: 1200, skill: "shieldPush" }],
-    right: [
-      { from: 250, to: 1100, skill: "shield" },
-      { from: 1100, to: 1450, skill: "retreat" },
-    ],
+    right: [{ from: 250, to: 1200, skill: "shield" }],
   },
 ];

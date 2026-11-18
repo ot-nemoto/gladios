@@ -34,6 +34,10 @@ function mount(): void {
     -1,
   );
   const contact = required<SVGGElement>(root, "[data-contact]");
+  const leftRole = required<HTMLElement>(root, '[data-role="left"]');
+  const rightRole = required<HTMLElement>(root, '[data-role="right"]');
+  const defaultLeftRole = leftRole.textContent;
+  const defaultRightRole = rightRole.textContent;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
   let keys = activeCase.frames;
@@ -86,10 +90,8 @@ function mount(): void {
     };
   });
   function setSkillLists(): void {
-    required<HTMLElement>(root, '[data-role="left"]').textContent =
-      activeCase.leftRole ?? "最初に攻撃する側";
-    required<HTMLElement>(root, '[data-role="right"]').textContent =
-      activeCase.rightRole ?? "避けて反撃する側";
+    leftRole.textContent = activeCase.leftRole ?? defaultLeftRole;
+    rightRole.textContent = activeCase.rightRole ?? defaultRightRole;
     skillPanels[0]!.setCues(activeCase.left);
     skillPanels[1]!.setCues(activeCase.right);
   }

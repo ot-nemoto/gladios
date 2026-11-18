@@ -21,7 +21,18 @@ export interface Keyframe {
   contact?: Point;
 }
 export type Scenario = "hold" | "hit" | "recover";
-const guard = (x: number): Pose => [x, 201, 7, 32, 5, -35, 33, 24, 32, -28];
+export const guard = (x: number): Pose => [
+  x,
+  201,
+  7,
+  32,
+  5,
+  -35,
+  33,
+  24,
+  32,
+  -28,
+];
 export const branches: Record<Scenario, Keyframe[]> = {
   hold: [
     {
