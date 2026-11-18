@@ -61,6 +61,11 @@ function mount(): void {
           items.set(skill, item);
           list.append(item);
         }
+        if (items.size === 0) {
+          const item = document.createElement("li");
+          item.textContent = "なし";
+          list.append(item);
+        }
         previous = undefined;
       },
       update(t: number, duration: number): void {

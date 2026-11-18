@@ -2,6 +2,7 @@ import {
   shieldUpFrames,
   swordStopFrames,
   shieldPushFrames,
+  singleThrustFrames,
 } from "./motion-samples";
 import {
   branchKeys,
@@ -29,7 +30,8 @@ export type CaseId =
   | Scenario
   | "shield-up"
   | "sword-stop"
-  | "shield-push";
+  | "shield-push"
+  | "single-thrust";
 // 境目の開始姿勢そのものでは次の技を強調せず、from直後からto直前を使用中とする。
 export interface SkillCue {
   from: number;
@@ -122,5 +124,13 @@ export const sampleCases: SampleCase[] = [
     rightRole: "盾で支え、後退する側",
     left: [{ from: 0, to: 1200, skill: "shieldPush" }],
     right: [{ from: 250, to: 1200, skill: "shield" }],
+  },
+  {
+    id: "single-thrust",
+    frames: singleThrustFrames,
+    leftRole: "突きの動きを確認する側",
+    rightRole: "位置の目安（動かない）",
+    left: [{ from: 0, to: 650, skill: "thrust" }],
+    right: [],
   },
 ];
