@@ -40,7 +40,7 @@ function mount(): void {
   const defaultRightRole = rightRole.textContent;
   const defaultDescription = svg.getAttribute("aria-label")!;
   const startLabel = (): string =>
-    activeCase.id === "single-thrust" ? "モーションを再生" : "攻防を再生";
+    activeCase.id.startsWith("single-") ? "モーションを再生" : "攻防を再生";
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
   let keys = activeCase.frames;
@@ -100,9 +100,11 @@ function mount(): void {
   function setSkillLists(): void {
     svg.setAttribute(
       "aria-label",
-      activeCase.id === "single-thrust"
-        ? "左の剣闘士だけが構える、突く、剣を戻す単体モーション。右は動かない位置の目安。"
-        : defaultDescription,
+      activeCase.id === "single-left-slash"
+        ? "左の剣闘士だけが本人の右側から左側へ斬り、構えに戻す単体モーション。右は動かない位置の目安。"
+        : activeCase.id === "single-thrust"
+          ? "左の剣闘士だけが構える、突く、剣を戻す単体モーション。右は動かない位置の目安。"
+          : defaultDescription,
     );
     leftRole.textContent = activeCase.leftRole ?? defaultLeftRole;
     rightRole.textContent = activeCase.rightRole ?? defaultRightRole;
@@ -116,8 +118,9 @@ function mount(): void {
   const duration = (): number => keys[keys.length - 1]!.t;
 
   function mix(a: Pose, b: Pose, amount: number): Pose {
-    return a.map(
-      (value, i) => value + (b[i]! - value) * amount,
+    return Array.from(
+      { length: 11 },
+      (_, i) => (a[i] ?? 0) + ((b[i] ?? 0) - (a[i] ?? 0)) * amount,
     ) as unknown as Pose;
   }
 
