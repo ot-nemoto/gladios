@@ -2,7 +2,7 @@
 
 gladios の開発者向けの情報。アプリでできることは [README](../README.md) を参照。
 
-- 開発の規則はこの文書だけに書く。[CLAUDE.md](../CLAUDE.md) はこの文書を `@docs/development.md` で取り込み、規則の置き場所を案内するだけなので、エージェント（Claude Code）にもこの文書がそのまま渡る。
+- 開発の規則はこの文書だけに書く。[AGENTS.md](../AGENTS.md) は共通の入口。[CLAUDE.md](../CLAUDE.md) はこの文書を `@docs/development.md` で取り込み、規則の置き場所を案内するだけなので、エージェント（Claude Code）にもこの文書がそのまま渡る。
 - README はアプリの紹介（利用者向け）で、開発の規則や手順は書かない。
 
 ## 設計資料（最初に読むもの）
@@ -15,10 +15,14 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 3. **グラフィックス方針メモ**: [グラフィックス方針メモ](グラフィックス方針メモ.md)
    - PixelLab の API キーは保存されていない。制作を始める前にユーザーに確認すること。
 
+装備室の実装構成・他のLLMへの渡し方は [引き継ぎ資料](装備室_引き継ぎ.md)、依頼内容の書き方は [依頼テンプレート](装備室_依頼テンプレート.md) を参照。
+
 ## ディレクトリ構成
 
 ```
 /
+├─ AGENTS.md           エージェント共通の入口
+├─ CLAUDE.md           Claude Code向けの規則の参照
 ├─ index.html          低頭身キャラの着せ替えページ
 ├─ src/dress-up.ts     立ち絵3枚の切替・PNG保存
 ├─ src/dress-up.css    着せ替えページの表示
@@ -32,6 +36,8 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ vite.config.ts      開発サーバーの設定
 ├─ tsconfig.json       TypeScriptの設定
 └─ docs/
+   ├─ 装備室_引き継ぎ.md
+   ├─ 装備室_依頼テンプレート.md
    ├─ development.md
    ├─ 01_ゲーム企画・基本設計書.md
    ├─ グラディウス＋パルムラ.md
