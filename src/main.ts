@@ -100,11 +100,13 @@ function mount(): void {
   function setSkillLists(): void {
     svg.setAttribute(
       "aria-label",
-      activeCase.id === "single-left-slash"
-        ? "左の剣闘士だけが本人の右側から左側へ斬り、構えに戻す単体モーション。右は動かない位置の目安。"
-        : activeCase.id === "single-thrust"
-          ? "左の剣闘士だけが構える、突く、剣を戻す単体モーション。右は動かない位置の目安。"
-          : defaultDescription,
+      activeCase.id === "single-right-slash"
+        ? "左の剣闘士だけが本人の左側から右側へ斬り、構えに戻す単体モーション。右は動かない位置の目安。"
+        : activeCase.id === "single-left-slash"
+          ? "左の剣闘士だけが本人の右側から左側へ斬り、構えに戻す単体モーション。右は動かない位置の目安。"
+          : activeCase.id === "single-thrust"
+            ? "左の剣闘士だけが構える、突く、剣を戻す単体モーション。右は動かない位置の目安。"
+            : defaultDescription,
     );
     leftRole.textContent = activeCase.leftRole ?? defaultLeftRole;
     rightRole.textContent = activeCase.rightRole ?? defaultRightRole;

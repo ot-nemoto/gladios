@@ -4,6 +4,7 @@ import {
   shieldPushFrames,
   singleThrustFrames,
   singleLeftSlashFrames,
+  singleRightSlashFrames,
 } from "./motion-samples";
 import {
   branchKeys,
@@ -25,6 +26,7 @@ export const skillNames = {
   swordStop: "剣で受け止める",
   shieldPush: "盾の面で押す",
   slashLeft: "剣で左へ斬る",
+  slashRight: "剣で右へ斬る",
 } as const;
 export type SkillId = keyof typeof skillNames;
 export type CaseId =
@@ -34,7 +36,8 @@ export type CaseId =
   | "sword-stop"
   | "shield-push"
   | "single-thrust"
-  | "single-left-slash";
+  | "single-left-slash"
+  | "single-right-slash";
 // 境目の開始姿勢そのものでは次の技を強調せず、from直後からto直前を使用中とする。
 export interface SkillCue {
   from: number;
@@ -142,6 +145,14 @@ export const sampleCases: SampleCase[] = [
     leftRole: "左への斬撃を確認する側",
     rightRole: "位置の目安（動かない）",
     left: [{ from: 0, to: 950, skill: "slashLeft" }],
+    right: [],
+  },
+  {
+    id: "single-right-slash",
+    frames: singleRightSlashFrames,
+    leftRole: "右への斬撃を確認する側",
+    rightRole: "位置の目安（動かない）",
+    left: [{ from: 0, to: 950, skill: "slashRight" }],
     right: [],
   },
 ];
