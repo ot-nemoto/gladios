@@ -62,6 +62,39 @@
         >
           崩れた姿勢から防御
         </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-shield-up"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="shield-up"
+        >
+          盾で上へそらす
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-sword-stop"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="sword-stop"
+        >
+          剣で受け止める
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-shield-push"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="shield-push"
+        >
+          盾の面で押す
+        </button>
       </div>
       <section id="battle-panel" role="tabpanel" aria-labelledby="tab-flow">
         <div class="controls">
@@ -77,7 +110,9 @@
         <div class="battle-layout">
           <aside class="skills left-skills" aria-labelledby="left-title">
             <h2 id="left-title">左の剣闘士</h2>
-            <p class="facing">最初に攻撃する側<br />斜め前から</p>
+            <p class="facing">
+              <span data-role="left">最初に攻撃する側</span>斜め前から
+            </p>
             <h3>使用スキル（仮）</h3>
             <ul data-skills="left"></ul>
             <p class="current-state" data-current="left">待機</p>
@@ -108,7 +143,9 @@
           </div>
           <aside class="skills right-skills" aria-labelledby="right-title">
             <h2 id="right-title">右の剣闘士</h2>
-            <p class="facing">避けて反撃する側<br />斜め後ろから</p>
+            <p class="facing">
+              <span data-role="right">避けて反撃する側</span>斜め後ろから
+            </p>
             <h3>使用スキル（仮）</h3>
             <ul data-skills="right"></ul>
             <p class="current-state" data-current="right">待機</p>
