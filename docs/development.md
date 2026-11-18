@@ -21,6 +21,8 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 
 ```
 /
+├─ AGENTS.md           エージェント共通の入口
+├─ CLAUDE.md           Claude Code向けの規則の参照
 ├─ index.html          低頭身キャラの着せ替えページ
 ├─ src/dress-up.ts     立ち絵3枚の切替・PNG保存
 ├─ src/dress-up.css    着せ替えページの表示
@@ -34,6 +36,8 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ vite.config.ts      開発サーバーの設定
 ├─ tsconfig.json       TypeScriptの設定
 └─ docs/
+   ├─ 装備室_引き継ぎ.md
+   ├─ 装備室_依頼テンプレート.md
    ├─ development.md
    ├─ 01_ゲーム企画・基本設計書.md
    ├─ グラディウス＋パルムラ.md
