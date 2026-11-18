@@ -17,7 +17,7 @@
           グラディウス＋パルムラ同士の固定の演出見本です。スキル名は仮称で、能力値・命中・ダメージ・勝敗の判定はまだありません。
         </p>
       </header>
-      <div class="case-tabs" role="tablist" aria-label="攻防のケース">
+      <div class="case-tabs" role="tablist" aria-label="サンプルのケース">
         <button
           type="button"
           role="tab"
@@ -94,6 +94,17 @@
           data-case="shield-push"
         >
           盾の面で押す
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-single-thrust"
+          aria-controls="battle-panel"
+          aria-selected="false"
+          tabindex="-1"
+          data-case="single-thrust"
+        >
+          剣で突く（単体）
         </button>
       </div>
       <section id="battle-panel" role="tabpanel" aria-labelledby="tab-flow">
