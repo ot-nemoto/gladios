@@ -130,7 +130,7 @@ export const sampleCases: SampleCase[] = [
     frames: singleThrustFrames,
     leftRole: "突きの動きを確認する側",
     rightRole: "位置の目安（動かない）",
-    left: [{ from: 0, to: 650, skill: "thrust" }],
+    left: [{ from: 0, to: 850, skill: "thrust" }],
     right: [],
   },
 ];

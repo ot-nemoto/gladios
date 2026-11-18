@@ -38,6 +38,9 @@ function mount(): void {
   const rightRole = required<HTMLElement>(root, '[data-role="right"]');
   const defaultLeftRole = leftRole.textContent;
   const defaultRightRole = rightRole.textContent;
+  const defaultDescription = svg.getAttribute("aria-label")!;
+  const startLabel = (): string =>
+    activeCase.id === "single-thrust" ? "モーションを再生" : "攻防を再生";
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
   let keys = activeCase.frames;
@@ -95,6 +98,12 @@ function mount(): void {
     };
   });
   function setSkillLists(): void {
+    svg.setAttribute(
+      "aria-label",
+      activeCase.id === "single-thrust"
+        ? "左の剣闘士だけが構える、突く、剣を戻す単体モーション。右は動かない位置の目安。"
+        : defaultDescription,
+    );
     leftRole.textContent = activeCase.leftRole ?? defaultLeftRole;
     rightRole.textContent = activeCase.rightRole ?? defaultRightRole;
     skillPanels[0]!.setCues(activeCase.left);
@@ -121,7 +130,9 @@ function mount(): void {
     const eased = fraction * fraction * (3 - 2 * fraction);
     drawFighter(left, mix(a.l, b.l, eased), 1);
     drawFighter(right, mix(a.r, b.r, eased), -1);
-    const pose = fraction > 0.7 ? b : a;
+    // 終了の説明は、戻しの途中ではなく実際の終端で表示する。
+    const isFinalSegment = b === keys[keys.length - 1];
+    const pose = fraction > 0.7 && (!isFinalSegment || t >= duration()) ? b : a;
     const text = pose.text;
     if (status.textContent !== text) status.textContent = text;
     const point =
@@ -200,7 +211,7 @@ function mount(): void {
     setSkillLists();
     button.textContent = reducedMotion.matches
       ? "次の動きを見る"
-      : "攻防を再生";
+      : startLabel();
     render(0);
   }
   for (const tab of tabs) {
@@ -240,10 +251,10 @@ function mount(): void {
         ? "もう一度再生"
         : time > 0
           ? "続きを再生"
-          : "攻防を再生";
+          : startLabel();
   });
 
-  button.textContent = reducedMotion.matches ? "次の動きを見る" : "攻防を再生";
+  button.textContent = reducedMotion.matches ? "次の動きを見る" : startLabel();
   root.dataset.case = activeCase.id;
   setSkillLists();
   render(0);
