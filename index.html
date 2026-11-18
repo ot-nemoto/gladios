@@ -1,194 +1,37 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="剣闘士オートバトルゲーム gladios の、攻防の動きを確認するサンプル。"
-    />
-    <title>gladios — 攻防の動くサンプル</title>
-  </head>
-  <body>
-    <main>
-      <header>
-        <h1>gladios <span>攻防の動くサンプル</span></h1>
-        <p class="note">
-          グラディウス＋パルムラ同士の固定の演出見本です。スキル名は仮称で、能力値・命中・ダメージ・勝敗の判定はまだありません。
-        </p>
-      </header>
-      <div class="case-tabs" role="tablist" aria-label="サンプルのケース">
-        <button
-          type="button"
-          role="tab"
-          id="tab-flow"
-          aria-controls="battle-panel"
-          aria-selected="true"
-          tabindex="0"
-          data-case="flow"
-        >
-          連続攻防
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-hold"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="hold"
-        >
-          踏みとどまって防御
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-hit"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="hit"
-        >
-          崩れて被弾
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-recover"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="recover"
-        >
-          崩れた姿勢から防御
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-shield-up"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="shield-up"
-        >
-          盾で上へそらす
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-sword-stop"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="sword-stop"
-        >
-          剣で受け止める
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-shield-push"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="shield-push"
-        >
-          盾の面で押す
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-single-thrust"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="single-thrust"
-        >
-          剣で突く（単体）
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-single-left-slash"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="single-left-slash"
-        >
-          剣で左へ斬る（単体）
-        </button>
-        <button
-          type="button"
-          role="tab"
-          id="tab-single-right-slash"
-          aria-controls="battle-panel"
-          aria-selected="false"
-          tabindex="-1"
-          data-case="single-right-slash"
-        >
-          剣で右へ斬る（単体）
-        </button>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="低頭身の女性剣闘士の、兜なし・銀青緑・黒金紫の立ち絵を見比べられる着せ替え見本です。">
+<title>小さな装備室 — 兜の着せ替え</title>
+</head>
+<body>
+<noscript>着せ替えの切替にはJavaScriptを有効にしてください。</noscript>
+<main>
+  <header><div><p class="eyebrow">CHIBI WARDROBE</p><h1>小さな装備室</h1></div><span>女性剣闘士 / 兜の着せ替え</span></header>
+  <div class="layout">
+    <section class="preview" aria-label="着せ替えのプレビュー">
+      <div class="preview-label"><span>APPEARANCE</span><span id="variant-label">銀・青緑の兜</span></div>
+      <div class="arch" aria-hidden="true"></div>
+      <canvas id="character" width="640" height="900" role="img" aria-label="銀・青緑の兜を着けた低頭身の女性剣闘士"></canvas>
+      <div class="preview-bottom"><p id="status" role="status" aria-live="polite">立ち絵を読み込んでいます…</p><span id="counter">02 / 03</span></div>
+    </section>
+    <section class="wardrobe" aria-label="兜の選択">
+      <p class="eyebrow">CHOOSE YOUR HELMET</p><h2>どの兜にする？</h2><p class="intro">気に入った立ち絵を、切り替えて見比べられます。</p>
+      <div class="group-title"><h3>頭の装備</h3><span>3 STYLES</span></div>
+      <div class="options">
+        <button type="button" class="choice" data-style="base" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/base.png" width="1086" height="1448" alt=""></span><span><span class="name">兜なし</span><span class="description">ポニーテールと基本の装い</span></span><span class="check" aria-hidden="true">✓</span></button>
+        <button type="button" class="choice" data-style="silver" aria-pressed="true"><span class="thumb"><img src="/src/assets/dress-up/thumbs/silver-teal.png" width="1024" height="1536" alt=""></span><span><span class="name">銀・青緑の兜</span><span class="description">銀の面頬と、大きな飾り毛</span></span><span class="check" aria-hidden="true">✓</span></button>
+        <button type="button" class="choice" data-style="purple" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/black-gold-purple.png" width="1024" height="1536" alt=""></span><span><span class="name">黒金・紫の兜</span><span class="description">金の縁飾りと、白い仮面</span></span><span class="check" aria-hidden="true">✓</span></button>
       </div>
-      <section id="battle-panel" role="tabpanel" aria-labelledby="tab-flow">
-        <div class="controls">
-          <button type="button" class="play" data-play>攻防を再生</button>
-          <label
-            >再生速度
-            <select data-speed>
-              <option value="1">通常</option>
-              <option value="0.35">ゆっくり</option>
-            </select>
-          </label>
-        </div>
-        <div class="battle-layout">
-          <aside class="skills left-skills" aria-labelledby="left-title">
-            <h2 id="left-title">左の剣闘士</h2>
-            <p class="note">右手：剣／左手：盾</p>
-            <p class="facing">
-              <span data-role="left">最初に攻撃する側</span>斜め前から
-            </p>
-            <h3>使用スキル（仮）</h3>
-            <ul data-skills="left"></ul>
-            <p class="current-state" data-current="left">待機</p>
-          </aside>
-          <div class="stage">
-            <svg
-              viewBox="0 -40 680 400"
-              role="img"
-              aria-label="斜めに向かい合う剣闘士の攻防。左は顔と胸、右は背中が見える向き。"
-            >
-              <path
-                d="M125 202L555 377M213 172L643 347"
-                stroke="var(--border)"
-                fill="none"
-              />
-              <g data-fighter="left"></g>
-              <g data-fighter="right"></g>
-              <g
-                data-contact
-                stroke="var(--foreground)"
-                stroke-width="2"
-                fill="none"
-                opacity="0"
-              >
-                <path d="M-11 -10L-5 -4M12 -9L5 -4M-12 9L-5 4M12 9L5 4" />
-              </g>
-            </svg>
-          </div>
-          <aside class="skills right-skills" aria-labelledby="right-title">
-            <h2 id="right-title">右の剣闘士</h2>
-            <p class="note">右手：剣／左手：盾</p>
-            <p class="facing">
-              <span data-role="right">避けて反撃する側</span>斜め後ろから
-            </p>
-            <h3>使用スキル（仮）</h3>
-            <ul data-skills="right"></ul>
-            <p class="current-state" data-current="right">待機</p>
-          </aside>
-        </div>
-        <output aria-live="polite">構え</output>
-      </section>
-    </main>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+      <div class="selected"><p>現在の装い</p><h3 id="selected-name">銀・青緑の兜</h3><div id="selected-detail">目穴から顔がのぞく、銀色の兜。</div></div>
+      <div class="actions"><button id="remove" type="button">兜を外す</button><a id="download" download="gladiator-chibi-silver.png" aria-disabled="true">この立ち絵を保存 ↓</a></div>
+      <p class="note">3枚の全身画像を切り替える見本です。兜パーツの合成は行っていません。</p>
+    </section>
+  </div>
+  <footer><span>GLADIOS / CHIBI APPEARANCE STUDY</span><span>静止画の着せ替え見本</span></footer>
+</main>
+<script type="module" src="/src/dress-up.ts"></script>
+</body>
 </html>

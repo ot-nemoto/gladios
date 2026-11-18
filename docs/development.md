@@ -19,13 +19,16 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 
 ```
 /
-├─ index.html          攻防サンプルのトップページ
-├─ src/main.ts         サンプルの再生操作（戦闘判定なし）
-├─ src/sample-data.ts     表示用の固定の振り付け
-├─ src/motion-samples.ts  モーション候補を元にした追加の振り付け
-├─ src/sample-cases.ts    ケース別の使用スキル表示
-├─ src/sample-renderer.ts 棒人間の描画
-├─ src/style.css          ページの表示
+├─ index.html          低頭身キャラの着せ替えページ
+├─ src/dress-up.ts     立ち絵3枚の切替・PNG保存
+├─ src/dress-up.css    着せ替えページの表示
+├─ src/assets/dress-up/ 着せ替え用の立ち絵PNGと縮小サムネイル
+├─ src/main.ts         既存の棒人間サンプルの再生操作（公開ページでは未使用）
+├─ src/sample-data.ts     既存棒人間サンプル用の振り付け
+├─ src/motion-samples.ts  既存棒人間サンプル用の追加の振り付け
+├─ src/sample-cases.ts    既存棒人間サンプル用のスキル表示
+├─ src/sample-renderer.ts 既存棒人間サンプルの描画
+├─ src/style.css          既存棒人間サンプルの表示（公開ページでは未使用）
 ├─ vite.config.ts      開発サーバーの設定
 ├─ tsconfig.json       TypeScriptの設定
 └─ docs/
