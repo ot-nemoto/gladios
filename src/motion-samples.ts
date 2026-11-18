@@ -199,6 +199,12 @@ export const singleLeftSlashFrames: Keyframe[] = [
 export const singleRightSlashFrames: Keyframe[] = [
   { t: 0, l: guard(222), r: guard(470), text: "構える" },
   {
+    t: 100,
+    l: [226, 201, 7, 32, 5, 0, 25, 40, 32, -28, 0],
+    r: guard(470),
+    text: "左：横振りの位置へ剣を整える",
+  },
+  {
     t: 220,
     l: [230, 201, 6, 35, -15, 0, 20, 55, 34, -29, -65],
     r: guard(470),
