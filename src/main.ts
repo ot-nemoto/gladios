@@ -118,11 +118,10 @@ function mount(): void {
   const duration = (): number => keys[keys.length - 1]!.t;
 
   function mix(a: Pose, b: Pose, amount: number): Pose {
-    const base = a
-      .slice(0, 10)
-      .map((value, i) => value! + (b[i]! - value!) * amount);
-    const yaw = (a[10] ?? 0) + ((b[10] ?? 0) - (a[10] ?? 0)) * amount;
-    return [...base, yaw] as unknown as Pose;
+    return Array.from(
+      { length: 11 },
+      (_, i) => (a[i] ?? 0) + ((b[i] ?? 0) - (a[i] ?? 0)) * amount,
+    ) as unknown as Pose;
   }
 
   function render(t: number): void {

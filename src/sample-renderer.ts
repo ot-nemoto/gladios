@@ -56,9 +56,11 @@ const path = (p: readonly Point[]) =>
   "M" + p.map((a) => a.map((n) => n.toFixed(2)).join(" ")).join("L");
 // Oblique camera: the left fighter faces toward the viewer;
 // the opponent faces away. Depth separates shoulders, hips and hands.
+const cameraForward: Point = [0.86, 0.35];
+const cameraDepth: Point = [0.75, 0.38];
 export const project = (x: number, y: number, z = 0): Point => [
-  340 + (x - 340) * 0.86 + z * 0.75,
-  270 + (x - 340) * 0.35 + (y - 284) + z * 0.38,
+  340 + (x - 340) * cameraForward[0] + z * cameraDepth[0],
+  270 + (x - 340) * cameraForward[1] + (y - 284) + z * cameraDepth[1],
 ];
 function joint(
   a: Point,
@@ -147,11 +149,17 @@ export function drawFighter(
   }
   // 剣腕を肩まわりで横に回す。0なら既存の側面姿勢と同じ描画になる。
   const yaw = rad(sweep);
-  const swordPoint = (point: Point): Point =>
-    at(
-      [shoulder[0] + (point[0] - shoulder[0]) * Math.cos(yaw), point[1]],
-      swordDepth + mirror * (point[0] - shoulder[0]) * Math.sin(yaw),
+  const swordPoint = (point: Point): Point => {
+    const along = point[0] - shoulder[0];
+    const side = mirror * along * Math.sin(yaw);
+    const base = at(
+      [shoulder[0] + along * Math.cos(yaw), point[1]],
+      swordDepth,
     );
+    // 図として横振りを読めるよう、横方向の差は前後軸と交差する向きへ投影する。
+    // 既存の身体の重なり用depthは保ち、sweep=0なら旧表示と一致させる。
+    return [base[0] + side * cameraDepth[0], base[1] - side * cameraDepth[1]];
+  };
   f.arm.setAttribute("d", path([shoulder, elbow, hand].map(swordPoint)));
   const head = at([
     neck[0] + Math.sin(rad(tilt)) * 14,
@@ -175,8 +183,12 @@ export function drawFighter(
   const handScreen = swordPoint(hand),
     shieldScreen = at(sh, shieldDepth),
     a = rad(angle);
-  const forward = mirror * (0.86 * Math.cos(yaw) + 0.75 * Math.sin(yaw));
-  const rise = mirror * (0.35 * Math.cos(yaw) + 0.38 * Math.sin(yaw));
+  const forward =
+    mirror *
+    (cameraForward[0] * Math.cos(yaw) + cameraDepth[0] * Math.sin(yaw));
+  const rise =
+    mirror *
+    (cameraForward[1] * Math.cos(yaw) - cameraDepth[1] * Math.sin(yaw));
   f.sword.setAttribute(
     "transform",
     `matrix(${forward * Math.cos(a)} ${rise * Math.cos(a) + Math.sin(a)} ${-forward * Math.sin(a)} ${-rise * Math.sin(a) + Math.cos(a)} ${handScreen[0]} ${handScreen[1]})`,
