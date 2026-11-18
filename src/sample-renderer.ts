@@ -18,7 +18,7 @@ export function createFighter(g: SVGGElement, mirror: 1 | -1) {
   g.setAttribute("fill", "none");
   const rear = make(
       "path",
-      { "data-arm": "left", opacity: mirror === 1 ? "1" : ".45" },
+      { "data-arm": "left" },
       g,
     ),
     legs = make("path", {}, g),
@@ -26,7 +26,7 @@ export function createFighter(g: SVGGElement, mirror: 1 | -1) {
     detail = make("path", { "stroke-width": 2 }, g),
     arm = make(
       "path",
-      { "data-arm": "right", opacity: mirror === 1 ? ".45" : "1" },
+      { "data-arm": "right" },
       g,
     ),
     head = make("circle", { r: 13, fill: "var(--background)" }, g),
@@ -60,6 +60,8 @@ export function createFighter(g: SVGGElement, mirror: 1 | -1) {
   );
   // 左は前面が見えるので、右の剣腕が奥・左の盾腕が手前。
   // 右は背面が見えるので、左の盾腕が奥・右の剣腕が手前。
+  const farArm = mirror === 1 ? arm : rear;
+  farArm.setAttribute("opacity", ".45");
   if (mirror === 1) {
     g.insertBefore(rear, shield);
     g.prepend(arm, sword);
