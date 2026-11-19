@@ -3,8 +3,9 @@ import baseImage from "./assets/dress-up/base.png";
 import silverImage from "./assets/dress-up/silver-teal.png";
 import purpleImage from "./assets/dress-up/black-gold-purple.png";
 import goldRedImage from "./assets/dress-up/gold-red.png";
+import hornedImage from "./assets/dress-up/silver-horned.png";
 
-type Style = "base" | "silver" | "purple" | "goldred";
+type Style = "base" | "silver" | "purple" | "goldred" | "horned";
 interface Variant {
   src: string;
   name: string;
@@ -14,7 +15,7 @@ interface Variant {
   feet: number;
 }
 
-const styles: readonly Style[] = ["base", "silver", "purple", "goldred"];
+const styles: readonly Style[] = ["base", "silver", "purple", "goldred", "horned"];
 const silverAnchor = { waist: [540, 948] as const, feet: 1490 };
 const variants: Record<Style, Variant> = {
   base: {
@@ -46,6 +47,14 @@ const variants: Record<Style, Variant> = {
     detail: "赤い飾り毛がある、金色の兜。",
     alt: "赤い大きな飾り毛がある金色の兜を着けた、低頭身の女性剣闘士",
     ...silverAnchor,
+  },
+  horned: {
+    src: hornedImage,
+    name: "銀・角付きの兜",
+    detail: "下へ曲がる茶色の角と、金の付け根がある銀色の兜。",
+    alt: "金色の付け根から下へ曲がる茶色の角が付いた銀の兜を着けた、低頭身の女性剣闘士",
+    waist: [534, 916],
+    feet: 1458,
   },
 };
 
@@ -132,7 +141,7 @@ async function select(style: Style): Promise<void> {
       label.textContent = "読込できません";
       selectedName.textContent = "立ち絵を読み込めませんでした";
       selectedDetail.textContent = "兜を選ぶと、もう一度読み込みます。";
-      counter.textContent = "— / 04";
+      counter.textContent = "— / 05";
     }
     status.textContent = "画像を読み込めませんでした。もう一度、兜を選んでください。";
   } finally {
@@ -143,7 +152,7 @@ async function select(style: Style): Promise<void> {
 for (const button of buttons) {
   button.addEventListener("click", () => {
     const style = button.dataset.style;
-    if (style === "base" || style === "silver" || style === "purple" || style === "goldred") void select(style);
+    if (style === "base" || style === "silver" || style === "purple" || style === "goldred" || style === "horned") void select(style);
   });
 }
 required<HTMLButtonElement>("#remove").addEventListener("click", () => void select("base"));
