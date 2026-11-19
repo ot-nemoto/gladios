@@ -2,8 +2,9 @@ import "./dress-up.css";
 import baseImage from "./assets/dress-up/base.png";
 import silverImage from "./assets/dress-up/silver-teal.png";
 import purpleImage from "./assets/dress-up/black-gold-purple.png";
+import goldRedImage from "./assets/dress-up/gold-red.png";
 
-type Style = "base" | "silver" | "purple";
+type Style = "base" | "silver" | "purple" | "goldred";
 interface Variant {
   src: string;
   name: string;
@@ -13,7 +14,8 @@ interface Variant {
   feet: number;
 }
 
-const styles: readonly Style[] = ["base", "silver", "purple"];
+const styles: readonly Style[] = ["base", "silver", "purple", "goldred"];
+const silverAnchor = { waist: [540, 948] as const, feet: 1490 };
 const variants: Record<Style, Variant> = {
   base: {
     src: baseImage,
@@ -28,8 +30,7 @@ const variants: Record<Style, Variant> = {
     name: "銀・青緑の兜",
     detail: "目穴から顔がのぞく、銀色の兜。",
     alt: "青緑の大きな飾り毛がある銀色の兜を着けた、低頭身の女性剣闘士",
-    waist: [540, 948],
-    feet: 1490,
+    ...silverAnchor,
   },
   purple: {
     src: purpleImage,
@@ -38,6 +39,13 @@ const variants: Record<Style, Variant> = {
     alt: "紫の飾り毛と白い仮面がある黒金の兜を着けた、低頭身の女性剣闘士",
     waist: [535, 925],
     feet: 1490,
+  },
+  goldred: {
+    src: goldRedImage,
+    name: "金・赤の兜",
+    detail: "赤い飾り毛がある、金色の兜。",
+    alt: "赤い大きな飾り毛がある金色の兜を着けた、低頭身の女性剣闘士",
+    ...silverAnchor,
   },
 };
 
@@ -93,7 +101,7 @@ async function select(style: Style): Promise<void> {
   try {
     const image = await load(variant.src);
     if (ticket !== request) return;
-    // These three authored images have different native sizes. Align the waist
+    // These authored images have different native sizes. Align the waist
     // and soles so the body does not shrink when a crest is added.
     const scale = 300 / (variant.feet - variant.waist[1]);
     const x = 320 - variant.waist[0] * scale;
@@ -124,7 +132,7 @@ async function select(style: Style): Promise<void> {
       label.textContent = "読込できません";
       selectedName.textContent = "立ち絵を読み込めませんでした";
       selectedDetail.textContent = "兜を選ぶと、もう一度読み込みます。";
-      counter.textContent = "— / 03";
+      counter.textContent = "— / 04";
     }
     status.textContent = "画像を読み込めませんでした。もう一度、兜を選んでください。";
   } finally {
@@ -135,7 +143,7 @@ async function select(style: Style): Promise<void> {
 for (const button of buttons) {
   button.addEventListener("click", () => {
     const style = button.dataset.style;
-    if (style === "base" || style === "silver" || style === "purple") void select(style);
+    if (style === "base" || style === "silver" || style === "purple" || style === "goldred") void select(style);
   });
 }
 required<HTMLButtonElement>("#remove").addEventListener("click", () => void select("base"));

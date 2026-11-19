@@ -23,7 +23,7 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ AGENTS.md           エージェント共通の入口
 ├─ CLAUDE.md           Claude Code向けの規則の参照
 ├─ index.html          低頭身キャラの着せ替えページ
-├─ src/dress-up.ts     立ち絵3枚の切替・PNG保存
+├─ src/dress-up.ts     立ち絵の切替・PNG保存
 ├─ src/dress-up.css    着せ替えページの表示
 ├─ src/assets/dress-up/ 着せ替え用の立ち絵PNGと縮小サムネイル
 ├─ src/main.ts         既存の棒人間サンプルの再生操作（公開ページでは未使用）
