@@ -102,7 +102,7 @@ async function select(style: Style): Promise<void> {
   try {
     const image = await load(variant.src);
     if (ticket !== request) return;
-    // These three authored images have different native sizes. Align the waist
+    // These authored images have different native sizes. Align the waist
     // and soles so the body does not shrink when a crest is added.
     const scale = 300 / (variant.feet - variant.waist[1]);
     const x = 320 - variant.waist[0] * scale;
