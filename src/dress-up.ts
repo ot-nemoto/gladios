@@ -15,6 +15,7 @@ interface Variant {
 }
 
 const styles: readonly Style[] = ["base", "silver", "purple", "goldred"];
+const silverAnchor = { waist: [540, 948] as const, feet: 1490 };
 const variants: Record<Style, Variant> = {
   base: {
     src: baseImage,
@@ -29,8 +30,7 @@ const variants: Record<Style, Variant> = {
     name: "銀・青緑の兜",
     detail: "目穴から顔がのぞく、銀色の兜。",
     alt: "青緑の大きな飾り毛がある銀色の兜を着けた、低頭身の女性剣闘士",
-    waist: [540, 948],
-    feet: 1490,
+    ...silverAnchor,
   },
   purple: {
     src: purpleImage,
@@ -45,8 +45,7 @@ const variants: Record<Style, Variant> = {
     name: "金・赤の兜",
     detail: "赤い飾り毛がある、金色の兜。",
     alt: "赤い大きな飾り毛がある金色の兜を着けた、低頭身の女性剣闘士",
-    waist: [540, 948],
-    feet: 1490,
+    ...silverAnchor,
   },
 };
 
