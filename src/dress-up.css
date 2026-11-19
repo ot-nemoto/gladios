@@ -337,6 +337,19 @@ footer {
   gap:12px;
 }
 
+/* Keep the character visible while browsing a longer desktop option list. */
+@media(min-width:621px) {
+  .preview {
+    position:sticky;
+    top:16px;
+    align-self:start;
+  }
+
+  canvas {
+    max-height:min(650px,calc(100dvh - 150px));
+  }
+}
+
 @media(max-width:780px) {
   main {
     padding:20px;

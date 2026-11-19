@@ -4,8 +4,10 @@ import silverImage from "./assets/dress-up/silver-teal.png";
 import purpleImage from "./assets/dress-up/black-gold-purple.png";
 import goldRedImage from "./assets/dress-up/gold-red.png";
 import hornedImage from "./assets/dress-up/silver-horned.png";
+import goldHornImage from "./assets/dress-up/gold-single-horn.png";
+import blackRedImage from "./assets/dress-up/black-red-crest.png";
 
-type Style = "base" | "silver" | "purple" | "goldred" | "horned";
+type Style = "base" | "silver" | "purple" | "goldred" | "horned" | "goldhorn" | "blackred";
 interface Variant {
   src: string;
   name: string;
@@ -15,7 +17,7 @@ interface Variant {
   feet: number;
 }
 
-const styles: readonly Style[] = ["base", "silver", "purple", "goldred", "horned"];
+const styles: readonly Style[] = ["base", "silver", "purple", "goldred", "horned", "goldhorn", "blackred"];
 const silverAnchor = { waist: [540, 948] as const, feet: 1490 };
 const variants: Record<Style, Variant> = {
   base: {
@@ -55,6 +57,22 @@ const variants: Record<Style, Variant> = {
     alt: "金色の付け根から下へ曲がる茶色の角が付いた銀の兜を着けた、低頭身の女性剣闘士",
     waist: [534, 916],
     feet: 1458,
+  },
+  goldhorn: {
+    src: goldHornImage,
+    name: "金・一本角の兜",
+    detail: "上へ湾曲する一本角と、長い頬当てのある金色の兜。",
+    alt: "上へ湾曲する一本の角が付いた金の兜を着けた、低頭身の女性剣闘士",
+    waist: [583, 766],
+    feet: 1393,
+  },
+  blackred: {
+    src: blackRedImage,
+    name: "黒・赤い鶏冠の兜",
+    detail: "赤い鶏冠状の飾りと、鼻当てのある黒い兜。",
+    alt: "赤い鶏冠状の飾りが前後に伸びる黒い兜を着けた、低頭身の女性剣闘士",
+    waist: [582, 793],
+    feet: 1401,
   },
 };
 
@@ -141,7 +159,7 @@ async function select(style: Style): Promise<void> {
       label.textContent = "読込できません";
       selectedName.textContent = "立ち絵を読み込めませんでした";
       selectedDetail.textContent = "兜を選ぶと、もう一度読み込みます。";
-      counter.textContent = "— / 05";
+      counter.textContent = "— / 07";
     }
     status.textContent = "画像を読み込めませんでした。もう一度、兜を選んでください。";
   } finally {
@@ -152,7 +170,7 @@ async function select(style: Style): Promise<void> {
 for (const button of buttons) {
   button.addEventListener("click", () => {
     const style = button.dataset.style;
-    if (style === "base" || style === "silver" || style === "purple" || style === "goldred" || style === "horned") void select(style);
+    if (style === "base" || style === "silver" || style === "purple" || style === "goldred" || style === "horned" || style === "goldhorn" || style === "blackred") void select(style);
   });
 }
 required<HTMLButtonElement>("#remove").addEventListener("click", () => void select("base"));
