@@ -24,6 +24,9 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ CLAUDE.md           Claude Code向けの規則の参照
 ├─ index.html          元の画像切替版
 ├─ equipment.html      比較用の装備着脱版
+├─ helmet-fit.html     元の顔と兜のサイズ比較
+├─ src/helmet-fit.ts / .css 比較カードと基準線
+├─ src/equipment-renderer.ts 着脱版と比較ページ共通の合成
 ├─ src/equipment.ts    共通人物と兜パーツの合成・着脱・PNG保存
 ├─ src/equipment-data.ts 装備候補とパーツの定義
 ├─ src/assets/equipment/ 装備着脱用の透過パーツとサムネイル

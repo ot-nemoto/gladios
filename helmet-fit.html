@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="元の顔と兜の大きさ・位置を、同じ倍率と基準線で見比べるページです。装備着脱版に追加した兜も比較できます。">
+<title>小さな装備室 — 顔と兜のサイズ比較</title>
+</head>
+<body class="fit-page">
+<noscript>比較画面の表示にはJavaScriptを有効にしてください。</noscript>
+<main>
+  <header><div><p class="eyebrow">CHIBI WARDROBE</p><h1>顔と兜のサイズ比較</h1></div></header>
+  <nav class="page-switch" aria-label="装備室のページ"><a href="./">画像を切り替える</a><a href="./equipment.html">装備を着脱する</a><a href="./helmet-fit.html" aria-current="page">顔と兜を比較する</a></nav>
+  <section class="fit-reference" aria-labelledby="reference-title">
+    <div id="reference-stage" class="fit-stage"><canvas id="reference" width="480" height="480" role="img" aria-label="基準となる元の顔" aria-busy="true"></canvas></div>
+    <div><h2 id="reference-title">基準：兜なしの元画像</h2>
+      <p>すべて同じ顔の位置・倍率で比較します。<span id="helmet-count"></span></p>
+      <p>縦線は元の顔の耳側と鼻先、横線は頭頂・目・顎の位置に固定しています。</p>
+      <p class="fit-note">頭頂は髪を含む目安です。髪の内側の頭の輪郭を確定する線ではありません。<br>顔周りの比較用のため、羽飾りや角の先は一部画面外になります。</p>
+    </div>
+  </section>
+  <div class="fit-controls"><label><input id="ghost" type="checkbox" disabled>元の顔を透かして比較</label><label><input id="guides" type="checkbox" checked>頭頂・顔の幅・目・顎の基準線を表示</label></div>
+  <div class="fit-loading"><p id="fit-status" role="status" aria-live="polite">元の顔を読み込んでいます…</p><button id="retry" type="button" hidden>再読み込み</button></div>
+  <div id="comparison-grid" class="comparison-grid" aria-label="兜ごとの比較"></div>
+  <p class="fit-note">透かし表示では元の人物に兜を半透明で重ねます。通常表示は装備着脱ページと同じ姿です。<br>青＝頭頂の目安、紫＝顔の幅、緑＝目、赤＝顎。装備画像の変更はこの画面では行いません。</p>
+</main>
+<script type="module" src="/src/helmet-fit.ts"></script>
+</body>
+</html>

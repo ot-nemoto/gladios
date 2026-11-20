@@ -6,7 +6,9 @@
 
 元の全身画像7枚を切り替えるページに加え、[装備を着脱するページ](https://ot-nemoto.github.io/gladios/equipment.html)を用意しています。同じレイアウトで両方式を行き来して比較できます。
 
-着脱版は同じ人物に6種類の兜パーツを重ねます。兜を外すと元の髪型に戻り、着けた姿を合成PNGとして保存できます。武器・防具の着脱やモーション・戦闘判定はありません。
+着脱版は同じ人物に6種類の兜パーツを重ねます。兜を外すと元の髪型に戻り、着けた姿を合成PNGとして保存できます。[顔と兜のサイズ比較](https://ot-nemoto.github.io/gladios/helmet-fit.html)では、元の顔と各兜を同じ倍率で並べ、半透明表示と基準線で大きさや位置を確認できます。着脱版へ追加した兜は比較画面にも反映されます。
+
+武器・防具の着脱やモーション・戦闘判定はありません。
 
 ## 手元で開く
 
@@ -17,7 +19,7 @@ npm ci
 npm run dev
 ```
 
-http://localhost:5173/ で画像切替版、http://localhost:5173/equipment.html で装備着脱版が開きます。
+http://localhost:5173/ で画像切替版、http://localhost:5173/equipment.html で装備着脱版、http://localhost:5173/helmet-fit.html でサイズ比較が開きます。
 
 ## 資料
 
