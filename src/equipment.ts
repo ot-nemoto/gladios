@@ -66,7 +66,7 @@ async function select(item: Equipment): Promise<void> {
   download.setAttribute("aria-disabled", "true");
   status.textContent = "装備を読み込んでいます…";
   try {
-    const result = await composeEquipment(item, () => ticket === request);
+    const result = await composeEquipment(item, { isCurrent: () => ticket === request });
     if (!result || ticket !== request) return;
     drawPreview(ctx, canvas, result, baseAnchor, figure.top);
     composition = result;

@@ -108,8 +108,12 @@ function renderCard(card: Card): void {
   if (!card.failed) card.status.textContent = ghost.checked ? "元の顔に半透明で重ねています。" : "現在の装備表示です。";
 }
 
-function render(): void {
+function renderGuides(): void {
   for (const overlay of document.querySelectorAll<HTMLElement>(".fit-guide-overlay")) overlay.hidden = !showGuides.checked;
+}
+
+function render(): void {
+  renderGuides();
   for (const card of cards) renderCard(card);
 }
 
@@ -117,19 +121,15 @@ async function loadCard(card: Card): Promise<void> {
   card.canvas.setAttribute("aria-busy", "true");
   card.status.textContent = "読み込み中…";
   try {
-    const [normal, helmet, base] = await Promise.all([
-      composeEquipment(card.item), loadImage(card.item.src), loadImage(figure.base),
-    ]);
-    if (!normal || !baseCrop) throw new Error("Missing comparison figure");
-    const transparent = document.createElement("canvas");
-    transparent.width = figure.width;
-    transparent.height = figure.height;
-    const ctx = context(transparent);
-    ctx.drawImage(base, 0, figure.top);
-    ctx.globalAlpha = .55;
-    ctx.drawImage(helmet, 0, 0);
+    const normal = await composeEquipment(card.item);
+    if (!normal) throw new Error("Missing comparison figure");
+    const normalCrop = cropImage(normal);
+    normal.width = normal.height = 0;
+    const transparent = await composeEquipment(card.item, { mode: "ghost" });
+    if (!transparent) throw new Error("Missing comparison figure");
     // Keep only cropped faces; full-size compositions can be released after loading.
-    card.frames = { normal: cropImage(normal), ghost: cropImage(transparent) };
+    card.frames = { normal: normalCrop, ghost: cropImage(transparent) };
+    transparent.width = transparent.height = 0;
     card.failed = false;
     card.canvas.dataset.state = "ready";
     renderCard(card);
@@ -152,18 +152,27 @@ async function initialize(): Promise<void> {
   status.textContent = "元の顔と兜を読み込んでいます…";
   reference.setAttribute("aria-busy", "true");
   try {
-    baseCrop = cropImage(await loadImage(figure.base), crop.y - figure.top);
+    baseCrop ??= cropImage(await loadImage(figure.base), crop.y - figure.top);
     context(reference).clearRect(0, 0, crop.size, crop.size);
     context(reference).drawImage(baseCrop, 0, 0);
     ghost.disabled = false;
-    await Promise.all(cards.map(loadCard));
+    // Process one helmet at a time and leave successful cards untouched on retry.
+    for (const card of cards) if (!card.frames || card.failed) await loadCard(card);
     const failed = cards.filter(card => card.failed).length;
     grid.dataset.state = failed ? "partial" : "ready";
-    status.textContent = failed
+    status.textContent = failed === cards.length && failed > 0
+      ? "すべての兜を読み込めませんでした。再読み込みをお試しください。"
+      : failed
       ? `${cards.length - failed}/${cards.length}種類を表示しました。一部の兜を読み込めませんでした。`
       : `${cards.length}種類の兜を同じ顔・同じ倍率で比較できます。`;
     retry.hidden = failed === 0;
   } catch {
+    for (const card of cards) {
+      card.canvas.removeAttribute("aria-busy");
+      card.canvas.dataset.state = "error";
+      card.canvas.setAttribute("aria-label", "基準の顔を読み込めず比較できませんでした");
+      card.status.textContent = "元の顔を読み込めず比較できませんでした。";
+    }
     grid.dataset.state = "error";
     status.textContent = "元の顔を読み込めませんでした。再読み込みをお試しください。";
     retry.hidden = false;
@@ -175,7 +184,7 @@ async function initialize(): Promise<void> {
 }
 
 ghost.addEventListener("change", render);
-showGuides.addEventListener("change", render);
+showGuides.addEventListener("change", renderGuides);
 retry.addEventListener("click", () => void initialize());
 render();
 void initialize();
