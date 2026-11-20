@@ -15,6 +15,7 @@ import goldhornThumb from "./assets/equipment/thumbs/goldhorn.png";
 import blackredThumb from "./assets/equipment/thumbs/blackred.png";
 
 export const figure = { base, body, ponytail, top: 260, width: 1086, height: 1708 } as const;
+export const equipmentThumbnailSize = { width: 128, height: 128 } as const;
 
 export const equipment = [
   { id: "base", name: "兜なし", detail: "兜を外し、元の顔と髪型に戻ります。", src: null, thumb: null, hairY: 0 },
