@@ -125,12 +125,18 @@ for (const item of equipment) {
   button.setAttribute("aria-pressed", "false");
   const thumb = document.createElement("span");
   thumb.className = "thumb";
-  const image = document.createElement("img");
-  image.src = item.thumb;
-  image.alt = "";
-  image.width = 128;
-  image.height = 202;
-  thumb.append(image);
+  if (item.thumb) {
+    const image = document.createElement("img");
+    image.src = item.thumb;
+    image.alt = "";
+    image.width = 128;
+    image.height = 128;
+    thumb.append(image);
+  } else {
+    thumb.classList.add("thumb-empty");
+    thumb.setAttribute("aria-hidden", "true");
+    thumb.textContent = "—";
+  }
   const text = document.createElement("span");
   const name = document.createElement("span");
   name.className = "name";

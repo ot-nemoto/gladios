@@ -7,7 +7,6 @@ import goldred from "./assets/equipment/gold-red.png";
 import horned from "./assets/equipment/silver-horned.png";
 import goldhorn from "./assets/equipment/gold-single-horn.png";
 import blackred from "./assets/equipment/black-red-crest.png";
-import baseThumb from "./assets/equipment/thumbs/base.png";
 import silverThumb from "./assets/equipment/thumbs/silver.png";
 import purpleThumb from "./assets/equipment/thumbs/purple.png";
 import goldredThumb from "./assets/equipment/thumbs/goldred.png";
@@ -18,7 +17,7 @@ import blackredThumb from "./assets/equipment/thumbs/blackred.png";
 export const figure = { base, body, ponytail, top: 260, width: 1086, height: 1708 } as const;
 
 export const equipment = [
-  { id: "base", name: "兜なし", detail: "兜を外し、元の顔と髪型に戻ります。", src: null, thumb: baseThumb, hairY: 0 },
+  { id: "base", name: "兜なし", detail: "兜を外し、元の顔と髪型に戻ります。", src: null, thumb: null, hairY: 0 },
   { id: "silver", name: "銀・青緑の兜", detail: "青緑の大きな飾り毛と銀の面頬。", src: silver, thumb: silverThumb, hairY: -25 },
   { id: "purple", name: "黒金・紫の兜", detail: "紫の飾り毛と、金で縁取られた白い仮面。", src: purple, thumb: purpleThumb, hairY: 0 },
   { id: "goldred", name: "金・赤の兜", detail: "赤い飾り毛と金の面頬。", src: goldred, thumb: goldredThumb, hairY: -45 },
