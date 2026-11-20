@@ -1,4 +1,5 @@
 import "./dress-up.css";
+import { baseAnchor, drawPreview, loadImage, required } from "./wardrobe-common";
 import baseImage from "./assets/dress-up/base.png";
 import silverImage from "./assets/dress-up/silver-teal.png";
 import purpleImage from "./assets/dress-up/black-gold-purple.png";
@@ -25,8 +26,7 @@ const variants: Record<Style, Variant> = {
     name: "兜なし",
     detail: "基本の服装。顔と髪型をそのまま見られます。",
     alt: "兜を着けず、ポニーテールとベージュのチュニックで立つ低頭身の女性剣闘士",
-    waist: [584, 760],
-    feet: 1396,
+    ...baseAnchor,
   },
   silver: {
     src: silverImage,
@@ -76,12 +76,6 @@ const variants: Record<Style, Variant> = {
   },
 };
 
-function required<T extends Element>(selector: string): T {
-  const element = document.querySelector<T>(selector);
-  if (!element) throw new Error(`Missing wardrobe element: ${selector}`);
-  return element;
-}
-
 const canvas = required<HTMLCanvasElement>("#character");
 const context = canvas.getContext("2d");
 if (!context) throw new Error("Canvas 2D is unavailable");
@@ -93,7 +87,6 @@ const selectedName = required<HTMLElement>("#selected-name");
 const selectedDetail = required<HTMLElement>("#selected-detail");
 const counter = required<HTMLElement>("#counter");
 const buttons = [...document.querySelectorAll<HTMLButtonElement>("button[data-style]")];
-const cache = new Map<string, Promise<HTMLImageElement>>();
 let request = 0;
 let selected: Style | null = null;
 
@@ -101,20 +94,6 @@ function markSelected(style: Style | null): void {
   for (const button of buttons) {
     button.setAttribute("aria-pressed", String(button.dataset.style === style));
   }
-}
-
-function load(src: string): Promise<HTMLImageElement> {
-  const existing = cache.get(src);
-  if (existing) return existing;
-  const pending = new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(`Unable to load ${src}`));
-    image.src = src;
-  });
-  cache.set(src, pending);
-  void pending.catch(() => cache.delete(src));
-  return pending;
 }
 
 async function select(style: Style): Promise<void> {
@@ -126,16 +105,11 @@ async function select(style: Style): Promise<void> {
   status.textContent = "立ち絵を読み込んでいます…";
 
   try {
-    const image = await load(variant.src);
+    const image = await loadImage(variant.src);
     if (ticket !== request) return;
     // These authored images have different native sizes. Align the waist
     // and soles so the body does not shrink when a crest is added.
-    const scale = 300 / (variant.feet - variant.waist[1]);
-    const x = 320 - variant.waist[0] * scale;
-    const y = 852 - variant.feet * scale;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(image, x, y, image.naturalWidth * scale, image.naturalHeight * scale);
+    drawPreview(ctx, canvas, image, variant);
     selected = style;
     // Identify the actually displayed style for browser checks and inspection.
     canvas.dataset.style = style;
