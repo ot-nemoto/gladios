@@ -1,5 +1,6 @@
 import "./dress-up.css";
-import { baseAnchor, drawPreview, loadImage, required } from "./wardrobe-common";
+import { composeEquipment } from "./equipment-renderer";
+import { baseAnchor, drawPreview, required } from "./wardrobe-common";
 import { equipment, equipmentThumbnailSize, figure, type Equipment } from "./equipment-data";
 
 const canvas = required<HTMLCanvasElement>("#character");
@@ -26,27 +27,6 @@ function markSelected(id: Equipment["id"] | null): void {
 
 function updateDownload(): void {
   download.setAttribute("aria-disabled", String(!composition || canvas.hasAttribute("aria-busy") || saving));
-}
-
-async function compose(item: Equipment, isCurrent: () => boolean): Promise<HTMLCanvasElement | null> {
-  const images = item.src === null
-    ? [await loadImage(figure.base)]
-    : await Promise.all([loadImage(figure.ponytail), loadImage(figure.body), loadImage(item.src)]);
-  // Abandon superseded loads before allocating or drawing another large canvas.
-  if (!isCurrent()) return null;
-  const result = document.createElement("canvas");
-  result.width = figure.width;
-  result.height = figure.height;
-  const g = result.getContext("2d");
-  if (!g) throw new Error("Canvas 2D is unavailable");
-  if (item.src === null) {
-    g.drawImage(images[0]!, 0, figure.top);
-  } else {
-    g.drawImage(images[0]!, 0, figure.top + item.hairY);
-    g.drawImage(images[1]!, 0, figure.top);
-    g.drawImage(images[2]!, 0, 0);
-  }
-  return result;
 }
 
 async function save(): Promise<void> {
@@ -86,7 +66,7 @@ async function select(item: Equipment): Promise<void> {
   download.setAttribute("aria-disabled", "true");
   status.textContent = "装備を読み込んでいます…";
   try {
-    const result = await compose(item, () => ticket === request);
+    const result = await composeEquipment(item, () => ticket === request);
     if (!result || ticket !== request) return;
     drawPreview(ctx, canvas, result, baseAnchor, figure.top);
     composition = result;
