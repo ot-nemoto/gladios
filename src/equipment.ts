@@ -1,11 +1,6 @@
 import "./dress-up.css";
+import { baseAnchor, drawPreview, loadImage, required } from "./wardrobe-common";
 import { equipment, figure, type Equipment } from "./equipment-data";
-
-function required<T extends Element>(selector: string): T {
-  const element = document.querySelector<T>(selector);
-  if (!element) throw new Error(`Missing equipment element: ${selector}`);
-  return element;
-}
 
 const canvas = required<HTMLCanvasElement>("#character");
 const context = canvas.getContext("2d");
@@ -18,46 +13,70 @@ const selectedName = required<HTMLElement>("#selected-name");
 const selectedDetail = required<HTMLElement>("#selected-detail");
 const counter = required<HTMLElement>("#counter");
 const options = required<HTMLElement>("#equipment-options");
-const cache = new Map<string, Promise<HTMLImageElement>>();
 const buttons: HTMLButtonElement[] = [];
 let request = 0;
 let displayed: Equipment | null = null;
+let composition: HTMLCanvasElement | null = null;
+let saving = false;
+let downloadURL: string | null = null;
 
 function markSelected(id: Equipment["id"] | null): void {
   for (const button of buttons) button.setAttribute("aria-pressed", String(button.dataset.style === id));
 }
 
-function load(src: string): Promise<HTMLImageElement> {
-  const existing = cache.get(src);
-  if (existing) return existing;
-  const pending = new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(`Unable to load equipment image: ${src}`));
-    image.src = src;
-  });
-  cache.set(src, pending);
-  void pending.catch(() => { if (cache.get(src) === pending) cache.delete(src); });
-  return pending;
+function updateDownload(): void {
+  download.setAttribute("aria-disabled", String(!composition || canvas.hasAttribute("aria-busy") || saving));
 }
 
-async function compose(item: Equipment): Promise<HTMLCanvasElement> {
-  // Prepare each selection separately: an incomplete load never changes the visible figure.
+async function compose(item: Equipment, isCurrent: () => boolean): Promise<HTMLCanvasElement | null> {
+  const images = item.src === null
+    ? [await loadImage(figure.base)]
+    : await Promise.all([loadImage(figure.ponytail), loadImage(figure.body), loadImage(item.src)]);
+  // Abandon superseded loads before allocating or drawing another large canvas.
+  if (!isCurrent()) return null;
   const result = document.createElement("canvas");
   result.width = figure.width;
   result.height = figure.height;
   const g = result.getContext("2d");
   if (!g) throw new Error("Canvas 2D is unavailable");
-  g.imageSmoothingEnabled = false;
   if (item.src === null) {
-    g.drawImage(await load(figure.base), 0, figure.top);
+    g.drawImage(images[0]!, 0, figure.top);
   } else {
-    const [body, hair, helmet] = await Promise.all([load(figure.body), load(figure.ponytail), load(item.src)]);
-    g.drawImage(hair, 0, figure.top + item.hairY);
-    g.drawImage(body, 0, figure.top);
-    g.drawImage(helmet, 0, 0);
+    g.drawImage(images[0]!, 0, figure.top + item.hairY);
+    g.drawImage(images[1]!, 0, figure.top);
+    g.drawImage(images[2]!, 0, 0);
   }
   return result;
+}
+
+async function save(): Promise<void> {
+  if (!composition || !displayed || download.getAttribute("aria-disabled") === "true") return;
+  const snapshot = composition;
+  const item = displayed;
+  const ticket = request;
+  saving = true;
+  updateDownload();
+  status.textContent = "PNGを準備しています…";
+  try {
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      snapshot.toBlob(result => result ? resolve(result) : reject(new Error("PNG encoding failed")), "image/png");
+    });
+    if (downloadURL) URL.revokeObjectURL(downloadURL);
+    downloadURL = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadURL;
+    link.download = `gladiator-equipment-${item.id}.png`;
+    link.hidden = true;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    if (ticket === request) status.textContent = `${item.name}のPNGの保存を開始しました。`;
+  } catch {
+    if (ticket === request) status.textContent = "PNGを保存できませんでした。もう一度お試しください。";
+  } finally {
+    saving = false;
+    updateDownload();
+  }
 }
 
 async function select(item: Equipment): Promise<void> {
@@ -67,16 +86,10 @@ async function select(item: Equipment): Promise<void> {
   download.setAttribute("aria-disabled", "true");
   status.textContent = "装備を読み込んでいます…";
   try {
-    const composition = await compose(item);
-    if (ticket !== request) return;
-    const png = composition.toDataURL("image/png");
-    // Use the base figure's waist and soles on both pages; helmets never resize the person.
-    const scale = 300 / (1396 - 760);
-    const x = 320 - 584 * scale;
-    const y = 852 - (1396 + figure.top) * scale;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(composition, x, y, composition.width * scale, composition.height * scale);
+    const result = await compose(item, () => ticket === request);
+    if (!result || ticket !== request) return;
+    drawPreview(ctx, canvas, result, baseAnchor, figure.top);
+    composition = result;
     displayed = item;
     canvas.dataset.style = item.id;
     canvas.setAttribute("aria-label", item.id === "base"
@@ -85,15 +98,11 @@ async function select(item: Equipment): Promise<void> {
     label.textContent = selectedName.textContent = item.name;
     selectedDetail.textContent = item.detail;
     counter.textContent = `${String(equipment.indexOf(item) + 1).padStart(2, "0")} / ${String(equipment.length).padStart(2, "0")}`;
-    download.href = png;
-    download.download = `gladiator-equipment-${item.id}.png`;
-    download.removeAttribute("aria-disabled");
     status.textContent = item.id === "base" ? "兜を外し、元の髪型に戻しました。" : `${item.name}を着けています。`;
   } catch {
     if (ticket !== request) return;
     markSelected(displayed?.id ?? null);
-    if (displayed) download.removeAttribute("aria-disabled");
-    else {
+    if (!displayed) {
       canvas.setAttribute("aria-label", "装備を読み込めませんでした");
       label.textContent = selectedName.textContent = "読込できません";
       selectedDetail.textContent = "兜を選ぶと、もう一度読み込みます。";
@@ -101,7 +110,10 @@ async function select(item: Equipment): Promise<void> {
     }
     status.textContent = "画像を読み込めませんでした。もう一度、兜を選んでください。";
   } finally {
-    if (ticket === request) canvas.removeAttribute("aria-busy");
+    if (ticket === request) {
+      canvas.removeAttribute("aria-busy");
+      updateDownload();
+    }
   }
 }
 
@@ -141,6 +153,12 @@ const base = equipment[0];
 const initial = equipment[1];
 required<HTMLButtonElement>("#remove").addEventListener("click", () => void select(base));
 download.addEventListener("click", (event) => {
-  if (download.getAttribute("aria-disabled") === "true") event.preventDefault();
+  event.preventDefault();
+  void save();
+});
+counter.textContent = `— / ${String(equipment.length).padStart(2, "0")}`;
+window.addEventListener("pagehide", () => {
+  if (downloadURL) URL.revokeObjectURL(downloadURL);
+  downloadURL = null;
 });
 void select(initial);
