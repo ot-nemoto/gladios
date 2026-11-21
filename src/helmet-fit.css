@@ -13,7 +13,14 @@
 .fit-card { background:#faf8f1; padding:14px; border:1px solid var(--line); border-radius:8px; }
 .fit-card h2 { font-size:18px; margin:0 0 10px; }
 .fit-card-status { font-size:13px; color:var(--muted); margin:8px 0 0; }
-.fit-stage { position:relative; margin-bottom:24px; }
+.fit-stage { position:relative; }
+.fit-image { position:relative; }
+.fit-guide-footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 8px; padding-top:6px; }
+.fit-guide-footer .fit-guide-label { position:static; white-space:normal; overflow-wrap:anywhere; }
+.fit-page main[data-guides="off"] .fit-guide-overlay,
+.fit-page main[data-guides="off"] .fit-guide-footer,
+.fit-page main[data-labels="off"] .fit-guide-footer,
+.fit-page main[data-labels="off"] .fit-guide-label { display:none; }
 .fit-stage canvas { display:block; width:100%; height:auto; max-height:none; aspect-ratio:1; object-fit:fill; image-rendering:pixelated; background:#d9d5c8; }
 .fit-guide-overlay { position:absolute; inset:0; pointer-events:none; }
 .fit-guide-overlay[hidden] { display:none; }
