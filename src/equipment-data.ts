@@ -9,7 +9,7 @@ import goldhorn from "./assets/equipment/gold-single-horn.png";
 import goldhornHair from "./assets/equipment/gold-single-horn-hair.png";
 import goldhornRoot from "./assets/equipment/gold-single-horn-root.png";
 import blackred from "./assets/equipment/black-red-crest.png";
-import blackredBody from "./assets/equipment/black-red-body.png";
+import blackredNape from "./assets/equipment/black-red-nape.png";
 import silverThumb from "./assets/equipment/thumbs/silver.png";
 import purpleThumb from "./assets/equipment/thumbs/purple.png";
 import goldredThumb from "./assets/equipment/thumbs/goldred.png";
@@ -32,7 +32,12 @@ export const equipment = [
     src: goldhorn, thumb: goldhornThumb,
     hairLayers: { rear: goldhornHair, root: { src: goldhornRoot, x: 350, y: 630 } },
   },
-  { id: "blackred", name: "黒・赤い鶏冠の兜", detail: "赤い鶏冠と黒い面頬。後ろ髪は兜の中に収まります。", src: blackred, thumb: blackredThumb, hairY: 0, body: blackredBody, hideHair: true },
+  { id: "blackred", name: "黒・赤い鶏冠の兜", detail: "赤い鶏冠と黒い面頬。後ろ髪は兜の中に収まります。", src: blackred, thumb: blackredThumb, hideHair: true,
+    bodyPatch: { src: blackredNape, x: 260, y: 720 } },
 ] as const;
 
 export type Equipment = (typeof equipment)[number];
+
+export function hidesHair(item: Equipment): item is Extract<Equipment, { hideHair: true }> {
+  return "hideHair" in item;
+}

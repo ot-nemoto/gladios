@@ -1,7 +1,7 @@
 import "./dress-up.css";
 import { composeEquipment } from "./equipment-renderer";
 import { baseAnchor, drawPreview, required } from "./wardrobe-common";
-import { equipment, equipmentThumbnailSize, figure, type Equipment } from "./equipment-data";
+import { equipment, equipmentThumbnailSize, figure, hidesHair, type Equipment } from "./equipment-data";
 
 const canvas = required<HTMLCanvasElement>("#character");
 const context = canvas.getContext("2d");
@@ -74,7 +74,7 @@ async function select(item: Equipment): Promise<void> {
     canvas.dataset.style = item.id;
     canvas.setAttribute("aria-label", item.id === "base"
       ? "兜を外し、元の顔とポニーテールに戻った女性剣闘士"
-      : `同じ女性剣闘士に${item.name}を重ね、${"hideHair" in item && item.hideHair ? "後ろ髪を兜の中へ収めた" : "低いポニーテールを出した"}姿`);
+      : `同じ女性剣闘士に${item.name}を重ね、${hidesHair(item) ? "後ろ髪を兜の中へ収めた" : "低いポニーテールを出した"}姿`);
     label.textContent = selectedName.textContent = item.name;
     selectedDetail.textContent = item.detail;
     counter.textContent = `${String(equipment.indexOf(item) + 1).padStart(2, "0")} / ${String(equipment.length).padStart(2, "0")}`;
