@@ -39,6 +39,7 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ src/sample-cases.ts    既存棒人間サンプル用のスキル表示
 ├─ src/sample-renderer.ts 既存棒人間サンプルの描画
 ├─ src/style.css          既存棒人間サンプルの表示（公開ページでは未使用）
+├─ scripts/bake-goldhorn-hair.js 承認済みの髪パーツを書き出す制作用関数
 ├─ vite.config.ts      開発サーバーの設定
 ├─ tsconfig.json       TypeScriptの設定
 └─ docs/

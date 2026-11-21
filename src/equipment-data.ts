@@ -6,6 +6,8 @@ import purple from "./assets/equipment/black-gold-purple.png";
 import goldred from "./assets/equipment/gold-red.png";
 import horned from "./assets/equipment/silver-horned.png";
 import goldhorn from "./assets/equipment/gold-single-horn.png";
+import goldhornHair from "./assets/equipment/gold-single-horn-hair.png";
+import goldhornRoot from "./assets/equipment/gold-single-horn-root.png";
 import blackred from "./assets/equipment/black-red-crest.png";
 import silverThumb from "./assets/equipment/thumbs/silver.png";
 import purpleThumb from "./assets/equipment/thumbs/purple.png";
@@ -14,7 +16,7 @@ import hornedThumb from "./assets/equipment/thumbs/horned.png";
 import goldhornThumb from "./assets/equipment/thumbs/goldhorn.png";
 import blackredThumb from "./assets/equipment/thumbs/blackred.png";
 
-export const figure = { base, body, ponytail, top: 260, width: 1086, height: 1708, ponytailRootY: 405, ponytailJoinY: 540 } as const;
+export const figure = { base, body, ponytail, top: 260, width: 1086, height: 1708 } as const;
 export const equipmentThumbnailSize = { width: 128, height: 128 } as const;
 
 export const equipment = [
@@ -26,9 +28,8 @@ export const equipment = [
   {
     id: "goldhorn", name: "金・一本角の兜",
     detail: "先が右へ曲がる短い一本角と、襟足を覆う浅く反った縁。",
-    src: goldhorn, thumb: goldhornThumb, hairY: -40,
-    hairRoot: { x: 50, y: 30 },
-    hairFrontClip: [[350, 630], [430, 630], [450, 660], [455, 690], [445, 720], [390, 735], [350, 710]],
+    src: goldhorn, thumb: goldhornThumb,
+    hairLayers: { rear: goldhornHair, root: { src: goldhornRoot, x: 350, y: 630 } },
   },
   { id: "blackred", name: "黒・赤い鶏冠の兜", detail: "高い赤の鶏冠状の飾りと、黒い面頬。", src: blackred, thumb: blackredThumb, hairY: 0 },
 ] as const;
