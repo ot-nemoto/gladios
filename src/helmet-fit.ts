@@ -10,7 +10,8 @@ const crop = { x: 330, y: figure.top + 70, size: 480 };
 const eyeY = figure.top + 335;
 const chinY = figure.top + 455;
 const earX = 450;
-// Shared across helmets: face anchors, plus the midpoint from the frame to the ear.
+const noseX = 700;
+// Shared across helmets: face anchors and frame-relative comparison guides.
 const guides = [
   { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂（目安）" },
   { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額（目安）" },
@@ -19,7 +20,10 @@ const guides = [
   { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部（目安）",
     labelTop: `calc(${(eyeY - crop.y) / crop.size * 100}% - 22px)` },
   { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
-  { id: "front", axis: "x", value: 700, color: "#77518f", label: "鼻先" },
+  { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先", labelSide: "left" },
+  { id: "helmet-edge", axis: "x", value: noseX + (crop.x + crop.size - noseX) / 3,
+    color: "#b44581", label: "兜の端（目安）", labelSide: "left",
+    labelTop: "calc(100% + 6px)" },
 ] as const;
 const grid = required<HTMLElement>("#comparison-grid");
 const status = required<HTMLElement>("#fit-status");
@@ -65,6 +69,7 @@ function mountGuides(stage: HTMLElement): void {
     label.className = "fit-guide-label";
     label.textContent = guide.label;
     if ("labelTop" in guide) label.style.top = guide.labelTop;
+    if ("labelSide" in guide) label.dataset.side = guide.labelSide;
     line.append(label);
     overlay.append(line);
   }
