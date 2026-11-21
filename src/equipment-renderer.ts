@@ -1,4 +1,4 @@
-import { figure, hidesHair, type Equipment } from "./equipment-data";
+import { figure, type Equipment } from "./equipment-data";
 import { loadImage } from "./wardrobe-common";
 
 interface ComposeOptions {
@@ -28,13 +28,7 @@ export async function composeEquipment(item: Equipment, options: ComposeOptions 
     ? [await loadImage(figure.base)]
     : mode === "ghost"
       ? await Promise.all([loadImage(figure.base), loadImage(item.src)])
-      : await Promise.all([
-        hidesHair(item) ? null
-          : loadImage("hairLayers" in item ? item.hairLayers.rear : figure.ponytail),
-        loadImage(figure.body), loadImage(item.src),
-        "hairLayers" in item ? loadImage(item.hairLayers.root.src) : null,
-        "bodyPatch" in item ? loadImage(item.bodyPatch.src) : null,
-      ]);
+      : await Promise.all([loadImage(figure.body), loadImage(figure.napePatch.src), loadImage(item.src)]);
   // Abandon superseded loads before allocating or drawing another large canvas.
   if (!isCurrent()) return null;
   const result = document.createElement("canvas");
@@ -45,22 +39,13 @@ export async function composeEquipment(item: Equipment, options: ComposeOptions 
   if (item.src === null || mode === "ghost") {
     g.drawImage(images[0]!, 0, figure.top);
   } else {
-    if (!hidesHair(item)) g.drawImage(images[0]!, 0, "hairLayers" in item ? 0 : figure.top + item.hairY);
-    g.drawImage(images[1]!, 0, figure.top);
-    if ("bodyPatch" in item) {
-      // Replace RGBA, including transparency, to erase the baked-in hair fragments.
-      g.putImageData(readImagePixels(images[4]!), item.bodyPatch.x, item.bodyPatch.y);
-    }
+    g.drawImage(images[0]!, 0, figure.top);
+    // Replace RGBA, including transparency, to remove baked-in back-hair fragments.
+    g.putImageData(readImagePixels(images[1]!), figure.napePatch.x, figure.napePatch.y);
   }
   if (item.src !== null) {
     if (mode === "ghost") g.globalAlpha = .55;
     g.drawImage(images[mode === "ghost" ? 1 : 2]!, 0, 0);
-    if (mode === "normal" && "hairLayers" in item) {
-      // This is an approved composite of the root AND rear rim, not raw hair.
-      // Copy RGBA once: source-over would accumulate translucent edge pixels.
-      const root = item.hairLayers.root;
-      g.putImageData(readImagePixels(images[3]!), root.x, root.y);
-    }
   }
   return result;
 }
