@@ -15,14 +15,14 @@
     <div id="reference-stage" class="fit-stage"><canvas id="reference" width="480" height="480" role="img" aria-label="基準となる元の顔" aria-busy="true"></canvas></div>
     <div><h2 id="reference-title">基準：兜なしの元画像</h2>
       <p>すべて同じ顔の位置・倍率で比較します。<span id="helmet-count"></span></p>
-      <p>縦線は後頭部の目安・耳側・鼻先、横線は頭頂・額の目安・目・顎の位置に固定しています。</p>
-      <p class="fit-note">頭頂は髪を含む目安です。額は目から顎までと同じ距離だけ目の上、後頭部は比較枠の左端と耳側の中間です。どの線も髪の内側の頭の輪郭を確定するものではありません。<br>顔周りの比較用のため、羽飾りや角の先は一部画面外になります。</p>
+      <p>縦線は後頭部の目安・耳側・鼻先・兜の端の目安、横線は頭頂・額の目安・目・顎の位置に固定しています。</p>
+      <p class="fit-note">頭頂は髪を含む目安です。額は目から顎までと同じ距離だけ目の上、後頭部は比較枠の左端と耳側の中間です。兜の端は鼻先から比較枠の右端までを3等分した、鼻先寄りの位置です。どの線も髪の内側の頭の輪郭を確定するものではありません。<br>顔周りの比較用のため、羽飾りや角の先は一部画面外になります。</p>
     </div>
   </section>
-  <div class="fit-controls"><label><input id="ghost" type="checkbox" disabled>元の顔を透かして比較</label><label><input id="guides" type="checkbox" checked>頭頂・額・後頭部・顔の幅・目・顎の基準線を表示</label></div>
+  <div class="fit-controls"><label><input id="ghost" type="checkbox" disabled>元の顔を透かして比較</label><label><input id="guides" type="checkbox" checked>頭頂・額・後頭部・顔の幅・目・顎・兜の端の基準線を表示</label></div>
   <div class="fit-loading"><p id="fit-status" role="status" aria-live="polite">元の顔を読み込んでいます…</p><button id="retry" type="button" hidden>再読み込み</button></div>
   <div id="comparison-grid" class="comparison-grid" aria-label="兜ごとの比較"></div>
-  <p class="fit-note">透かし表示では元の人物に兜を半透明で重ねます。通常表示は装備着脱ページと同じ姿です。<br>青＝頭頂の目安、オレンジ＝額の目安、青緑＝後頭部の目安、紫＝耳側・鼻先、緑＝目、赤＝顎。装備画像の変更はこの画面では行いません。</p>
+  <p class="fit-note">透かし表示では元の人物に兜を半透明で重ねます。通常表示は装備着脱ページと同じ姿です。<br>青＝頭頂の目安、オレンジ＝額の目安、青緑＝後頭部の目安、紫＝耳側・鼻先、緑＝目、赤＝顎、ピンク＝兜の端の目安。装備画像の変更はこの画面では行いません。</p>
 </main>
 <script type="module" src="/src/helmet-fit.ts"></script>
 </body>
