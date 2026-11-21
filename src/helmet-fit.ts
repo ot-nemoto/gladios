@@ -13,23 +13,25 @@ const earX = 450;
 const noseX = 700;
 // Shared across helmets: face anchors and frame-relative comparison guides.
 const guides = [
-  { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂（目安）" },
-  { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額（目安）" },
+  { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂" },
+  { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額" },
   { id: "eye", axis: "y", value: eyeY, color: "#196e68", label: "目" },
   { id: "chin", axis: "y", value: chinY, color: "#9f4b50", label: "顎" },
-  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部（目安）",
-    labelTop: `calc(${(eyeY - crop.y) / crop.size * 100}% - 22px)` },
+  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部",
+    labelPlacement: "below" },
   { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
   { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先", labelSide: "left" },
   { id: "helmet-edge", axis: "x", value: noseX + (crop.x + crop.size - noseX) / 3,
-    color: "#b44581", label: "兜の端（目安）", labelSide: "left",
-    labelTop: "calc(100% + 6px)" },
+    color: "#b44581", label: "兜の端",
+    labelPlacement: "below" },
 ] as const;
 const grid = required<HTMLElement>("#comparison-grid");
 const status = required<HTMLElement>("#fit-status");
 const retry = required<HTMLButtonElement>("#retry");
 const ghost = required<HTMLInputElement>("#ghost");
 const showGuides = required<HTMLInputElement>("#guides");
+const showLabels = required<HTMLInputElement>("#labels");
+const page = required<HTMLElement>("main");
 const reference = required<HTMLCanvasElement>("#reference");
 let baseCrop: HTMLCanvasElement | null = null;
 let loading = false;
@@ -55,6 +57,12 @@ function cropImage(image: HTMLImageElement | HTMLCanvasElement, y = crop.y): HTM
 }
 
 function mountGuides(stage: HTMLElement): void {
+  const image = document.createElement("div");
+  image.className = "fit-image";
+  image.append(stage.querySelector("canvas")!);
+  const footer = document.createElement("div");
+  footer.className = "fit-guide-footer";
+  footer.setAttribute("aria-hidden", "true");
   const overlay = document.createElement("div");
   overlay.className = "fit-guide-overlay";
   overlay.setAttribute("aria-hidden", "true");
@@ -68,12 +76,18 @@ function mountGuides(stage: HTMLElement): void {
     const label = document.createElement("span");
     label.className = "fit-guide-label";
     label.textContent = guide.label;
-    if ("labelTop" in guide) label.style.top = guide.labelTop;
-    if ("labelSide" in guide) label.dataset.side = guide.labelSide;
-    line.append(label);
+    label.dataset.guideId = guide.id;
+        if ("labelSide" in guide) label.dataset.side = guide.labelSide;
+    if ("labelPlacement" in guide && guide.labelPlacement === "below") {
+      label.style.setProperty("--guide-color", guide.color);
+      footer.append(label);
+    } else {
+      line.append(label);
+    }
     overlay.append(line);
   }
-  stage.append(overlay);
+  image.append(overlay);
+  stage.append(image, footer);
 }
 
 interface Card {
@@ -121,12 +135,9 @@ function renderCard(card: Card): void {
 }
 
 function renderGuides(): void {
-  for (const overlay of document.querySelectorAll<HTMLElement>(".fit-guide-overlay")) overlay.hidden = !showGuides.checked;
-}
-
-function render(): void {
-  renderGuides();
-  for (const card of cards) renderCard(card);
+  page.dataset.guides = showGuides.checked ? "on" : "off";
+  page.dataset.labels = showLabels.checked ? "on" : "off";
+  showLabels.disabled = !showGuides.checked;
 }
 
 async function loadCard(card: Card): Promise<void> {
@@ -195,8 +206,9 @@ async function initialize(): Promise<void> {
   }
 }
 
-ghost.addEventListener("change", render);
+ghost.addEventListener("change", () => cards.forEach(renderCard));
 showGuides.addEventListener("change", renderGuides);
+showLabels.addEventListener("change", renderGuides);
 retry.addEventListener("click", () => void initialize());
-render();
+renderGuides();
 void initialize();
