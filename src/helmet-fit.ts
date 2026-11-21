@@ -7,12 +7,17 @@ import { loadImage, required } from "./wardrobe-common";
 type Helmet = Exclude<Equipment, { src: null }>;
 const helmets = equipment.filter((item): item is Helmet => item.src !== null);
 const crop = { x: 330, y: figure.top + 70, size: 480 };
+const eyeY = figure.top + 335;
+const chinY = figure.top + 455;
+const earX = 450;
 // These guides belong to the original face, never to an individual helmet.
 const guides = [
   { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂（目安）" },
-  { id: "eye", axis: "y", value: figure.top + 335, color: "#196e68", label: "目" },
-  { id: "chin", axis: "y", value: figure.top + 455, color: "#9f4b50", label: "顎" },
-  { id: "back", axis: "x", value: 450, color: "#77518f", label: "耳側" },
+  { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額（目安）" },
+  { id: "eye", axis: "y", value: eyeY, color: "#196e68", label: "目" },
+  { id: "chin", axis: "y", value: chinY, color: "#9f4b50", label: "顎" },
+  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部（目安）" },
+  { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
   { id: "front", axis: "x", value: 700, color: "#77518f", label: "鼻先" },
 ] as const;
 const grid = required<HTMLElement>("#comparison-grid");

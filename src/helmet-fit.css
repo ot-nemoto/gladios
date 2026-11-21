@@ -23,6 +23,7 @@
 .fit-guide-label { position:absolute; background:#faf8f1eb; color:var(--guide-color); font:11px/1.3 system-ui; padding:1px 3px; white-space:nowrap; }
 .horizontal .fit-guide-label { left:3px; top:2px; }
 .vertical .fit-guide-label { left:3px; top:32px; }
+.vertical[data-guide="backhead"] .fit-guide-label { top:76px; }
 @media(max-width:700px) {
   .fit-page main { padding:18px 14px; }
   .fit-reference { flex-direction:column; align-items:start; gap:14px; }
