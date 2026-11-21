@@ -20,10 +20,10 @@ const guides = [
   { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部（目安）",
     labelTop: `calc(${(eyeY - crop.y) / crop.size * 100}% - 22px)` },
   { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
-  { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先" },
+  { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先", labelSide: "left" },
   { id: "helmet-edge", axis: "x", value: noseX + (crop.x + crop.size - noseX) / 3,
     color: "#b44581", label: "兜の端（目安）", labelSide: "left",
-    labelTop: `calc(${(eyeY - crop.y) / crop.size * 100}% + 22px)` },
+    labelTop: "calc(100% + 6px)" },
 ] as const;
 const grid = required<HTMLElement>("#comparison-grid");
 const status = required<HTMLElement>("#fit-status");
@@ -69,10 +69,7 @@ function mountGuides(stage: HTMLElement): void {
     label.className = "fit-guide-label";
     label.textContent = guide.label;
     if ("labelTop" in guide) label.style.top = guide.labelTop;
-    if ("labelSide" in guide && guide.labelSide === "left") {
-      label.style.left = "auto";
-      label.style.right = "4px";
-    }
+    if ("labelSide" in guide) label.dataset.side = guide.labelSide;
     line.append(label);
     overlay.append(line);
   }
