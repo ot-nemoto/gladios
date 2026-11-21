@@ -15,11 +15,14 @@
 .fit-card-status { font-size:13px; color:var(--muted); margin:8px 0 0; }
 .fit-stage { position:relative; }
 .fit-image { position:relative; }
-.fit-guide-footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 8px; padding-top:6px; }
-.fit-guide-footer .fit-guide-label { position:static; white-space:normal; overflow-wrap:anywhere; }
+.fit-guide-header { display:grid; align-items:end; padding-bottom:4px; }
+.fit-guide-header .fit-guide-label { position:static; min-width:0; padding:1px 0; background:transparent; white-space:normal; overflow-wrap:anywhere; }
+.fit-guide-header [data-guide-id="backhead"] { text-align:center; }
+.fit-guide-header [data-guide-id="front"] { text-align:right; padding-right:3px; }
+.fit-guide-header [data-guide-id="helmet-edge"] { margin-left:max(0px, calc(100% / 3 - 1.5em)); }
 .fit-page main[data-guides="off"] .fit-guide-overlay,
-.fit-page main[data-guides="off"] .fit-guide-footer,
-.fit-page main[data-labels="off"] .fit-guide-footer,
+.fit-page main[data-guides="off"] .fit-guide-header,
+.fit-page main[data-labels="off"] .fit-guide-header,
 .fit-page main[data-labels="off"] .fit-guide-label { display:none; }
 .fit-stage canvas { display:block; width:100%; height:auto; max-height:none; aspect-ratio:1; object-fit:fill; image-rendering:pixelated; background:#d9d5c8; }
 .fit-guide-overlay { position:absolute; inset:0; pointer-events:none; }
@@ -29,8 +32,6 @@
 .fit-guide.vertical { top:0; bottom:0; width:0; transform:translateX(-1px); border-left:2px dashed var(--guide-color); }
 .fit-guide-label { position:absolute; background:#faf8f1eb; color:var(--guide-color); font:11px/1.3 system-ui; padding:1px 3px; white-space:nowrap; }
 .horizontal .fit-guide-label { left:3px; top:2px; }
-.vertical .fit-guide-label { left:3px; top:32px; }
-.fit-guide-label[data-side="left"] { left:auto; right:4px; }
 @media(max-width:700px) {
   .fit-page main { padding:18px 14px; }
   .fit-reference { flex-direction:column; align-items:start; gap:14px; }
