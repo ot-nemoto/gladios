@@ -22,7 +22,14 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 /
 ├─ AGENTS.md           エージェント共通の入口
 ├─ CLAUDE.md           Claude Code向けの規則の参照
-├─ index.html          低頭身キャラの着せ替えページ
+├─ index.html          元の画像切替版
+├─ equipment.html      比較用の装備着脱版
+├─ helmet-fit.html     元の顔と兜のサイズ比較
+├─ src/helmet-fit.ts / .css 比較カードと基準線
+├─ src/equipment-renderer.ts 着脱版と比較ページ共通の合成
+├─ src/equipment.ts    共通人物と兜パーツの合成・着脱・PNG保存
+├─ src/equipment-data.ts 装備候補とパーツの定義
+├─ src/assets/equipment/ 装備着脱用の透過パーツとサムネイル
 ├─ src/dress-up.ts     立ち絵の切替・PNG保存
 ├─ src/dress-up.css    着せ替えページの表示
 ├─ src/assets/dress-up/ 着せ替え用の立ち絵PNGと縮小サムネイル
@@ -32,6 +39,7 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ src/sample-cases.ts    既存棒人間サンプル用のスキル表示
 ├─ src/sample-renderer.ts 既存棒人間サンプルの描画
 ├─ src/style.css          既存棒人間サンプルの表示（公開ページでは未使用）
+├─ scripts/bake-goldhorn-hair.js 承認済みの髪パーツを書き出す制作用関数
 ├─ vite.config.ts      開発サーバーの設定
 ├─ tsconfig.json       TypeScriptの設定
 └─ docs/
