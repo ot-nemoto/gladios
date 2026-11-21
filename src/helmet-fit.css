@@ -15,15 +15,17 @@
 .fit-card-status { font-size:13px; color:var(--muted); margin:8px 0 0; }
 .fit-stage { position:relative; }
 .fit-image { position:relative; }
-.fit-guide-header { display:grid; align-items:end; padding-bottom:4px; }
-.fit-guide-header .fit-guide-label { position:static; min-width:0; padding:1px 0; background:transparent; white-space:normal; overflow-wrap:anywhere; }
-.fit-guide-header [data-guide-id="backhead"] { text-align:center; }
-.fit-guide-header [data-guide-id="front"] { text-align:right; padding-right:3px; }
-.fit-guide-header [data-guide-id="helmet-edge"] { margin-left:max(0px, calc(100% / 3 - 1.5em)); }
+.fit-guide-header { display:grid; grid-template-columns:var(--guide-columns); align-items:end; padding-bottom:4px; }
+.fit-guide-header-cell { display:flex; align-items:flex-end; min-width:0; }
+.fit-guide-header-cell::before, .fit-guide-header-cell::after { content:""; flex-basis:0; min-width:0; }
+.fit-guide-header-cell::before { flex-grow:var(--label-position); }
+.fit-guide-header-cell::after { flex-grow:calc(1 - var(--label-position)); }
+.fit-guide-header .fit-guide-label { position:static; flex:0 1 auto; min-width:0; max-width:100%; padding:1px 0; background:transparent; white-space:normal; overflow-wrap:anywhere; }
+.fit-guide-header-cell[data-guide-id="front"] { box-sizing:border-box; padding-right:6px; }
 .fit-page main[data-guides="off"] .fit-guide-overlay,
+.fit-page main[data-labels="off"] .fit-guide-overlay .fit-guide-label { display:none; }
 .fit-page main[data-guides="off"] .fit-guide-header,
-.fit-page main[data-labels="off"] .fit-guide-header,
-.fit-page main[data-labels="off"] .fit-guide-label { display:none; }
+.fit-page main[data-labels="off"] .fit-guide-header { visibility:hidden; }
 .fit-stage canvas { display:block; width:100%; height:auto; max-height:none; aspect-ratio:1; object-fit:fill; image-rendering:pixelated; background:#d9d5c8; }
 .fit-guide-overlay { position:absolute; inset:0; pointer-events:none; }
 .fit-guide-overlay[hidden] { display:none; }

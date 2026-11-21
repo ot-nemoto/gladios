@@ -17,12 +17,18 @@ const guides = [
   { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額" },
   { id: "eye", axis: "y", value: eyeY, color: "#196e68", label: "目" },
   { id: "chin", axis: "y", value: chinY, color: "#9f4b50", label: "顎" },
-  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部" },
-  { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
-  { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先" },
+  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部", headerColumn: 1 },
+  { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側", headerColumn: 2 },
+  { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先", headerColumn: 3 },
   { id: "helmet-edge", axis: "x", value: noseX + (crop.x + crop.size - noseX) / 3,
-    color: "#b44581", label: "兜の端" },
+    color: "#b44581", label: "兜の端", headerColumn: 4 },
 ] as const;
+const earGuide = guides.find(guide => guide.id === "back")!;
+const noseGuide = guides.find(guide => guide.id === "front")!;
+const headerBounds = [crop.x, earGuide.value, (earGuide.value + noseGuide.value) / 2,
+  noseGuide.value, crop.x + crop.size] as const;
+const headerColumns = headerBounds.slice(1)
+  .map((right, index) => `${(right - headerBounds[index]!) / crop.size * 100}%`).join(" ");
 const grid = required<HTMLElement>("#comparison-grid");
 const status = required<HTMLElement>("#fit-status");
 const retry = required<HTMLButtonElement>("#retry");
@@ -30,6 +36,7 @@ const ghost = required<HTMLInputElement>("#ghost");
 const showGuides = required<HTMLInputElement>("#guides");
 const showLabels = required<HTMLInputElement>("#labels");
 const page = required<HTMLElement>("main");
+page.style.setProperty("--guide-columns", headerColumns);
 const reference = required<HTMLCanvasElement>("#reference");
 let baseCrop: HTMLCanvasElement | null = null;
 let loading = false;
@@ -61,9 +68,6 @@ function mountGuides(stage: HTMLElement): void {
   const header = document.createElement("div");
   header.className = "fit-guide-header";
   header.setAttribute("aria-hidden", "true");
-  const halfFace = (noseX - earX) / 2;
-  header.style.gridTemplateColumns = [earX - crop.x, halfFace, halfFace, crop.x + crop.size - noseX]
-    .map(width => `${width / crop.size * 100}%`).join(" ");
   const overlay = document.createElement("div");
   overlay.className = "fit-guide-overlay";
   overlay.setAttribute("aria-hidden", "true");
@@ -80,7 +84,17 @@ function mountGuides(stage: HTMLElement): void {
     label.dataset.guideId = guide.id;
     if (guide.axis === "x") {
       label.style.setProperty("--guide-color", guide.color);
-      header.append(label);
+      const cell = document.createElement("div");
+      cell.className = "fit-guide-header-cell";
+      cell.dataset.guideId = guide.id;
+      cell.style.gridRow = "1";
+      cell.style.gridColumn = String(guide.headerColumn);
+      const left = headerBounds[guide.headerColumn - 1]!;
+      const right = headerBounds[guide.headerColumn];
+      const position = Math.max(0, Math.min(1, (guide.value - left) / (right - left)));
+      cell.style.setProperty("--label-position", String(position));
+      cell.append(label);
+      header.append(cell);
     } else {
       line.append(label);
     }
