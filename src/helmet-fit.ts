@@ -13,16 +13,16 @@ const earX = 450;
 const noseX = 700;
 // Shared across helmets: face anchors and frame-relative comparison guides.
 const guides = [
-  { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂（目安）" },
-  { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額（目安）" },
+  { id: "crown", axis: "y", value: figure.top + 100, color: "#3f679d", label: "頭頂" },
+  { id: "forehead", axis: "y", value: eyeY - (chinY - eyeY), color: "#bc6810", label: "額" },
   { id: "eye", axis: "y", value: eyeY, color: "#196e68", label: "目" },
   { id: "chin", axis: "y", value: chinY, color: "#9f4b50", label: "顎" },
-  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部（目安）",
-    labelTop: `calc(${(eyeY - crop.y) / crop.size * 100}% - 22px)` },
+  { id: "backhead", axis: "x", value: (crop.x + earX) / 2, color: "#007e91", label: "後頭部",
+    labelTop: "calc(100% + 6px)" },
   { id: "back", axis: "x", value: earX, color: "#77518f", label: "耳側" },
   { id: "front", axis: "x", value: noseX, color: "#77518f", label: "鼻先", labelSide: "left" },
   { id: "helmet-edge", axis: "x", value: noseX + (crop.x + crop.size - noseX) / 3,
-    color: "#b44581", label: "兜の端（目安）", labelSide: "left",
+    color: "#b44581", label: "兜の端", labelSide: "left",
     labelTop: "calc(100% + 6px)" },
 ] as const;
 const grid = required<HTMLElement>("#comparison-grid");
@@ -30,6 +30,7 @@ const status = required<HTMLElement>("#fit-status");
 const retry = required<HTMLButtonElement>("#retry");
 const ghost = required<HTMLInputElement>("#ghost");
 const showGuides = required<HTMLInputElement>("#guides");
+const showLabels = required<HTMLInputElement>("#labels");
 const reference = required<HTMLCanvasElement>("#reference");
 let baseCrop: HTMLCanvasElement | null = null;
 let loading = false;
@@ -122,6 +123,7 @@ function renderCard(card: Card): void {
 
 function renderGuides(): void {
   for (const overlay of document.querySelectorAll<HTMLElement>(".fit-guide-overlay")) overlay.hidden = !showGuides.checked;
+  for (const label of document.querySelectorAll<HTMLElement>(".fit-guide-label")) label.hidden = !showLabels.checked;
 }
 
 function render(): void {
@@ -197,6 +199,7 @@ async function initialize(): Promise<void> {
 
 ghost.addEventListener("change", render);
 showGuides.addEventListener("change", renderGuides);
+showLabels.addEventListener("change", renderGuides);
 retry.addEventListener("click", () => void initialize());
 render();
 void initialize();
