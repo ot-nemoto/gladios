@@ -6,6 +6,8 @@ import purple from "./assets/equipment/black-gold-purple.png";
 import goldred from "./assets/equipment/gold-red.png";
 import horned from "./assets/equipment/silver-horned.png";
 import goldhorn from "./assets/equipment/gold-single-horn.png";
+import goldhornHair from "./assets/equipment/gold-single-horn-hair.png";
+import goldhornRoot from "./assets/equipment/gold-single-horn-root.png";
 import blackred from "./assets/equipment/black-red-crest.png";
 import silverThumb from "./assets/equipment/thumbs/silver.png";
 import purpleThumb from "./assets/equipment/thumbs/purple.png";
@@ -23,7 +25,12 @@ export const equipment = [
   { id: "purple", name: "黒金・紫の兜", detail: "紫の飾り毛と、金で縁取られた白い仮面。", src: purple, thumb: purpleThumb, hairY: 0 },
   { id: "goldred", name: "金・赤の兜", detail: "赤い飾り毛と金の面頬。", src: goldred, thumb: goldredThumb, hairY: -45 },
   { id: "horned", name: "銀・角付きの兜", detail: "下へ曲がる茶色の角と、耳・襟足まで覆う一体の銀板。", src: horned, thumb: hornedThumb, hairY: -45 },
-  { id: "goldhorn", name: "金・一本角の兜", detail: "先が右へ曲がる短い一本角と、襟足を覆う低く反った縁。", src: goldhorn, thumb: goldhornThumb, hairY: -40 },
+  {
+    id: "goldhorn", name: "金・一本角の兜",
+    detail: "先が右へ曲がる短い一本角と、襟足を覆う浅く反った縁。",
+    src: goldhorn, thumb: goldhornThumb,
+    hairLayers: { rear: goldhornHair, root: { src: goldhornRoot, x: 350, y: 630 } },
+  },
   { id: "blackred", name: "黒・赤い鶏冠の兜", detail: "高い赤の鶏冠状の飾りと、黒い面頬。", src: blackred, thumb: blackredThumb, hairY: 0 },
 ] as const;
 
