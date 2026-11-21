@@ -29,8 +29,9 @@ export async function composeEquipment(item: Equipment, options: ComposeOptions 
     : mode === "ghost"
       ? await Promise.all([loadImage(figure.base), loadImage(item.src)])
       : await Promise.all([
-        loadImage("hairLayers" in item ? item.hairLayers.rear : figure.ponytail),
-        loadImage(figure.body), loadImage(item.src),
+        "hideHair" in item && item.hideHair ? null
+          : loadImage("hairLayers" in item ? item.hairLayers.rear : figure.ponytail),
+        loadImage("body" in item ? item.body : figure.body), loadImage(item.src),
         "hairLayers" in item ? loadImage(item.hairLayers.root.src) : null,
       ]);
   // Abandon superseded loads before allocating or drawing another large canvas.
@@ -43,7 +44,7 @@ export async function composeEquipment(item: Equipment, options: ComposeOptions 
   if (item.src === null || mode === "ghost") {
     g.drawImage(images[0]!, 0, figure.top);
   } else {
-    g.drawImage(images[0]!, 0, "hairLayers" in item ? 0 : figure.top + item.hairY);
+    if (images[0]) g.drawImage(images[0], 0, "hairLayers" in item ? 0 : figure.top + item.hairY);
     g.drawImage(images[1]!, 0, figure.top);
   }
   if (item.src !== null) {
