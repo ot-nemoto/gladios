@@ -13,6 +13,8 @@ let character = characters[0]!;
 let background = backgrounds[0]!;
 let shown: { character: SceneItem; background: SceneItem } | null = null;
 let request = 0;
+let saving = false;
+let downloadURL: string | null = null;
 
 function renderOptions(
   container: HTMLElement,
@@ -70,7 +72,7 @@ async function draw(): Promise<void> {
     canvas.dataset.background = target.background.id;
     canvas.setAttribute("aria-label", `${target.background.name}の背景に立つ${target.character.name}`);
     status.textContent = `${target.character.name} × ${target.background.name}`;
-    download.disabled = false;
+    download.disabled = saving;
   } catch {
     if (ticket !== request) return;
     if (shown) {
@@ -78,7 +80,9 @@ async function draw(): Promise<void> {
       markBackground(shown.background);
       character = shown.character;
       background = shown.background;
-      download.disabled = false;
+      download.disabled = saving;
+    } else {
+      canvas.setAttribute("aria-label", "画像を読み込めませんでした");
     }
     status.textContent = "画像を読み込めませんでした。もう一度選んでください。";
   } finally {
@@ -87,20 +91,34 @@ async function draw(): Promise<void> {
 }
 
 download.addEventListener("click", () => {
-  if (!shown) return;
+  if (!shown || saving) return;
   const name = `gladios-${shown.character.id}-${shown.background.id}.png`;
+  saving = true;
+  download.disabled = true;
+  status.textContent = "PNGを準備しています…";
   canvas.toBlob((blob) => {
+    saving = false;
+    const busy = canvas.hasAttribute("aria-busy");
+    download.disabled = busy || !shown;
     if (!blob) {
       status.textContent = "PNGを作れませんでした。";
       return;
     }
-    const url = URL.createObjectURL(blob);
+    // 直後に破棄すると、ブラウザによっては保存が始まる前にURLが無効になる。
+    // 次の保存かページ離脱まで保持する。
+    if (downloadURL) URL.revokeObjectURL(downloadURL);
+    downloadURL = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url;
+    link.href = downloadURL;
     link.download = name;
     link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    if (!busy) status.textContent = `${name} を保存しました。`;
   }, "image/png");
+});
+
+window.addEventListener("pagehide", () => {
+  if (downloadURL) URL.revokeObjectURL(downloadURL);
+  downloadURL = null;
 });
 
 void draw();
