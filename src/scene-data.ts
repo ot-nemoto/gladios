@@ -2,6 +2,12 @@ import tadalaImage from "./assets/scene/tadala.png";
 import marcusImage from "./assets/scene/marcus-marius-avitus.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.png";
+import meadowImage from "./assets/scene/meadow.png";
+import forestImage from "./assets/scene/forest.webp";
+import marshImage from "./assets/scene/marsh.webp";
+import mountainImage from "./assets/scene/mountain.webp";
+import townImage from "./assets/scene/town.webp";
+import caveImage from "./assets/scene/cave.png";
 
 /** 合成の出力サイズ。キャラ・背景とも同じ大きさの素材を重ねる。 */
 export const sceneSize = 512;
@@ -22,4 +28,10 @@ export const characters: readonly SceneItem[] = [
 export const backgrounds: readonly SceneItem[] = [
   { id: "sea", name: "海", src: seaImage },
   { id: "snowfield", name: "雪原", src: snowfieldImage },
+  { id: "meadow", name: "草原", src: meadowImage },
+  { id: "forest", name: "森", src: forestImage },
+  { id: "marsh", name: "湿地", src: marshImage },
+  { id: "mountain", name: "山", src: mountainImage },
+  { id: "town", name: "街", src: townImage },
+  { id: "cave", name: "洞窟", src: caveImage },
 ];
