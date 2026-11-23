@@ -31,6 +31,8 @@ function renderOptions(
     thumb.width = sceneSize;
     thumb.height = sceneSize;
     thumb.alt = "";
+    // 選択肢が増えても、画面外のサムネイルは見えるまで読み込まない。
+    thumb.loading = "lazy";
     const name = document.createElement("span");
     name.textContent = item.name;
     button.append(thumb, name);
