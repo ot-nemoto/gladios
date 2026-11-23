@@ -25,7 +25,10 @@ gladios の開発者向けの情報。アプリでできることは [README](..
 ├─ index.html          元の画像切替版
 ├─ equipment.html      比較用の装備着脱版
 ├─ helmet-fit.html     元の顔と兜のサイズ比較
+├─ scene.html          キャラと背景の組み合わせ・PNG保存
 ├─ src/helmet-fit.ts / .css 比較カードと基準線
+├─ src/scene.ts / .css / scene-data.ts キャラと背景の合成
+├─ src/assets/scene/   組み合わせ用のキャラ（背景透過）と背景
 ├─ src/equipment-renderer.ts 着脱版と比較ページ共通の合成
 ├─ src/equipment.ts    共通人物と兜パーツの合成・着脱・PNG保存
 ├─ src/equipment-data.ts 装備候補とパーツの定義

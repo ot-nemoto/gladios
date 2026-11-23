@@ -8,6 +8,7 @@ export default defineConfig({
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         equipment: fileURLToPath(new URL('./equipment.html', import.meta.url)),
         helmetFit: fileURLToPath(new URL('./helmet-fit.html', import.meta.url)),
+        scene: fileURLToPath(new URL('./scene.html', import.meta.url)),
       },
     },
   },
