@@ -31,6 +31,18 @@ import plumGoldSnowImage from "./assets/scene/plum-gold-snow.png";
 import fujiGoldCloudsImage from "./assets/scene/fuji-gold-clouds.png";
 import koiWaterfallImage from "./assets/scene/koi-waterfall.webp";
 import mapleGoldStreamImage from "./assets/scene/maple-gold-stream.png";
+import cathedralRoseWindowImage from "./assets/scene/cathedral-rose-window.png";
+import gothicPointedArchImage from "./assets/scene/gothic-pointed-arch.png";
+import medievalGrisailleImage from "./assets/scene/medieval-grisaille.png";
+import cathedralNightImage from "./assets/scene/cathedral-night.png";
+import wisteriaDragonfliesImage from "./assets/scene/wisteria-dragonflies.png";
+import roseGardenArchImage from "./assets/scene/rose-garden-arch.png";
+import seaSailingShipsImage from "./assets/scene/sea-sailing-ships.png";
+import celticKnotImage from "./assets/scene/celtic-knot.png";
+import peacockFeathersImage from "./assets/scene/peacock-feathers.png";
+import grapesAutumnLeavesImage from "./assets/scene/grapes-autumn-leaves.png";
+import lotusWaterImage from "./assets/scene/lotus-water.png";
+import constellationRingImage from "./assets/scene/constellation-ring.png";
 
 /** 合成の出力サイズ。キャラ・背景とも同じ大きさの素材を重ねる。 */
 export const sceneSize = 512;
@@ -101,4 +113,16 @@ export const backgrounds: readonly SceneItem[] = [
   { id: "fuji-gold-clouds", name: "富士の裾と金雲", src: fujiGoldCloudsImage },
   { id: "koi-waterfall", name: "鯉と滝", src: koiWaterfallImage },
   { id: "maple-gold-stream", name: "紅葉と金流水", src: mapleGoldStreamImage },
+  { id: "cathedral-rose-window", name: "大聖堂のバラ窓", src: cathedralRoseWindowImage },
+  { id: "gothic-pointed-arch", name: "ゴシック尖頭アーチ", src: gothicPointedArchImage },
+  { id: "medieval-grisaille", name: "中世グリザイユ", src: medievalGrisailleImage },
+  { id: "cathedral-night", name: "夜の大聖堂", src: cathedralNightImage },
+  { id: "wisteria-dragonflies", name: "藤とトンボ", src: wisteriaDragonfliesImage },
+  { id: "rose-garden-arch", name: "バラ園アーチ", src: roseGardenArchImage },
+  { id: "sea-sailing-ships", name: "海と帆船", src: seaSailingShipsImage },
+  { id: "celtic-knot", name: "ケルト結び目", src: celticKnotImage },
+  { id: "peacock-feathers", name: "孔雀の羽", src: peacockFeathersImage },
+  { id: "grapes-autumn-leaves", name: "葡萄と秋の葉", src: grapesAutumnLeavesImage },
+  { id: "lotus-water", name: "蓮と水", src: lotusWaterImage },
+  { id: "constellation-ring", name: "星座の円環", src: constellationRingImage },
 ];
