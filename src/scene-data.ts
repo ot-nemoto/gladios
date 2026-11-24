@@ -4,6 +4,10 @@ import bereniceImage from "./assets/scene/berenice.png";
 import cassiaImage from "./assets/scene/cassia.png";
 import goldHildrImage from "./assets/scene/gold-hildr.png";
 import vlattiaImage from "./assets/scene/vlattia.png";
+import spataliaImage from "./assets/scene/spatalia.png";
+import krimharthImage from "./assets/scene/krimharth.png";
+import branthocImage from "./assets/scene/branthoc.png";
+import tukhorisImage from "./assets/scene/tukhoris.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.png";
 import meadowImage from "./assets/scene/meadow.png";
@@ -30,6 +34,10 @@ export const characters: readonly SceneItem[] = [
   { id: "cassia", name: "CASSIA", src: cassiaImage },
   { id: "gold-hildr", name: "GOLD HILDR", src: goldHildrImage },
   { id: "vlattia", name: "VLATTIA", src: vlattiaImage },
+  { id: "spatalia", name: "SPATALIA", src: spataliaImage },
+  { id: "krimharth", name: "KRIMHARTH", src: krimharthImage },
+  { id: "branthoc", name: "BRANTHOC", src: branthocImage },
+  { id: "tukhoris", name: "TUKHORIS", src: tukhorisImage },
 ];
 
 /** 512×512の背景。 */
