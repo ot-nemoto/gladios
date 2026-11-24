@@ -4,6 +4,17 @@ import bereniceImage from "./assets/scene/berenice.png";
 import cassiaImage from "./assets/scene/cassia.png";
 import goldHildrImage from "./assets/scene/gold-hildr.png";
 import vlattiaImage from "./assets/scene/vlattia.png";
+import spataliaImage from "./assets/scene/spatalia.png";
+import krimharthImage from "./assets/scene/krimharth.png";
+import branthocImage from "./assets/scene/branthoc.png";
+import tukhorisImage from "./assets/scene/tukhoris.png";
+import kasosImage from "./assets/scene/kasos.png";
+import thalesImage from "./assets/scene/thales.png";
+import khnubaImage from "./assets/scene/khnuba.png";
+import medocusImage from "./assets/scene/medocus.png";
+import gaiusImage from "./assets/scene/gaius-pontidius-stolo.png";
+import salomonImage from "./assets/scene/salomon.png";
+import ambillusImage from "./assets/scene/ambillus.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.png";
 import meadowImage from "./assets/scene/meadow.png";
@@ -30,6 +41,17 @@ export const characters: readonly SceneItem[] = [
   { id: "cassia", name: "CASSIA", src: cassiaImage },
   { id: "gold-hildr", name: "GOLD HILDR", src: goldHildrImage },
   { id: "vlattia", name: "VLATTIA", src: vlattiaImage },
+  { id: "spatalia", name: "SPATALIA", src: spataliaImage },
+  { id: "krimharth", name: "KRIMHARTH", src: krimharthImage },
+  { id: "branthoc", name: "BRANTHOC", src: branthocImage },
+  { id: "tukhoris", name: "TUKHORIS", src: tukhorisImage },
+  { id: "kasos", name: "KASOS", src: kasosImage },
+  { id: "thales", name: "THALES", src: thalesImage },
+  { id: "khnuba", name: "KHNUBA", src: khnubaImage },
+  { id: "medocus", name: "MEDOCUS", src: medocusImage },
+  { id: "gaius-pontidius-stolo", name: "GAIUS PONTIDIUS STOLO", src: gaiusImage },
+  { id: "salomon", name: "SALOMON", src: salomonImage },
+  { id: "ambillus", name: "AMBILLUS", src: ambillusImage },
 ];
 
 /** 512×512の背景。 */
