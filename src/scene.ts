@@ -32,8 +32,8 @@ function renderOptions(
     thumb.width = thumbSize;
     thumb.height = thumbSize;
     thumb.alt = "";
-    // 選択肢が増えても、画面外のサムネイルは見えるまで読み込まない。
-    thumb.loading = "lazy";
+    // 横スクロール欄では、画面外のサムネイルを lazy にするとスワイプ後に空欄が見えるため、
+    // 縮小画像は最初にすべて読み込む（全33枚で約0.87MB、#166・#178）。
     const name = document.createElement("span");
     name.textContent = item.name;
     button.append(thumb, name);
