@@ -1,5 +1,9 @@
 import tadalaImage from "./assets/scene/tadala.png";
 import marcusImage from "./assets/scene/marcus-marius-avitus.png";
+import bereniceImage from "./assets/scene/berenice.png";
+import cassiaImage from "./assets/scene/cassia.png";
+import goldHildrImage from "./assets/scene/gold-hildr.png";
+import vlattiaImage from "./assets/scene/vlattia.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.png";
 import meadowImage from "./assets/scene/meadow.png";
@@ -22,6 +26,10 @@ export interface SceneItem {
 export const characters: readonly SceneItem[] = [
   { id: "tadala", name: "TADALA", src: tadalaImage },
   { id: "marcus-marius-avitus", name: "MARCUS MARIUS AVITUS", src: marcusImage },
+  { id: "berenice", name: "BERENICE", src: bereniceImage },
+  { id: "cassia", name: "CASSIA", src: cassiaImage },
+  { id: "gold-hildr", name: "GOLD HILDR", src: goldHildrImage },
+  { id: "vlattia", name: "VLATTIA", src: vlattiaImage },
 ];
 
 /** 512×512の背景。 */
