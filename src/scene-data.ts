@@ -12,6 +12,9 @@ import kasosImage from "./assets/scene/kasos.png";
 import thalesImage from "./assets/scene/thales.png";
 import khnubaImage from "./assets/scene/khnuba.png";
 import medocusImage from "./assets/scene/medocus.png";
+import gaiusImage from "./assets/scene/gaius-pontidius-stolo.png";
+import salomonImage from "./assets/scene/salomon.png";
+import ambillusImage from "./assets/scene/ambillus.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.png";
 import meadowImage from "./assets/scene/meadow.png";
@@ -46,6 +49,9 @@ export const characters: readonly SceneItem[] = [
   { id: "thales", name: "THALES", src: thalesImage },
   { id: "khnuba", name: "KHNUBA", src: khnubaImage },
   { id: "medocus", name: "MEDOCUS", src: medocusImage },
+  { id: "gaius-pontidius-stolo", name: "GAIUS PONTIDIUS STOLO", src: gaiusImage },
+  { id: "salomon", name: "SALOMON", src: salomonImage },
+  { id: "ambillus", name: "AMBILLUS", src: ambillusImage },
 ];
 
 /** 512×512の背景。 */
