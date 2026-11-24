@@ -114,5 +114,13 @@ footer {
 
 @media (max-width:760px) {
   main { padding:20px 16px; }
-  .scene-layout { grid-template-columns:1fr; }
+  .scene-layout { grid-template-columns:1fr; gap:22px; }
+  /* 1列表示では選択肢を小さく並べ、プレビューと保存ボタンの距離を縮める。 */
+  fieldset { margin-bottom:16px; }
+  legend { font-size:16px; margin-bottom:6px; }
+  /* タブレット幅でサムネイルが大きくなりすぎないよう、4列の幅に上限を付ける。 */
+  .scene-options { grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; max-width:440px; }
+  .scene-choice { gap:3px; padding:4px; font-size:11px; line-height:1.3; }
+  .scene-choice:focus-visible { outline-offset:2px; }
+  .scene-choice img { background-size:8px 8px; }
 }
