@@ -8,6 +8,8 @@
 
 着脱版は同じ人物に6種類の兜パーツを重ねます。兜を外すと元の髪型に戻り、着けた姿を合成PNGとして保存できます。[顔と兜のサイズ比較](https://ot-nemoto.github.io/gladios/helmet-fit.html)では、元の顔と各兜を同じ倍率で並べ、半透明表示と基準線で大きさや位置を確認できます。着脱版へ追加した兜は比較画面にも反映されます。
 
+[キャラと背景を組み合わせるページ](https://ot-nemoto.github.io/gladios/scene.html)では、背景透過の剣闘士（TADALA、MARCUS MARIUS AVITUS）と背景（海、雪原、草原、森、湿地、山、街、洞窟）を選んで重ね、512×512のPNGとして保存できます。
+
 武器・防具の着脱やモーション・戦闘判定はありません。
 
 ## 手元で開く
@@ -19,7 +21,7 @@ npm ci
 npm run dev
 ```
 
-http://localhost:5173/ で画像切替版、http://localhost:5173/equipment.html で装備着脱版、http://localhost:5173/helmet-fit.html でサイズ比較が開きます。
+http://localhost:5173/ で画像切替版、http://localhost:5173/equipment.html で装備着脱版、http://localhost:5173/helmet-fit.html でサイズ比較、http://localhost:5173/scene.html で背景との組み合わせが開きます。
 
 ## 資料
 
