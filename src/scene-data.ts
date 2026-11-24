@@ -23,6 +23,14 @@ import marshImage from "./assets/scene/marsh.webp";
 import mountainImage from "./assets/scene/mountain.webp";
 import townImage from "./assets/scene/town.webp";
 import caveImage from "./assets/scene/cave.png";
+import pineGoldCloudsImage from "./assets/scene/pine-gold-clouds.webp";
+import cranesSeigaihaImage from "./assets/scene/cranes-seigaiha.png";
+import sakuraGoldScreenImage from "./assets/scene/sakura-gold-screen.png";
+import bambooGoldMoonImage from "./assets/scene/bamboo-gold-moon.png";
+import plumGoldSnowImage from "./assets/scene/plum-gold-snow.png";
+import fujiGoldCloudsImage from "./assets/scene/fuji-gold-clouds.png";
+import koiWaterfallImage from "./assets/scene/koi-waterfall.webp";
+import mapleGoldStreamImage from "./assets/scene/maple-gold-stream.png";
 
 /** 合成の出力サイズ。キャラ・背景とも同じ大きさの素材を重ねる。 */
 export const sceneSize = 512;
@@ -64,4 +72,12 @@ export const backgrounds: readonly SceneItem[] = [
   { id: "mountain", name: "山", src: mountainImage },
   { id: "town", name: "街", src: townImage },
   { id: "cave", name: "洞窟", src: caveImage },
+  { id: "pine-gold-clouds", name: "松と金雲", src: pineGoldCloudsImage },
+  { id: "cranes-seigaiha", name: "鶴と青海波", src: cranesSeigaihaImage },
+  { id: "sakura-gold-screen", name: "桜と金屏風", src: sakuraGoldScreenImage },
+  { id: "bamboo-gold-moon", name: "竹と金月", src: bambooGoldMoonImage },
+  { id: "plum-gold-snow", name: "梅と金の雪", src: plumGoldSnowImage },
+  { id: "fuji-gold-clouds", name: "富士の裾と金雲", src: fujiGoldCloudsImage },
+  { id: "koi-waterfall", name: "鯉と滝", src: koiWaterfallImage },
+  { id: "maple-gold-stream", name: "紅葉と金流水", src: mapleGoldStreamImage },
 ];
