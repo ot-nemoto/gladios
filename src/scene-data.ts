@@ -38,7 +38,28 @@ export const sceneSize = 512;
 export interface SceneItem {
   id: string;
   name: string;
+  /** 合成と保存に使う512×512の元画像。 */
   src: string;
+}
+
+/** 選択欄のサムネイルの一辺（px）。元画像を縮小した `thumbs/<id>.webp` を使う。 */
+export const thumbSize = 256;
+
+const thumbs = import.meta.glob<string>("./assets/scene/thumbs/*.webp", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+/**
+ * 選択欄に表示する縮小画像のURL。素材を追加・差し替えたら縮小画像も用意する（引き継ぎ資料を参照）。
+ * 縮小画像がなくてもページ全体は止めず、元画像で表示してコンソールに知らせる。
+ */
+export function thumbOf(item: SceneItem): string {
+  const url = thumbs[`./assets/scene/thumbs/${item.id}.webp`];
+  if (url) return url;
+  console.error(`Missing scene thumbnail: ${item.id}`);
+  return item.src;
 }
 
 /** 背景透過の512×512キャラ。 */
