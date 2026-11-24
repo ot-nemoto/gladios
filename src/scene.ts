@@ -1,6 +1,6 @@
 import "./scene.css";
 import { loadImage, required } from "./wardrobe-common";
-import { backgrounds, characters, sceneSize, type SceneItem } from "./scene-data";
+import { backgrounds, characters, sceneSize, thumbOf, thumbSize, type SceneItem } from "./scene-data";
 
 const canvas = required<HTMLCanvasElement>("#scene");
 const context = canvas.getContext("2d");
@@ -27,9 +27,10 @@ function renderOptions(
     button.className = "scene-choice";
     button.dataset.id = item.id;
     const thumb = document.createElement("img");
-    thumb.src = item.src;
-    thumb.width = sceneSize;
-    thumb.height = sceneSize;
+    // 選択欄には縮小画像を使い、開いた直後の読み込みを減らす。合成には元画像を使う。
+    thumb.src = thumbOf(item);
+    thumb.width = thumbSize;
+    thumb.height = thumbSize;
     thumb.alt = "";
     // 選択肢が増えても、画面外のサムネイルは見えるまで読み込まない。
     thumb.loading = "lazy";
