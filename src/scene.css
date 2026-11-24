@@ -72,11 +72,12 @@ fieldset { border:0; margin:0 0 22px; padding:0; min-width:0; }
 legend { font:18px/1.4 Georgia,"Yu Mincho",serif; margin-bottom:10px; padding:0; }
 
 /* 選択肢が増えても欄を1行に保ち、はみ出した分は横スクロールで選ぶ（#178）。
+   常に右端の選択肢が半分見える幅にして、続きがあることを示す（PCは3つ半）。
    余白は選択中の枠線とフォーカス枠がスクロール欄の端で切れないようにするため。 */
 .scene-options {
   display:grid;
   grid-auto-flow:column;
-  grid-auto-columns:120px;
+  grid-auto-columns:calc((100% - 3 * 10px) / 3.5);
   gap:10px;
   overflow-x:auto;
   overscroll-behavior-x:contain;
@@ -126,6 +127,11 @@ footer {
   color:var(--muted);
   font-size:10px;
   letter-spacing:.12em;
+}
+
+/* 右の列が狭い幅（最小260px）では、3つ半だと小さくなりすぎるため2つ半にする。 */
+@media (min-width:761px) and (max-width:960px) {
+  .scene-options { grid-auto-columns:calc((100% - 2 * 10px) / 2.5); }
 }
 
 @media (max-width:760px) {
