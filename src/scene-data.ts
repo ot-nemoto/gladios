@@ -51,11 +51,15 @@ const thumbs = import.meta.glob<string>("./assets/scene/thumbs/*.webp", {
   import: "default",
 });
 
-/** 選択欄に表示する縮小画像のURL。素材を追加したら縮小画像も用意する（引き継ぎ資料を参照）。 */
+/**
+ * 選択欄に表示する縮小画像のURL。素材を追加・差し替えたら縮小画像も用意する（引き継ぎ資料を参照）。
+ * 縮小画像がなくてもページ全体は止めず、元画像で表示してコンソールに知らせる。
+ */
 export function thumbOf(item: SceneItem): string {
   const url = thumbs[`./assets/scene/thumbs/${item.id}.webp`];
-  if (!url) throw new Error(`Missing scene thumbnail: ${item.id}`);
-  return url;
+  if (url) return url;
+  console.error(`Missing scene thumbnail: ${item.id}`);
+  return item.src;
 }
 
 /** 背景透過の512×512キャラ。 */
