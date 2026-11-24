@@ -33,7 +33,7 @@ function renderOptions(
     thumb.height = thumbSize;
     thumb.alt = "";
     // 横スクロール欄では、画面外のサムネイルを lazy にするとスワイプ後に空欄が見えるため、
-    // 縮小画像は最初にすべて読み込む（全33枚で約0.87MB、#166・#178）。
+    // 縮小画像は最初にすべて読み込む（#166・#178。#182 時点で全45枚・約1.0MB）。
     const name = document.createElement("span");
     name.textContent = item.name;
     button.append(thumb, name);
