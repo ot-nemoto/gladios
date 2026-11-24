@@ -16,21 +16,33 @@ import gaiusImage from "./assets/scene/gaius-pontidius-stolo.png";
 import salomonImage from "./assets/scene/salomon.png";
 import ambillusImage from "./assets/scene/ambillus.png";
 import seaImage from "./assets/scene/sea.webp";
-import snowfieldImage from "./assets/scene/snowfield.png";
-import meadowImage from "./assets/scene/meadow.png";
+import snowfieldImage from "./assets/scene/snowfield.webp";
+import meadowImage from "./assets/scene/meadow.webp";
 import forestImage from "./assets/scene/forest.webp";
 import marshImage from "./assets/scene/marsh.webp";
 import mountainImage from "./assets/scene/mountain.webp";
 import townImage from "./assets/scene/town.webp";
-import caveImage from "./assets/scene/cave.png";
+import caveImage from "./assets/scene/cave.webp";
 import pineGoldCloudsImage from "./assets/scene/pine-gold-clouds.webp";
-import cranesSeigaihaImage from "./assets/scene/cranes-seigaiha.png";
-import sakuraGoldScreenImage from "./assets/scene/sakura-gold-screen.png";
-import bambooGoldMoonImage from "./assets/scene/bamboo-gold-moon.png";
-import plumGoldSnowImage from "./assets/scene/plum-gold-snow.png";
-import fujiGoldCloudsImage from "./assets/scene/fuji-gold-clouds.png";
+import cranesSeigaihaImage from "./assets/scene/cranes-seigaiha.webp";
+import sakuraGoldScreenImage from "./assets/scene/sakura-gold-screen.webp";
+import bambooGoldMoonImage from "./assets/scene/bamboo-gold-moon.webp";
+import plumGoldSnowImage from "./assets/scene/plum-gold-snow.webp";
+import fujiGoldCloudsImage from "./assets/scene/fuji-gold-clouds.webp";
 import koiWaterfallImage from "./assets/scene/koi-waterfall.webp";
-import mapleGoldStreamImage from "./assets/scene/maple-gold-stream.png";
+import mapleGoldStreamImage from "./assets/scene/maple-gold-stream.webp";
+import cathedralRoseWindowImage from "./assets/scene/cathedral-rose-window.webp";
+import gothicPointedArchImage from "./assets/scene/gothic-pointed-arch.webp";
+import medievalGrisailleImage from "./assets/scene/medieval-grisaille.webp";
+import cathedralNightImage from "./assets/scene/cathedral-night.webp";
+import wisteriaDragonfliesImage from "./assets/scene/wisteria-dragonflies.webp";
+import roseGardenArchImage from "./assets/scene/rose-garden-arch.webp";
+import seaSailingShipsImage from "./assets/scene/sea-sailing-ships.webp";
+import celticKnotImage from "./assets/scene/celtic-knot.webp";
+import peacockFeathersImage from "./assets/scene/peacock-feathers.webp";
+import grapesAutumnLeavesImage from "./assets/scene/grapes-autumn-leaves.webp";
+import lotusWaterImage from "./assets/scene/lotus-water.webp";
+import constellationRingImage from "./assets/scene/constellation-ring.webp";
 
 /** 合成の出力サイズ。キャラ・背景とも同じ大きさの素材を重ねる。 */
 export const sceneSize = 512;
@@ -101,4 +113,16 @@ export const backgrounds: readonly SceneItem[] = [
   { id: "fuji-gold-clouds", name: "富士の裾と金雲", src: fujiGoldCloudsImage },
   { id: "koi-waterfall", name: "鯉と滝", src: koiWaterfallImage },
   { id: "maple-gold-stream", name: "紅葉と金流水", src: mapleGoldStreamImage },
+  { id: "cathedral-rose-window", name: "大聖堂のバラ窓", src: cathedralRoseWindowImage },
+  { id: "gothic-pointed-arch", name: "ゴシック尖頭アーチ", src: gothicPointedArchImage },
+  { id: "medieval-grisaille", name: "中世グリザイユ", src: medievalGrisailleImage },
+  { id: "cathedral-night", name: "夜の大聖堂", src: cathedralNightImage },
+  { id: "wisteria-dragonflies", name: "藤とトンボ", src: wisteriaDragonfliesImage },
+  { id: "rose-garden-arch", name: "バラ園アーチ", src: roseGardenArchImage },
+  { id: "sea-sailing-ships", name: "海と帆船", src: seaSailingShipsImage },
+  { id: "celtic-knot", name: "ケルト結び目", src: celticKnotImage },
+  { id: "peacock-feathers", name: "孔雀の羽", src: peacockFeathersImage },
+  { id: "grapes-autumn-leaves", name: "葡萄と秋の葉", src: grapesAutumnLeavesImage },
+  { id: "lotus-water", name: "蓮と水", src: lotusWaterImage },
+  { id: "constellation-ring", name: "星座の円環", src: constellationRingImage },
 ];
