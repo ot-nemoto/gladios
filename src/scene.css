@@ -105,6 +105,8 @@ legend { font:18px/1.4 Georgia,"Yu Mincho",serif; margin-bottom:10px; padding:0;
   background:repeating-conic-gradient(#e6e2d6 0 25%,#f7f5ef 0 50%) 0 0/16px 16px;
   image-rendering:pixelated;
 }
+/* 長い名前（GWENDOLYNNE HEAVENSBRAND など）も、狭い幅でボタンからはみ出さないよう単語の途中で折り返す（#195）。 */
+.scene-choice span { min-width:0; overflow-wrap:anywhere; }
 .scene-choice[aria-pressed=true] { border-color:var(--green); box-shadow:0 0 0 2px var(--green); }
 
 .scene-actions { display:flex; align-items:center; gap:14px; }
