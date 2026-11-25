@@ -15,6 +15,9 @@ import medocusImage from "./assets/scene/medocus.png";
 import gaiusImage from "./assets/scene/gaius-pontidius-stolo.png";
 import salomonImage from "./assets/scene/salomon.png";
 import ambillusImage from "./assets/scene/ambillus.png";
+import eathyrossImage from "./assets/scene/eathyross.png";
+import akiliasImage from "./assets/scene/akilias.png";
+import igraineImage from "./assets/scene/igraine.png";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.webp";
 import meadowImage from "./assets/scene/meadow.webp";
@@ -93,6 +96,9 @@ export const characters: readonly SceneItem[] = [
   { id: "gaius-pontidius-stolo", name: "GAIUS PONTIDIUS STOLO", src: gaiusImage },
   { id: "salomon", name: "SALOMON", src: salomonImage },
   { id: "ambillus", name: "AMBILLUS", src: ambillusImage },
+  { id: "eathyross", name: "EATHYROSS", src: eathyrossImage },
+  { id: "akilias", name: "AKILIAS", src: akiliasImage },
+  { id: "igraine", name: "IGRAINE", src: igraineImage },
 ];
 
 /** 512×512の背景。 */
