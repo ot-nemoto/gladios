@@ -16,11 +16,46 @@ let request = 0;
 let saving = false;
 let downloadURL: string | null = null;
 
+/*
+ * サムネイルは段階的に読み込む（#186）。
+ * 1. 各選択欄で、見えている選択肢と左右に欄の幅1つ分の先までを、すぐに読む。
+ * 2. 残りは、ページの読み込みが終わってから手が空いたときにまとめて読む。
+ * 選択肢が増えても開いた直後の読み込みは増えず、スワイプ後に空欄が見えることもほぼない
+ * （loading="lazy" は横スクロール欄の先読みが足りず、空欄が見えたため使わない。#178）。
+ */
+const pendingThumbs = new Set<HTMLImageElement>();
+
+function loadThumb(thumb: HTMLImageElement): void {
+  const src = thumb.dataset.src;
+  if (!src) return;
+  thumb.src = src;
+  delete thumb.dataset.src;
+  pendingThumbs.delete(thumb);
+}
+
+function loadRemainingThumbsWhenIdle(): void {
+  const run = () => {
+    for (const thumb of [...pendingThumbs]) loadThumb(thumb);
+  };
+  if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 2000 });
+  else setTimeout(run, 200);
+}
+
 function renderOptions(
   container: HTMLElement,
   items: readonly SceneItem[],
   onSelect: (item: SceneItem) => void,
 ): (item: SceneItem) => void {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        loadThumb(entry.target as HTMLImageElement);
+      }
+    },
+    { root: container, rootMargin: "0px 100%" },
+  );
   const buttons = items.map((item) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -28,12 +63,12 @@ function renderOptions(
     button.dataset.id = item.id;
     const thumb = document.createElement("img");
     // 選択欄には縮小画像を使い、開いた直後の読み込みを減らす。合成には元画像を使う。
-    thumb.src = thumbOf(item);
+    thumb.dataset.src = thumbOf(item);
     thumb.width = thumbSize;
     thumb.height = thumbSize;
     thumb.alt = "";
-    // 横スクロール欄では、画面外のサムネイルを lazy にするとスワイプ後に空欄が見えるため、
-    // 縮小画像は最初にすべて読み込む（#166・#178。#182 時点で全45枚・約1.0MB）。
+    pendingThumbs.add(thumb);
+    observer.observe(thumb);
     const name = document.createElement("span");
     name.textContent = item.name;
     button.append(thumb, name);
@@ -123,5 +158,8 @@ window.addEventListener("pagehide", () => {
   if (downloadURL) URL.revokeObjectURL(downloadURL);
   downloadURL = null;
 });
+
+if (document.readyState === "complete") loadRemainingThumbsWhenIdle();
+else window.addEventListener("load", loadRemainingThumbsWhenIdle, { once: true });
 
 void draw();
