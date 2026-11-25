@@ -17,15 +17,12 @@ body {
 }
 
 button { font:inherit; color:inherit; cursor:pointer; }
-button:focus-visible,a:focus-visible { outline:3px solid #b38a46; outline-offset:4px; }
+button:focus-visible { outline:3px solid #b38a46; outline-offset:4px; }
 .scene-choice:focus-visible { outline-offset:2px; }
 
 main { max-width:1100px; margin:auto; padding:26px 32px 22px; }
 
 header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
   padding:0 0 20px;
   border-bottom:1px solid var(--line);
 }
@@ -107,8 +104,6 @@ legend { font:18px/1.4 Georgia,"Yu Mincho",serif; margin-bottom:10px; padding:0;
 #download:disabled { opacity:.5; cursor:not-allowed; }
 
 footer {
-  display:flex;
-  justify-content:space-between;
   margin-top:30px;
   padding-top:14px;
   border-top:1px solid var(--line);
