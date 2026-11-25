@@ -1,5 +1,5 @@
 import "./scene.css";
-import { loadImage, required } from "./wardrobe-common";
+import { loadImage, required } from "./common";
 import { backgrounds, characters, sceneSize, thumbOf, thumbSize, type SceneItem } from "./scene-data";
 
 const canvas = required<HTMLCanvasElement>("#scene");
