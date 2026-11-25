@@ -8,7 +8,7 @@
 
 着脱版は同じ人物に6種類の兜パーツを重ねます。兜を外すと元の髪型に戻り、着けた姿を合成PNGとして保存できます。[顔と兜のサイズ比較](https://ot-nemoto.github.io/gladios/helmet-fit.html)では、元の顔と各兜を同じ倍率で並べ、半透明表示と基準線で大きさや位置を確認できます。着脱版へ追加した兜は比較画面にも反映されます。
 
-[キャラと背景を組み合わせるページ](https://ot-nemoto.github.io/gladios/scene.html)では、背景透過の剣闘士（TADALA、MARCUS MARIUS AVITUS、BERENICE、CASSIA、GOLD HILDR、VLATTIA、SPATALIA、KRIMHARTH、BRANTHOC、TUKHORIS、KASOS、THALES、KHNUBA、MEDOCUS、GAIUS PONTIDIUS STOLO、SALOMON、AMBILLUS、EATHYROSS、AKILIAS、IGRAINE、OWAIN、IGNATIUS、GODFIREY、GALERON、ENOCH、ELIJAH、ANDREW、ADALRIC、GWENDOLYNNE HEAVENSBRAND）と背景（海、雪原、草原、森、湿地、山、街、洞窟、松と金雲、鶴と青海波、桜と金屏風、竹と金月、梅と金の雪、富士の裾と金雲、鯉と滝、紅葉と金流水、大聖堂のバラ窓、ゴシック尖頭アーチ、中世グリザイユ、夜の大聖堂、藤とトンボ、バラ園アーチ、海と帆船、ケルト結び目、孔雀の羽、葡萄と秋の葉、蓮と水、星座の円環）を選んで重ね、512×512のPNGとして保存できます。
+[キャラと背景を組み合わせるページ](https://ot-nemoto.github.io/gladios/scene.html)では、背景透過の剣闘士（TADALA、MARCUS MARIUS AVITUS、BERENICE、CASSIA、GOLD HILDR、VLATTIA、SPATALIA、KRIMHARTH、BRANTHOC、TUKHORIS、KASOS、THALES、KHNUBA、MEDOCUS、GAIUS PONTIDIUS STOLO、SALOMON、AMBILLUS、EATHYROSS、AKILIAS、IGRAINE、OWAIN、IGNATIUS、GODFREY、GALERON、ENOCH、ELIJAH、ANDREW、ADALRIC、GWENDOLYNNE HEAVENSBRAND）と背景（海、雪原、草原、森、湿地、山、街、洞窟、松と金雲、鶴と青海波、桜と金屏風、竹と金月、梅と金の雪、富士の裾と金雲、鯉と滝、紅葉と金流水、大聖堂のバラ窓、ゴシック尖頭アーチ、中世グリザイユ、夜の大聖堂、藤とトンボ、バラ園アーチ、海と帆船、ケルト結び目、孔雀の羽、葡萄と秋の葉、蓮と水、星座の円環）を選んで重ね、512×512のPNGとして保存できます。
 
 武器・防具の着脱やモーション・戦闘判定はありません。
 

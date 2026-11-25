@@ -20,7 +20,7 @@ import akiliasImage from "./assets/scene/akilias.webp";
 import igraineImage from "./assets/scene/igraine.webp";
 import owainImage from "./assets/scene/owain.webp";
 import ignatiusImage from "./assets/scene/ignatius.webp";
-import godfireyImage from "./assets/scene/godfirey.webp";
+import godfreyImage from "./assets/scene/godfrey.webp";
 import galeronImage from "./assets/scene/galeron.webp";
 import enochImage from "./assets/scene/enoch.webp";
 import elijahImage from "./assets/scene/elijah.webp";
@@ -110,7 +110,7 @@ export const characters: readonly SceneItem[] = [
   { id: "igraine", name: "IGRAINE", src: igraineImage },
   { id: "owain", name: "OWAIN", src: owainImage },
   { id: "ignatius", name: "IGNATIUS", src: ignatiusImage },
-  { id: "godfirey", name: "GODFIREY", src: godfireyImage },
+  { id: "godfrey", name: "GODFREY", src: godfreyImage },
   { id: "galeron", name: "GALERON", src: galeronImage },
   { id: "enoch", name: "ENOCH", src: enochImage },
   { id: "elijah", name: "ELIJAH", src: elijahImage },
