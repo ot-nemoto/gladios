@@ -18,6 +18,15 @@ import ambillusImage from "./assets/scene/ambillus.webp";
 import eathyrossImage from "./assets/scene/eathyross.webp";
 import akiliasImage from "./assets/scene/akilias.webp";
 import igraineImage from "./assets/scene/igraine.webp";
+import owainImage from "./assets/scene/owain.webp";
+import ignatiusImage from "./assets/scene/ignatius.webp";
+import godfireyImage from "./assets/scene/godfirey.webp";
+import galeronImage from "./assets/scene/galeron.webp";
+import enochImage from "./assets/scene/enoch.webp";
+import elijahImage from "./assets/scene/elijah.webp";
+import andrewImage from "./assets/scene/andrew.webp";
+import adalricImage from "./assets/scene/adalric.webp";
+import gwendolynneHeavensbrandImage from "./assets/scene/gwendolynne-heavensbrand.webp";
 import seaImage from "./assets/scene/sea.webp";
 import snowfieldImage from "./assets/scene/snowfield.webp";
 import meadowImage from "./assets/scene/meadow.webp";
@@ -99,6 +108,15 @@ export const characters: readonly SceneItem[] = [
   { id: "eathyross", name: "EATHYROSS", src: eathyrossImage },
   { id: "akilias", name: "AKILIAS", src: akiliasImage },
   { id: "igraine", name: "IGRAINE", src: igraineImage },
+  { id: "owain", name: "OWAIN", src: owainImage },
+  { id: "ignatius", name: "IGNATIUS", src: ignatiusImage },
+  { id: "godfirey", name: "GODFIREY", src: godfireyImage },
+  { id: "galeron", name: "GALERON", src: galeronImage },
+  { id: "enoch", name: "ENOCH", src: enochImage },
+  { id: "elijah", name: "ELIJAH", src: elijahImage },
+  { id: "andrew", name: "ANDREW", src: andrewImage },
+  { id: "adalric", name: "ADALRIC", src: adalricImage },
+  { id: "gwendolynne-heavensbrand", name: "GWENDOLYNNE HEAVENSBRAND", src: gwendolynneHeavensbrandImage },
 ];
 
 /** 512×512の背景。 */
