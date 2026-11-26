@@ -3,40 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="低頭身の女性剣闘士の、兜なし・銀青緑・黒金紫・金赤・銀角付き・金一本角・黒赤鶏冠の立ち絵を見比べられる着せ替え見本です。">
-<title>小さな装備室 — 兜の着せ替え</title>
+<meta name="description" content="剣闘士のキャラクターと背景を組み合わせ、512×512のPNGとして保存できるページです。">
+<title>Gladios</title>
 </head>
 <body>
-<noscript>着せ替えの切替にはJavaScriptを有効にしてください。</noscript>
+<noscript>組み合わせの表示と保存にはJavaScriptを有効にしてください。</noscript>
 <main>
-  <header><div><p class="eyebrow">CHIBI WARDROBE</p><h1>小さな装備室</h1></div><span>女性剣闘士 / 兜の着せ替え</span></header>
-  <nav class="page-switch" aria-label="装備室のページ"><a href="./" aria-current="page">画像を切り替える</a><a href="./equipment.html">装備を着脱する</a><a href="./helmet-fit.html">顔と兜を比較する</a><a href="./scene.html">背景と組み合わせる</a></nav>
-  <div class="layout">
-    <section class="preview" aria-label="着せ替えのプレビュー">
-      <div class="preview-label"><span>APPEARANCE</span><span id="variant-label">銀・青緑の兜</span></div>
-      <div class="arch" aria-hidden="true"></div>
-      <canvas id="character" width="640" height="900" role="img" aria-label="銀・青緑の兜を着けた低頭身の女性剣闘士"></canvas>
-      <div class="preview-bottom"><p id="status" role="status" aria-live="polite">立ち絵を読み込んでいます…</p><span id="counter">02 / 07</span></div>
+  <header><h1>Gladios</h1></header>
+  <div class="scene-layout">
+    <section class="scene-preview" aria-label="組み合わせのプレビュー">
+      <canvas id="scene" width="512" height="512" role="img" aria-label="キャラと背景の組み合わせ" aria-busy="true"></canvas>
+      <p id="status" role="status" aria-live="polite">画像を読み込んでいます…</p>
     </section>
-    <section class="wardrobe" aria-label="兜の選択">
-      <p class="eyebrow">CHOOSE YOUR HELMET</p><h2>どの兜にする？</h2><p class="intro">気に入った立ち絵を、切り替えて見比べられます。</p>
-      <div class="group-title"><h3>頭の装備</h3><span>7 STYLES</span></div>
-      <div class="options">
-        <button type="button" class="choice" data-style="base" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/base.png" width="1086" height="1448" alt=""></span><span><span class="name">兜なし</span><span class="description">ポニーテールと基本の装い</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="silver" aria-pressed="true"><span class="thumb"><img src="/src/assets/dress-up/thumbs/silver-teal.png" width="1024" height="1536" alt=""></span><span><span class="name">銀・青緑の兜</span><span class="description">銀の面頬と、大きな飾り毛</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="purple" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/black-gold-purple.png" width="1024" height="1536" alt=""></span><span><span class="name">黒金・紫の兜</span><span class="description">金の縁飾りと、白い仮面</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="goldred" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/gold-red.png" width="1024" height="1536" alt=""></span><span><span class="name">金・赤の兜</span><span class="description">赤い飾り毛と、金の兜</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="horned" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/silver-horned.png" width="1024" height="1536" alt=""></span><span><span class="name">銀・角付きの兜</span><span class="description">下向きの角と、金の付け根</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="goldhorn" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/gold-single-horn.png" width="1086" height="1448" alt=""></span><span><span class="name">金・一本角の兜</span><span class="description">上へ湾曲する一本角</span></span><span class="check" aria-hidden="true">✓</span></button>
-        <button type="button" class="choice" data-style="blackred" aria-pressed="false"><span class="thumb"><img src="/src/assets/dress-up/thumbs/black-red-crest.png" width="1086" height="1448" alt=""></span><span><span class="name">黒・赤い鶏冠の兜</span><span class="description">赤い鶏冠状の飾りと鼻当て</span></span><span class="check" aria-hidden="true">✓</span></button>
-      </div>
-      <div class="selected"><p>現在の装い</p><h3 id="selected-name">銀・青緑の兜</h3><div id="selected-detail">目穴から顔がのぞく、銀色の兜。</div></div>
-      <div class="actions"><button id="remove" type="button">兜を外す</button><a id="download" download="gladiator-chibi-silver.png" aria-disabled="true">この立ち絵を保存 ↓</a></div>
-      <p class="note">7枚の全身画像を切り替える見本です。兜パーツの合成は行っていません。</p>
+    <section class="scene-controls" aria-label="組み合わせの選択">
+      <fieldset>
+        <legend>キャラ</legend>
+        <div class="scene-options" id="characters"></div>
+      </fieldset>
+      <fieldset>
+        <legend>背景</legend>
+        <div class="scene-options" id="backgrounds"></div>
+      </fieldset>
+      <div class="scene-actions"><button id="download" type="button" disabled>PNGで保存 ↓</button><span>512 × 512 px</span></div>
     </section>
   </div>
-  <footer><span>GLADIOS / CHIBI APPEARANCE STUDY</span><span>静止画の着せ替え見本</span></footer>
+  <footer><span>GLADIOS</span></footer>
 </main>
-<script type="module" src="/src/dress-up.ts"></script>
+<script type="module" src="/src/scene.ts"></script>
 </body>
 </html>
